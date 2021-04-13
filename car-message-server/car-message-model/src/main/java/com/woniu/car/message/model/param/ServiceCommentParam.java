@@ -1,5 +1,6 @@
 package com.woniu.car.message.model.param;
 
+import io.swagger.annotations.ApiModel;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.springframework.web.multipart.MultipartFile;
@@ -16,10 +17,12 @@ import java.io.Serializable;
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
+@ApiModel(value = "服务评论参数信息")
 public class ServiceCommentParam implements Serializable {
     /**
      * 服务评论编号
      */
+
     private String commentSecode;
 
     /**

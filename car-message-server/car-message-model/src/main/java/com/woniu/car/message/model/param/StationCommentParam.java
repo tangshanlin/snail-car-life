@@ -18,6 +18,7 @@ import java.io.Serializable;
 
 @Data
 @EqualsAndHashCode(callSuper = false)
+
 public class StationCommentParam implements Serializable {
     /**
      * 电站评论编号

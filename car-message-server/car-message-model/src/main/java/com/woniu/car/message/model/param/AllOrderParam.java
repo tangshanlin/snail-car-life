@@ -1,5 +1,6 @@
 package com.woniu.car.message.model.param;
 
+import io.swagger.annotations.ApiModel;
 import lombok.Data;
 import lombok.experimental.Accessors;
 

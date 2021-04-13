@@ -11,10 +11,14 @@ import com.woniu.car.message.web.domain.GoodProduct;
 import com.woniu.car.message.web.service.GoodProductService;
 import com.woniu.car.message.web.service.ProductCommentService;
 import io.swagger.annotations.*;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.util.ObjectUtils;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
+import javax.validation.Valid;
 import java.util.List;
 
 /**
@@ -34,7 +38,28 @@ public class ProductCommentController {
     private ProductCommentService productCommentService;
     @Resource
     private GoodProductService goodProductService;
+    /**
+     * @Author Lints
+     * @Date 2021/4/5/005 18:05
+     * @Description 添加商品图片返回图片的地址为Json字符串
+     * @Param [param]
+     * @Return com.woniu.car.commons.core.dto.ResultEntity
+     * @Since version-1.0
+     */
 
+    @GetMapping("add_picture")
+    @ApiOperation(value = "添加商品评论图片",notes = "<span style='color:red;'>用来添加商品评论图片的接口</span>")
+    @ApiResponses({
+            @ApiResponse(code = 200,message = "添加商品评论图片成功"),
+            @ApiResponse(code=500,message = "添加商品评论图片失败")
+    })
+    public ResultEntity<String> addProductPicture(MultipartFile[] file){
+        Boolean isAddPicture=productCommentService.addProductPicture(file);
+        if(isAddPicture){
+            return ResultEntity.buildSuccessEntity(String.class).setMessage("添加商品评论图片成功！！！");
+        }
+        return ResultEntity.buildFailEntity(String.class).setMessage("添加商品评论图片成功！！！");
+    }
     /**
      * @Author Lints
      * @Date 2021/4/5/005 18:05
@@ -43,18 +68,20 @@ public class ProductCommentController {
      * @Return com.woniu.car.commons.core.dto.ResultEntity
      * @Since version-1.0
      */
-    @PostMapping("/upload")
+    @PutMapping("/upload")
     @ApiOperation(value = "添加商品评论",notes = "<span style='color:red;'>用来添加商品评论的接口</span>")
     @ApiResponses({
             @ApiResponse(code = 200,message = "添加商品评论成功"),
             @ApiResponse(code=500,message = "添加商品评论失败")
     })
-    public ResultEntity addProductComment(ProductCommentParam param){
+    public ResultEntity addProductComment(@RequestBody @Valid ProductCommentParam param){
+        System.out.println(param+"=======================================");
         Boolean isAddProduct=productCommentService.addPComment(param);
         if (isAddProduct){
             return new ResultEntity<>().buildSuccessEntity().setMessage("添加商品评价成功");
         }
         return new ResultEntity<>().buildFailEntity().setMessage("添加评价失败");
+
     }
 
    /**
@@ -65,7 +92,7 @@ public class ProductCommentController {
     * @Return com.woniu.car.commons.core.dto.ResultEntity
     * @Since version-1.0
     */
-    @DeleteMapping("delete")
+    @DeleteMapping("delete ")
     @ApiOperation(value = "删除商品评论",notes = "<span style='color:red;'>用来删除商品评论的接口</span>")
     //@ApiResponses用于描述响应状态信息
     @ApiResponses({
@@ -76,9 +103,9 @@ public class ProductCommentController {
     @ApiImplicitParams({
             //dataType:参数类型
             //paramType:参数由哪里获取     path->从路径中获取，query->?传参，body->ajax请求
-            @ApiImplicitParam(name = "commentPCode",value = "商品评论编码",dataType = "String",paramType = "path",example = "PRca1f4986-cd87-4bbc-80b1-f6ae7aeebe19"),
+            @ApiImplicitParam(name = "commentPCode",value = "商品评论编码",dataType = "String",paramType = "query",example = "PRf748e83b-edc0-4215-857d-6046da51a038"),
     })
-    public ResultEntity deleteProductComment(DeleteCommentParam commentPCode){
+    public ResultEntity deleteProductComment( @Valid DeleteCommentParam commentPCode){
         if (!ObjectUtils.isEmpty(commentPCode)){
             Boolean isDeleteProduct=productCommentService.deletePComment(commentPCode.getCommentPCode());
             if (isDeleteProduct){
