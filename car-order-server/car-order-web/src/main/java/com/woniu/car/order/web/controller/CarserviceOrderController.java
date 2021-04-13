@@ -2,6 +2,8 @@ package com.woniu.car.order.web.controller;
 
 
 import cn.hutool.core.lang.UUID;
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.alipay.api.AlipayApiException;
 import com.alipay.api.internal.util.AlipaySignature;
 import com.woniu.car.commons.core.code.ConstCode;
@@ -29,6 +31,7 @@ import com.woniu.car.order.web.util.InsertOrderNoUtil;
 import com.woniu.car.order.web.vo.AllOrder;
 import com.woniu.car.order.web.vo.AllOrderParam;
 import com.woniu.car.shop.web.domain.Shop;
+import com.woniu.car.user.web.domain.Address;
 import io.seata.spring.annotation.GlobalTransactional;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
@@ -40,19 +43,18 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
 import java.io.FileFilter;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * <p>
@@ -128,7 +130,7 @@ public class CarserviceOrderController {
      * @Param [user]
      * @return com.woniu.car.commons.core.dto.ResultEntity<com.woniu.car.order.web.vo.AllOrder>
      **/
-    public ResultEntity<AllOrder> findCarserviceOrdersByUserId(UserVo userVo){
+    public ResultEntity<AllOrder> findCarserviceOrdersByUserId(@Valid UserVo userVo){
         /*调用根据用户id查询当前用户的服务订单信息方法*/
         List<CarserviceOrder> caserviceOrders = carserviceOrderService.findCarserviceOrdersByUserId(userVo);
         //查询商品订单
@@ -137,8 +139,18 @@ public class CarserviceOrderController {
         for (int i = 0; i < productOrders.size(); i++) {
             List<ProductOrderDetail> productOrderDerails
                     = productOrderDetailService.findProductOrderDerailByProductOrderNo(productOrders.get(i).getProductOrderNo());
+
+            ArrayList<ProductOrderDetail> productOrderDetails = new ArrayList<>();
+//            for (int n = 0; n < productOrderDerails.size(); n++){
+//                // 将数据转成json字符串
+//                String jsonObject= JSON.toJSONString(productOrderDerails);
+//                //将json转成需要的对象
+//                ProductOrderDetail productOrderDetail = JSONObject.parseObject(jsonObject,ProductOrderDetail.class);
+//                productOrderDerails.add(productOrderDetail);
+//            }
+
             /*把查询的结果添加进集合*/
-            productOrders.get(i).getProductOrderDetails().add((ProductOrderDetail) productOrderDerails);
+            productOrders.get(i).setProductOrderDetails(productOrderDetails);
         }
 
         /*调用根据user_id查询电站订单方法*/
@@ -146,7 +158,7 @@ public class CarserviceOrderController {
 
         /*创建对象,传入查询的结果*/
         AllOrder allOrder = new AllOrder(caserviceOrders,productOrders,powerplantOrders);
-        return ResultEntity.buildFailEntity(AllOrder.class)
+        return new ResultEntity<AllOrder>()
                 .setCode(ConstCode.ACCESS_SUCCESS)
                 .setFlag(true)
                 .setData(allOrder)
@@ -264,15 +276,15 @@ public class CarserviceOrderController {
 //    @GlobalTransactional(timeoutMills = 50000, name = "prex-create-order")
     @RequestMapping(value = "find_orderinfo_by_orderno",method = RequestMethod.GET)
     @ApiOperation(value = "根据订单编号查询订单详情",notes = "<span style='color:red;'>此接口可查服务订单和电站订单</span>")
-    public ResultEntity<AllOrderParam> findOrderInfoByOrderNo(OrderVo orderVo){
+    public ResultEntity<AllOrderParam> findOrderInfoByOrderNo(FindOrder findOrder){
         /*截取订单前两位，判断订单类型*/
-        String str = orderVo.getOrderNo().substring(0, 2);
+        String str = findOrder.getOrderNo().substring(0, 2);
         log.info("订单前两位为："+str);
         log.info("根据截取的订单号，判断订单类型，调用对应的订单查询方法");
         if(str.equals("po")){
-            log.info(orderVo.getOrderNo()+"：订单为电站订单");
+            log.info(findOrder.getOrderNo()+"：订单为电站订单");
             PowerplantOrder powerplantOrder
-                    = powerplantOrderService.findpowerplantOrderByOrderCode(new PowerplantOrder().setOrderCode(orderVo.getOrderNo()));
+                    = powerplantOrderService.findpowerplantOrderByOrderCode(new PowerplantOrder().setOrderCode(findOrder.getOrderNo()));
             if(!ObjectUtils.isEmpty(powerplantOrder)){
                 return ResultEntity.buildFailEntity(AllOrderParam.class)
                         .setCode(ConstCode.FIND_POWERPLANT_ORDER_SUCCESS)
@@ -281,9 +293,9 @@ public class CarserviceOrderController {
                         .setData(new AllOrderParam().setPowerplantOrder(powerplantOrder));
             }
         }else if (str.equals("se")){
-            log.info(orderVo.getOrderNo()+"：订单为服务订单");
+            log.info(findOrder.getOrderNo()+"：订单为服务订单");
             CarserviceOrder carserviceOrder
-                    = carserviceOrderService.findCarserviceOrderByOrderNo(orderVo);
+                    = carserviceOrderService.findCarserviceOrderByOrderNo(new OrderVo().setOrderNo(findOrder.getOrderNo()));
             System.err.println(carserviceOrder);
             if(!ObjectUtils.isEmpty(carserviceOrder)){
                 return ResultEntity.buildFailEntity(AllOrderParam.class)
@@ -294,7 +306,7 @@ public class CarserviceOrderController {
             }
         }else if(str.equals("pr")){
            /*根据订单单号查询商品信息*/
-            ProductOrder productOrder = productOrderService.findProductOrderByProductOrderNo(orderVo);
+            ProductOrder productOrder = productOrderService.findProductOrderByProductOrderNo(new OrderVo().setOrderNo(findOrder.getOrderNo()));
             if(!ObjectUtils.isEmpty(productOrder)){
                 return ResultEntity.buildFailEntity(AllOrderParam.class)
                         .setCode(ConstCode.FIND_PRODUCT_ORDER_SUCCESS)
@@ -416,7 +428,7 @@ public class CarserviceOrderController {
     @RequestMapping(value = "api/update_carservice_order_status_for_serviceing by_use_code",method = RequestMethod.PUT)
     @ApiOperation(value = "根据使用码更改服务状态为服务进行中")
     @GlobalTransactional(timeoutMills = 10000, name = "prex-create-order")
-    public ResultEntity updateCarserViceOrderStatusForServiceingByUseCode(@RequestBody UseCodeVo useCodeVo){
+    public ResultEntity updateCarserViceOrderStatusForServiceingByUseCode(@RequestBody @Valid UseCodeVo useCodeVo){
         /*根据服务使用码查询服务订单*/
         CarserviceOrder carserviceOrder
                 = carserviceOrderService.findCarserviceOrderByUseCode(useCodeVo);
@@ -449,7 +461,7 @@ public class CarserviceOrderController {
      * @return com.woniu.car.commons.core.dto.ResultEntity
      **/
     @RequestMapping(value = "carservice_pay",method = RequestMethod.PUT)
-    @ApiOperation(value = "服务购买(钱包展示没写)")
+    @ApiOperation(value = "服务购买(钱包钱暂时没写)")
     @GlobalTransactional(timeoutMills = 10000, name = "prex-create-order")
     public ResultEntity carservicePay(@RequestBody OrderPayParam orderPayParam){
         /*根据订单编号查询订单信息*/
@@ -497,6 +509,7 @@ public class CarserviceOrderController {
      */
     @RequestMapping(value = "api/alipay_notify_notice",method = RequestMethod.POST)
     @ResponseBody
+
     @ApiOperation(value = "支付宝异步通知")
     public ResultEntity alipayNotifyNotice(HttpServletRequest request, HttpServletRequest response) throws Exception {
         System.out.println(("支付成功, 进入异步通知接口..."));

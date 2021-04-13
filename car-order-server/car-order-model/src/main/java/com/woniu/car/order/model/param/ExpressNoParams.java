@@ -3,6 +3,8 @@ package com.woniu.car.order.model.param;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import javax.validation.constraints.NotNull;
+
 /**
  * @ClassName UpOrderStatusForSent
  * @Desc TODO 修改商品订单发货时用
@@ -14,9 +16,11 @@ import lombok.Data;
 public class ExpressNoParams {
 
     @ApiModelProperty(value = "商品订单表id")
+    @NotNull(message = "商品订单表id不能为空")
     private Integer productOrderId;
 
     @ApiModelProperty(value = "发货快递单号")
+    @NotNull(message = "发货快递单号不能为空")
     private String expressNo;
 
 }

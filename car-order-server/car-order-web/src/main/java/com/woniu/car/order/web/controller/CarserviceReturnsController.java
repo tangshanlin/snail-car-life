@@ -16,6 +16,7 @@ import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import javax.validation.Valid;
 
 /**
  * <p>
@@ -45,7 +46,7 @@ public class CarserviceReturnsController {
      **/
     @ApiOperation(value = "服务退款申请接口")
     @RequestMapping(value ="insert_carservice_return_money_order",method = RequestMethod.POST)
-    public ResultEntity insertCarserviceReturnMoneyOrder(@RequestBody AddCarServiceReturnVo addCarServiceReturnVo){
+    public ResultEntity insertCarserviceReturnMoneyOrder(@RequestBody @Valid AddCarServiceReturnVo addCarServiceReturnVo){
         /*根据服务订单编号查询订单信息*/
         CarserviceOrder carserviceOrder
                 = carserviceOrderService.findCarserviceOrderByOrderNo(new OrderVo().setOrderNo(addCarServiceReturnVo.getCarserviceOrderNo()));
@@ -64,7 +65,6 @@ public class CarserviceReturnsController {
                 carserviceReturns.setReturnsAmount(carserviceReturns.getReturnsAmount());
                 /*退款原因*/
                 carserviceReturns.setReturnReason(addCarServiceReturnVo.getReturnReason());
-
                 /*提交退货信息*/
                 Boolean aBoolean = carserviceReturnsService.insertCarserviceReturn(carserviceReturns);
                 if(aBoolean){

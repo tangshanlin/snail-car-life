@@ -18,6 +18,7 @@ public class ConstCode {
      */
     public static final Integer NAME_ALREADY_EXISTS = 5001;
 
+
     /**
      * 返回标签代码成功
      */
@@ -55,8 +56,6 @@ public class ConstCode {
      * 没有该电站标签的评论
      */
     public static final Integer No_Power_BY_Tags=1608;
-
-
     /*登陆成功*/
     public static final Integer LOGIN_SUCCESS=1301;
     /*登陆失败账户未找到*/
@@ -201,6 +200,7 @@ public class ConstCode {
 
     /*门店联系方式*/
     public static final Integer ADD_SHOP_TEL_FAIL= 1503;
+
 
 
 

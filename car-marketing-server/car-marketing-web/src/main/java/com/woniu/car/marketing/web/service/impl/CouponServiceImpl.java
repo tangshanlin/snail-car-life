@@ -41,7 +41,14 @@ public class CouponServiceImpl extends ServiceImpl<CouponMapper, Coupon> impleme
     **/
     @Override
     public void addCoupon(AddCouponParamVo addCouponParamVo) {
+        System.out.println(addCouponParamVo);
         Coupon coupon = BeanCopyUtil.copyOne(addCouponParamVo, Coupon::new);
+        coupon.setCouponBeginTime(addCouponParamVo.getCouponBeginTime().getTime());//生效时间
+        coupon.setCouponEndTime(addCouponParamVo.getCouponEndTime().getTime());//失效时间
+        coupon.setCouponNoGetNumber(addCouponParamVo.getCouponNumber());//待领取数量
+        coupon.setCouponGetNumber(0);//领取数量
+        coupon.setCouponUseNumber(0);//已使用数量
+        coupon.setCouponNoUseNumber(0);//未使用数量
         couponMapper.insert(coupon);
     }
 

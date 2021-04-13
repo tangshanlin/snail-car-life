@@ -36,6 +36,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
+import javax.validation.Valid;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
@@ -81,10 +82,10 @@ public class ProductOrderDetailController {
      * @Param [addProductOrderVo]
      * @return com.woniu.car.commons.core.dto.ResultEntity
      **/
-    @GlobalTransactional(timeoutMills = 200000, name = "prex-create-order")
+//    @GlobalTransactional(timeoutMills = 200000, name = "prex-create-order")
     @ApiOperation("新增商品订单")
     @RequestMapping(value = "insert_product_order",method = RequestMethod.POST)
-    public ResultEntity insertProductOrder(@RequestBody AddProductOrderVo addProductOrderVo){
+    public ResultEntity insertProductOrder(@RequestBody @Valid AddProductOrderVo addProductOrderVo){
         /*生成商品订单编号*/
         String productOrderNo = InsertOrderNoUtil.InsertProductOrderNo();
         /*商品总数量*/
@@ -100,6 +101,7 @@ public class ProductOrderDetailController {
         for (int i = 0; i < productsInfo.size(); i++){
             /*根据商品id获取商品信息*/
             Product product = productClient.getProductById(productsInfo.get(i).getProductId()).getData();
+            System.err.println(product+"----------");
             products.add(product);
             /*计算总数量*/
             productSum = productSum+productsInfo.get(i).getProductCount();

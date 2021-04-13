@@ -1,9 +1,7 @@
 package com.woniu.car.message.web.domain;
 
-import com.baomidou.mybatisplus.annotation.TableName;
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.Version;
-import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.*;
+
 import java.io.Serializable;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -27,7 +25,7 @@ public class GoodProduct implements Serializable {
     private static final long serialVersionUID = 1L;
 
       @ApiModelProperty(value = "商品好评统计id")
-        @TableId(value = "id", type = IdType.ID_WORKER)
+      @TableId(value = "id", type = IdType.AUTO)
       private Integer id;
 
       @ApiModelProperty(value = "商品编号")
@@ -38,6 +36,9 @@ public class GoodProduct implements Serializable {
 
       @ApiModelProperty(value = "商品总数量")
       private Integer productNums;
+
+  @TableLogic
+  private Integer deleted;
 
 
 }

@@ -48,6 +48,8 @@ import java.util.UUID;
 @Slf4j
 public class ProductCommentServiceImpl extends ServiceImpl<ProductCommentMapper, ProductComment> implements ProductCommentService {
 
+
+    private String commentCode;
     @Resource
     private ProductCommentMapper productCommentMapper;
     @Resource
@@ -63,6 +65,28 @@ public class ProductCommentServiceImpl extends ServiceImpl<ProductCommentMapper,
     @Resource
     private GoodProductMapper goodProductMapper;
 
+    @Override
+    public Boolean addProductPicture(MultipartFile[] file) {
+        ArrayList<String> uploads = messageFileUpload.upload(file);
+        JSONObject jsonObject = new JSONObject();
+        if (uploads.size()==0) {
+            System.out.println("没有上传商品评价图片！！！");
+        }else{
+            uploads.forEach(upload->{
+                jsonObject.put("PR"+ UUID.randomUUID().toString(),upload);
+            });
+        }
+        String commentImages = JSONObject.toJSONString(jsonObject);
+        ProductComment productComment= new ProductComment();
+        commentCode="PR"+UUID.randomUUID().toString();
+        productComment.setCommentPcode(commentCode);
+        productComment.setCommentImage(commentImages);
+        int insert = productCommentMapper.insert(productComment);
+        if(insert>0){
+            return true;
+        }
+        return false;
+    }
     /**
      * 添加商品评论
      * @param param
@@ -71,55 +95,55 @@ public class ProductCommentServiceImpl extends ServiceImpl<ProductCommentMapper,
     @Override
     public Boolean addPComment(ProductCommentParam param) {
         if (!ObjectUtils.isEmpty(param)){
-            param.setCommentTime(new Date().getTime());
-            MultipartFile[] file = param.getFile();
-            ArrayList<String> uploads = messageFileUpload.upload(file);
-            JSONObject jsonObject = new JSONObject();
-            if (uploads.size()==0) {
-                System.out.println("没有上传商品评价图片！！！");
-            }else{
-                uploads.forEach(upload->{
-                    jsonObject.put("PR"+ UUID.randomUUID().toString(),upload);
-                });
-            }
-            String commentImages = JSONObject.toJSONString(jsonObject);
-            ProductComment productComment = BeanCopyUtil.copyOne(param, ProductComment::new);
-            productComment.setCommentImage(commentImages);
-            String comment="PR"+UUID.randomUUID().toString();
-            productComment.setCommentPcode(comment);
-            int insert = productCommentMapper.insert(productComment);
-            if (insert>0){
-                //修改Tag表的全部评论的数量
-                Tag tag = tagMapper.selectById(1);
-                tag.setTagNum(tag.getTagNum()+1);
-                tagMapper.updateById(tag);
-                //自动增加在标签联系表内容
-                CommentTagConnection tagConnection = new CommentTagConnection();
-                tagConnection.setTagId(1);
-                tagConnection.setCommentCode(comment);
-                commentTagConnectionMapper.insert(tagConnection);
-                QueryWrapper<GoodProduct> queryWrapper = new QueryWrapper<>();
-                queryWrapper.eq("product_code",param.getProductCode());
-                GoodProduct goodProduct = goodProductMapper.selectOne(queryWrapper);
+            QueryWrapper<ProductComment> queryWrapper = new QueryWrapper<>();
+            queryWrapper.eq("comment_pcode",commentCode);
+            ProductComment productComment1 = productCommentMapper.selectOne(queryWrapper);
+            if(!ObjectUtils.isEmpty(productComment1)){
+                productComment1.setCommentTime(new Date().getTime());
+                productComment1.setCommentName(param.getCommentName());
+                productComment1.setCommentWords(param.getCommentWords());
+                productComment1.setCommentScore(param.getCommentScore());
+                productComment1.setProductCode(param.getProductCode());
+                productComment1.setCommentUrl(param.getCommentUrl());
+                productComment1.setCommentOrderCode(param.getCommentOrderCode());
+                productComment1.setCommentUserId(param.getCommentUserId());
+                ProductComment productComment = BeanCopyUtil.copyOne(productComment1, ProductComment::new);
+                System.out.println(productComment+"========================================");
+                int insert = productCommentMapper.updateById(productComment);
+                if (insert>0){
+                    //修改Tag表的全部评论的数量
+                    Tag tag = tagMapper.selectById(1);
+                    tag.setTagNum(tag.getTagNum()+1);
+                    tagMapper.updateById(tag);
+                    //自动增加在标签联系表内容
+                    CommentTagConnection tagConnection = new CommentTagConnection();
+                    tagConnection.setTagId(1);
+                    tagConnection.setCommentCode(commentCode);
+                    commentTagConnectionMapper.insert(tagConnection);
+                    QueryWrapper<GoodProduct> queryWrapper1 = new QueryWrapper<>();
+                    queryWrapper1.eq("product_id",param.getProductCode());
+                    GoodProduct goodProduct = goodProductMapper.selectOne(queryWrapper1);
 
-                if(!ObjectUtils.isEmpty(goodProduct)){
-                    goodProduct.setProductId(param.getProductCode());
-                    goodProduct.setProductNums(goodProduct.getProductNums()+1);
-                    //如果这次的评分>=3分，好评加1
-                    if(param.getCommentScore()>=3){
-                        goodProduct.setProductGoodNum(goodProduct.getProductGoodNum()+1);
+                    if(!ObjectUtils.isEmpty(goodProduct)){
+                        goodProduct.setProductId(param.getProductCode());
+                        goodProduct.setProductNums(goodProduct.getProductNums()+1);
+                        //如果这次的评分>=3分，好评加1
+                        if(param.getCommentScore()>=3){
+                            goodProduct.setProductGoodNum(goodProduct.getProductGoodNum()+1);
+                        }
+                        goodProductMapper.updateById(goodProduct);
+                    }else{
+                        GoodProduct product = new GoodProduct();
+                        product.setProductId(param.getProductCode());
+                        product.setProductNums(1);
+                        if(param.getCommentScore()>=3){
+                            product.setProductGoodNum(1);
+                        }
+                        System.out.println(product);
+                        goodProductMapper.insert(product);
                     }
-                    goodProductMapper.updateById(goodProduct);
-                }else{
-                    GoodProduct product = new GoodProduct();
-                    product.setProductId(param.getProductCode());
-                    product.setProductNums(1);
-                    if(param.getCommentScore()>=3){
-                        product.setProductGoodNum(1);
-                    }
-                    goodProductMapper.insert(product);
+                    return true;
                 }
-                return true;
             }
         }
         return false;

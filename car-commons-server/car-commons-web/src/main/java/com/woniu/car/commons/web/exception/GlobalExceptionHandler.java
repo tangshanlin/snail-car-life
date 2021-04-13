@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.multipart.MaxUploadSizeExceededException;
 
+import javax.validation.UnexpectedTypeException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -71,16 +72,16 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(HttpMessageNotReadableException.class)
     @ResponseStatus(code = HttpStatus.INTERNAL_SERVER_ERROR )
     public ResultEntity<?> HttpMessageNotReadableExceptionExceptionHandler(HttpMessageNotReadableException e){
-        System.out.println("请求参数格式不合法");
+        System.out.println(e.getMessage());
         return new ResultEntity<>("请求参数格式不合法",ResultEnum.RES_FAIL.getCode());
     }
 
-    @ExceptionHandler(NullPointerException.class)
+    /*@ExceptionHandler(NullPointerException.class)
     @ResponseStatus(code = HttpStatus.INTERNAL_SERVER_ERROR )
     public ResultEntity<?> NullPointerExceptionHandler(NullPointerException e){
-        System.out.println("空指针异常");
+        System.out.println("空指针异常"+e.getMessage());
         return new ResultEntity<>("空指针异常",ResultEnum.RES_FAIL.getCode());
-    }
+    }*/
 
     @ExceptionHandler(RemotingConnectException.class)
     @ResponseStatus(code = HttpStatus.INTERNAL_SERVER_ERROR )
@@ -107,5 +108,11 @@ public class GlobalExceptionHandler {
         return new ResultEntity<>("索引越界异常",ResultEnum.RES_FAIL.getCode());
     }
 
+    @ExceptionHandler(UnexpectedTypeException.class)
+    @ResponseStatus(code = HttpStatus.INTERNAL_SERVER_ERROR )
+    public ResultEntity<?> IndexOutOfBoundsExceptionHandler(UnexpectedTypeException e){
+        System.out.println(e.getMessage());
+        return new ResultEntity<>("参数不能为空",ResultEnum.RES_FAIL.getCode());
+    }
 
 }
