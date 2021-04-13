@@ -3,6 +3,8 @@ package com.woniu.car.order.model.param;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import javax.validation.constraints.NotNull;
+
 /**
  * @ClassName OrderPayParam
  * @Desc TODO
@@ -13,8 +15,10 @@ import lombok.Data;
 @Data
 public class OrderPayParam {
     @ApiModelProperty(value = "订单编号")
+    @NotNull(message = "订单编号不能为空")
     private String orderNo;
 
     @ApiModelProperty(value = "订单支付渠道(1.钱包密码，2.支付宝)")
+    @NotNull(message = "支付方式不能为空")
     private String payChannel;
 }

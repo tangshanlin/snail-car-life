@@ -29,6 +29,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
+import javax.validation.Valid;
 import java.math.BigDecimal;
 
 /**
@@ -63,7 +64,7 @@ public class PowerplantOrderController {
      **/
     @RequestMapping(value = "insert_powerplant_order",method= RequestMethod.POST)
     @ApiOperation("新增电站订单")
-    public ResultEntity insertPowerplantOrder(@RequestBody AddPowerplantOrderVo addPowerplantOrderVo){
+    public ResultEntity insertPowerplantOrder(@RequestBody @Valid AddPowerplantOrderVo addPowerplantOrderVo){
         /*根据电桩id查询电站信息*/
         GetOneStationParam getOneStationParam = new GetOneStationParam();
         getOneStationParam.setStationId(addPowerplantOrderVo.getStationId());
@@ -127,7 +128,7 @@ public class PowerplantOrderController {
         /*用户id*/
         powerplantOrder.setUserId(addPowerplantOrderVo.getUserId());
         /*电桩编号*/
-        powerplantOrder.setStationMumeration(station.getStationNumeration());
+        powerplantOrder.setStationNumeration(station.getStationNumeration());
         /*开始时间*/
         powerplantOrder.setChargeStartTime(addPowerplantOrderVo.getChargeStartTime());
         /*结束时间*/
