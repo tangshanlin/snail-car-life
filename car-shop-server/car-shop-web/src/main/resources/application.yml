@@ -1,0 +1,50 @@
+server:
+  port: 8100
+  servlet:
+    context-path: /shop
+
+spring:
+  datasource:
+    type: com.alibaba.druid.pool.DruidDataSource
+    username: root
+    password: root
+    driver-class-name: com.mysql.jdbc.Driver
+    url: jdbc:mysql://119.23.75.195:3306/car-shop-server?useUnicode=true&useSSL=false&characterEncoding=utf-8
+  cloud:
+    nacos:
+      discovery:
+        server-addr: localhost:8848
+  #设置服务名
+  application:
+    name: car-shop-server
+  #控制文件参数
+  servlet:
+    multipart:
+      max-request-size: 10MB  #指定multipart/form-data请求允许的最大大小。 默认值为10MB。
+      max-file-size: 10MB #指定上载文件允许的最大大小。 默认值为1MB
+
+# minio 参数配置
+minio:
+  endpoint: http://192.168.10.22:9000
+  bucketName: shop
+
+
+mybatis-plus:
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl #sql打印日志
+swagger:
+  base-package: com.woniu.car.shop.web.controller
+  contact:
+    email: "1360166328@qq.com"
+    host: "http://tsl.com"
+    name: "tsl"
+  description: "门店服务接口"
+  title: "门店服务"
+  version: 1.0
+
+# seat 配置
+seata:
+  enabled: true
+  tx-service-group: my_test_tx_group
+  enable-auto-data-source-proxy: true
+  application-id: ${spring.application.name}

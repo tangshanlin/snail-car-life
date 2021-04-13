@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>car-marketing-server</artifactId>
+        <groupId>com.woniu.car</groupId>
+        <version>1.0.0</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>car-marketing-web</artifactId>
+    <dependencies>
+        <!--        促销关联的model-->
+        <dependency>
+            <groupId>com.woniu.car</groupId>
+            <artifactId>car-marketing-model</artifactId>
+            <version>1.0.0</version>
+        </dependency>
+        <!--        促销关联的client-->
+        <dependency>
+            <groupId>com.woniu.car</groupId>
+            <artifactId>car-marketing-client</artifactId>
+            <version>1.0.0</version>
+        </dependency>
+        <!--        关联公共的web-->
+        <dependency>
+            <groupId>com.woniu.car</groupId>
+            <artifactId>car-commons-web</artifactId>
+            <version>1.0.0</version>
+        </dependency>
+        <!--        关联门店model-->
+        <dependency>
+            <groupId>com.woniu.car</groupId>
+            <artifactId>car-shop-model</artifactId>
+            <version>1.0.0</version>
+        </dependency>
+        <!--        mysql依赖-->
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+        </dependency>
+        <!--        数据库连接池-->
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>druid</artifactId>
+            <version>1.2.3</version>
+        </dependency>
+        <!--        mybatis-plus-->
+        <dependency>
+            <groupId>com.baomidou</groupId>
+            <artifactId>mybatis-plus-boot-starter</artifactId>
+        </dependency>
+        <!--        自动代码生成-->
+        <dependency>
+            <groupId>com.baomidou</groupId>
+            <artifactId>mybatis-plus-generator</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.velocity</groupId>
+            <artifactId>velocity</artifactId>
+        </dependency>
+        <!--       阿里的JSONObject工具类依赖-->
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>fastjson</artifactId>
+            <version>1.2.75</version>
+        </dependency>
+        <!--        文件上传服务器依赖-->
+        <dependency>
+            <groupId>io.minio</groupId>
+            <artifactId>minio</artifactId>
+            <version>8.0.3</version>
+        </dependency>
+        <!--        接口文档依赖-->
+        <dependency>
+            <groupId>io.springfox</groupId>
+            <artifactId>springfox-swagger2</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.springfox</groupId>
+            <artifactId>springfox-swagger-ui</artifactId>
+        </dependency>
+        <!--分布式事务seata-->
+        <!--<dependency>
+            <groupId>com.alibaba.cloud</groupId>
+            <artifactId>spring-cloud-starter-alibaba-seata</artifactId>
+        </dependency>-->
+        <!--        文件上传服务器依赖-->
+        <dependency>
+            <groupId>io.minio</groupId>
+            <artifactId>minio</artifactId>
+            <version>8.0.3</version>
+        </dependency>
+
+
+
+
+    </dependencies>
+
+</project>

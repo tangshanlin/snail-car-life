@@ -1,0 +1,60 @@
+server:
+  port: 80
+spring:
+  application:
+    name: gateway-server
+  cloud:
+    nacos:
+      discovery:
+        server-addr: localhost:8848
+    gateway:
+      routes:
+        - id: commons-server
+          uri: lb://commons-server
+          predicates:
+            - Path=/commons/**
+
+        - id: user-server
+          uri: lb://user-server
+          predicates:
+            - Path=/user/**
+
+        - id: car-message-server
+          uri: lb://car-message-server
+          predicates:
+            - Path=/message/**
+
+        - id: car-service-server
+          uri: lb://car-service-server
+          predicates:
+            - Path=/service/**
+
+        - id: car-station-server
+          uri: lb://car-station-server
+          predicates:
+            - Path=/station/**
+
+        - id: car-auth-server
+          uri: lb://car-auth-server
+          predicates:
+            - Path=/auth/**
+
+        - id: car-order-server
+          uri: lb://car-order-server
+          predicates:
+            - Path=/order/**
+
+        - id: car-product-server
+          uri: lb://car-product-server
+          predicates:
+              - Path=/product/**
+
+        - id: car-markeing-server
+          uri: lb://car-marketing-server
+          predicates:
+              - Path=/marketing/**
+
+        - id: car-shop-server
+          uri: lb://car-shop-server
+          predicates:
+              - Path=/shop/**

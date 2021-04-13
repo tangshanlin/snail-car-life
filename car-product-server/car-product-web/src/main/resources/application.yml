@@ -1,0 +1,46 @@
+server:
+  port: 8200
+  servlet:
+    context-path: /product
+spring:
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 1MB
+      max-request-size: 10MB
+      location: "D:/temp"
+      file-size-threshold: 1MB
+  application:
+    name: car-product-server
+  cloud:
+    nacos:
+      discovery:
+        server-addr: localhost:8848
+  datasource:
+    type: com.alibaba.druid.pool.DruidDataSource
+    driver-class-name: com.mysql.jdbc.Driver
+    url: jdbc:mysql://119.23.75.195:3306/car-product-server?characterEncoding=utf-8&useSSL=false
+    username: root
+    password: root
+
+swagger:
+  base-package: com.woniu.car.product.web.controller
+  contact:
+    email: "cx@111.com"
+    host: "http://cx.com"
+    name: "cx"
+  description: "商品服务接口"
+  title: "商品服务"
+  version: 1.0
+
+# minio 参数配置
+minio:
+  endpoint: http://192.168.10.22:9000
+  bucketName: product
+
+# seat 配置
+seata:
+  enabled: true
+  tx-service-group: my_test_tx_group
+  enable-auto-data-source-proxy: true
+  application-id: ${spring.application.name}

@@ -1,0 +1,45 @@
+server:
+  port: 9102
+  servlet:
+    context-path: /station
+
+spring:
+  application:
+    name: car-station-server
+  cloud:
+    nacos:
+      discovery:
+        server-addr: localhost:8848
+  datasource:
+    type: com.alibaba.druid.pool.DruidDataSource
+    driver-class-name: com.mysql.jdbc.Driver
+    url: jdbc:mysql://119.23.75.195:3306/car-station-server?characterEncoding=utf-8
+    username: root
+    password: root
+  servlet:
+    multipart:
+      max-request-size: 30MB  #指定multipart/form-data请求允许的最大大小。 默认值为10MB。
+      max-file-size: 30MB #指定上载文件允许的最大大小。 默认值为1MB
+
+swagger:
+  base-package: com.woniu.car.station.web.controller
+  contact:
+    email: "mizunokaede@163.com"
+    host: "http://HZX.com"
+    name: "HZX"
+  description: "充电服务接口"
+  title: "充电服务"
+  version: 1.0
+
+minio:
+  endpoint: http://192.168.10.86:9000
+  accessKey: minioadmin
+  secretKey: minioadmin
+  bucketName: station
+
+# seat 配置
+seata:
+  enabled: true
+  tx-service-group: my_test_tx_group
+  enable-auto-data-source-proxy: true
+  application-id: ${spring.application.name}
