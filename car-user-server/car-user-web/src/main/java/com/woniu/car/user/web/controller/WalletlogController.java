@@ -16,6 +16,7 @@ import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import javax.validation.Valid;
 import java.math.BigDecimal;
 import java.util.List;
 
@@ -56,7 +57,7 @@ public class WalletlogController {
 //
 //})
 
-    public ResultEntity addWalletLog(@RequestBody AddWalletLogParam addWalletLogParam){
+    public ResultEntity addWalletLog(@RequestBody @Valid AddWalletLogParam addWalletLogParam){
     //校验
     //从jwt中获取userid
     Integer userId = GetTokenUtil.getUserId();
@@ -121,7 +122,7 @@ public class WalletlogController {
 //
 //    })
 
-    public ResultEntity selectWalletLog(){
+    public ResultEntity<List<Walletlog>> selectWalletLog(){
     //校验参数
         //从token获取userid
         Integer userId = GetTokenUtil.getUserId();
@@ -129,12 +130,12 @@ public class WalletlogController {
             //校验成功 执行查询
             List<Walletlog> walletlogList = walletlogService.list(new QueryWrapper<Walletlog>().eq("user_id", userId));
             //返回
-            if (walletlogList!=null) return ResultEntity.buildEntity(List.class).setCode(ConstCode.SELECTWALLETLOG_SUCCESS).setFlag(true)
+            if (walletlogList!=null) return ResultEntity.buildListEntity(Walletlog.class).setCode(ConstCode.SELECTWALLETLOG_SUCCESS).setFlag(true)
             .setMessage("查询钱包日志成功").setData(walletlogList);
-            return ResultEntity.buildEntity().setCode(ConstCode.SELECTWALLETLOG_FAIL).setFlag(false).setMessage("查询钱包日志失败");
+            return ResultEntity.buildListEntity(Walletlog.class).setCode(ConstCode.SELECTWALLETLOG_FAIL).setFlag(false).setMessage("查询钱包日志失败");
 
         }
-        return ResultEntity.buildEntity().setCode(ConstCode.PARAM_ERROR).setFlag(false).setMessage("输入参数错误");
+        return ResultEntity.buildListEntity(Walletlog.class).setCode(ConstCode.PARAM_ERROR).setFlag(false).setMessage("输入参数错误");
     }
 
 

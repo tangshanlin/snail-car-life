@@ -18,6 +18,7 @@ import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import javax.validation.Valid;
 import java.util.List;
 
 /**
@@ -43,13 +44,13 @@ public class MycarController {
             @ApiResponse(code = 1333, message = "查询我的爱车失败"),
     })
 
-    public ResultEntity selectMycar(){
+    public ResultEntity<List<Mycar>> selectMycar(){
         //从token获取userID
         Integer userId = GetTokenUtil.getUserId();
         //根据userId 查询selectMycar
         List<Mycar> mycarList = mycarService.list(new QueryWrapper<Mycar>().eq("user_id", userId));
         Mycar mycarDb = (Mycar) mycarList;
-        return ResultEntity.buildEntity(List.class).setCode(ConstCode.SELECTMYCAR_SUCCESS).setFlag(true)
+        return ResultEntity.buildListEntity(Mycar.class).setCode(ConstCode.SELECTMYCAR_SUCCESS).setFlag(true)
                 .setMessage("查询我的爱车成功");
     }
 
@@ -78,7 +79,7 @@ public class MycarController {
 //            @ApiImplicitParam(name = "mycarEngineCapaciTy", value = "发动机排量", dataType = "String",  example = "2L"),
 //
 //    })
-    public ResultEntity addMycar(@RequestBody AddMycarParam addMycarParam){
+    public ResultEntity addMycar(@RequestBody @Valid AddMycarParam addMycarParam){
         //校验输入参数
         Integer userId = addMycarParam.getUserId();
         //从jwt中获取useid
@@ -110,7 +111,7 @@ public class MycarController {
 //            @ApiImplicitParam(name = "userId", value = "用户Id", dataType = "Integer",  example = "1"),
 //            @ApiImplicitParam(name = "mycarKm", value = "里程", dataType = "Integr",  example = "2700")
 //    })
-    public ResultEntity updateMycar(@RequestBody UpdateMyCarParam updateMyCarParam){
+    public ResultEntity updateMycar(@RequestBody @Valid UpdateMyCarParam updateMyCarParam){
         //校验参数
         Integer userId = updateMyCarParam.getUserId();
         Integer mycarKm = updateMyCarParam.getMycarKm();
@@ -143,7 +144,7 @@ public class MycarController {
 //            @ApiImplicitParam(name = "userId", value = "用户Id", dataType = "Integer",  example = "1"),
 //            @ApiImplicitParam(name = "mycarId", value = "爱车ID", dataType = "Integr",  example = "1")
 //    })
-    public ResultEntity deleteMycar(@RequestBody DeleteMycarParam deleteMycarParam){
+    public ResultEntity deleteMycar(@RequestBody @Valid DeleteMycarParam deleteMycarParam){
         Integer mycarId = deleteMycarParam.getMycarId();
         Integer userId = deleteMycarParam.getUserId();
         if (mycarId!=null&userId!=null){

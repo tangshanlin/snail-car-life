@@ -35,6 +35,7 @@ import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import javax.validation.Valid;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -68,7 +69,9 @@ public class UserController {
     @ApiOperation(value = "注册方法", notes = "<span style='color:red;'>用来注册用户的接口</span>")
     @ApiResponses({
             @ApiResponse(code = 1306, message = "注册成功"),
-            @ApiResponse(code = 1307, message = "注册失败")
+            @ApiResponse(code = 1307, message = "注册失败"),
+            @ApiResponse(code = 1309, message = "手机号已经存在，请重新输入"),
+            @ApiResponse(code = 1311, message = "账户已经存在，请重新输入")
     })
 //    @ApiImplicitParams({
 //            //dataType:参数类型
@@ -78,11 +81,12 @@ public class UserController {
 //            @ApiImplicitParam(name = "userTel", value = "用户手机号", dataType = "String",  example = "15578491131")
 //    })
     @Transactional(rollbackFor = Exception.class)
-    public ResultEntity register(@RequestBody RegisterParam userParam) {
+    public ResultEntity register(@RequestBody @Valid RegisterParam userParam) {
         int register = userService.register(userParam);
         if (register > 0) {
             return ResultEntity.buildEntity().setCode(ConstCode.REGISTER_SUCCESS).setMessage("注册成功");
-        }
+        }if (register==-2) return ResultEntity.buildEntity().setCode(ConstCode.CHECKTEL_FAIL).setMessage("手机号已经存在，请重新输入");
+        if (register==-3) return ResultEntity.buildEntity().setCode(ConstCode.CHECKACCOUNT_FAIL).setMessage("账户已经存在，请重新输入");
         return ResultEntity.buildEntity().setCode(ConstCode.REGISTER_FAIL).setFlag(false).setMessage("注册失败");
     }
 
@@ -101,7 +105,7 @@ public class UserController {
 //
 //    })
 
-    public ResultEntity loginByPassword(@RequestBody  LoginPasswordParam loginPasswordParam) {
+    public ResultEntity loginByPassword(@RequestBody @Valid LoginPasswordParam loginPasswordParam) {
         //校验传入参数
         String userAccount = loginPasswordParam.getUserAccount();
         System.out.println(loginPasswordParam);
@@ -160,7 +164,7 @@ public class UserController {
 //
 //
 //    })
-    public ResultEntity<CloseableHttpResponse> sendcode( @RequestBody TelParam telParam) {
+    public ResultEntity<CloseableHttpResponse> sendcode( @RequestBody @Valid TelParam telParam) {
         //取出电话号码
         String userTel = telParam.getUserTel();
         System.out.println(userTel);
@@ -242,7 +246,7 @@ public class UserController {
 //            @ApiImplicitParam(name = "code", value = "用户填入的4位纯数字验证码", dataType = "String", paramType = "path", example = "15578491030"),
 //
 //    })
-    public ResultEntity checkByTel(@RequestBody LoginTelParam loginTelParam){
+    public ResultEntity checkByTel( @Valid LoginTelParam loginTelParam){
         //取出code 与redis的比较
         String userTel = loginTelParam.getUserTel();
         String code = loginTelParam.getCode();
@@ -259,7 +263,8 @@ public class UserController {
     @ApiOperation(value = "手机号码查重校验接口", notes = "<span style='color:red;'>用来手机号码查重校验接口</span>")
     @ApiResponses({
             @ApiResponse(code = 1308, message = "该手机号未注册，可以使用"),
-            @ApiResponse(code = 1309, message = "手机号已经存在，请更换手机号")
+            @ApiResponse(code = 1309, message = "手机号已经存在，请更换手机号"),
+            @ApiResponse(code = 1400, message = "输入参数错误")
 
     })
 //    @ApiImplicitParams({
@@ -269,18 +274,24 @@ public class UserController {
 //
 //
 //    })
-    public ResultEntity checkTel(@RequestBody TelParam telParam){
+    public ResultEntity checkTel(@Valid TelParam telParam){
+        if (!ObjectUtils.isEmpty(telParam)){
+
+
         User user = userService.selectByTel(telParam);
         if (user!=null) return ResultEntity.buildEntity().setCode(ConstCode.CHECKTEL_FAIL).setFlag(false).setMessage("手机号已经存在，请更换手机号");
 
         return ResultEntity.buildEntity().setCode(ConstCode.CHECKTEL_SUCCESS).setFlag(true).setMessage("该手机号未注册，可以使用");
-    }
+        }
+        return ResultEntity.buildEntity().setCode(ConstCode.PARAM_ERROR).setFlag(false).setMessage("输入参数错误");
+        }
     //账号查重校验
     @GetMapping("/checkAccount")
     @ApiOperation(value = "账号名查重校验接口", notes = "<span style='color:red;'>用来账号查重校验接口</span>")
     @ApiResponses({
             @ApiResponse(code = 1323, message = "账户已经存在，请重新输入"),
-            @ApiResponse(code = 1322, message = "账户名可以使用")
+            @ApiResponse(code = 1322, message = "账户名可以使用"),
+            @ApiResponse(code = 1400, message = "输入参数错误")
 
     })
 //    @ApiImplicitParams({
@@ -291,12 +302,17 @@ public class UserController {
 //
 //    })
 
-    public ResultEntity checkAccount(@RequestBody AccountParam accountParam){
+    public ResultEntity checkAccount(@Valid AccountParam accountParam){
+        if (!ObjectUtils.isEmpty(accountParam)){
+
+
         User user_account = userService.getOne(new QueryWrapper<User>().eq("user_account", accountParam.getUserAccount()));
         if (user_account!=null) return ResultEntity.buildEntity().setCode(ConstCode.CHECKACCOUNT_FAIL).setFlag(false)
         .setMessage("账户已经存在，请重新输入");
         return ResultEntity.buildEntity().setCode(ConstCode.CHECKACCOUNT_SUCCESS).setFlag(true).setMessage("账户名可以使用");
-    }
+        }
+        return ResultEntity.buildEntity().setCode(ConstCode.PARAM_ERROR).setFlag(false).setMessage("输入参数错误");
+        }
     //修改密码
     @PutMapping("/update_user")
     @ApiOperation(value = "账户密码及电话号码修改接口", notes = "<span style='color:red;'>用来账户密码及电话号码修改接口,需要接受手机验证码</span>")
@@ -316,7 +332,7 @@ public class UserController {
 //            @ApiImplicitParam(name = "code", value = "验证码", dataType = "String", paramType = "path", example = "1234"),
 //
 //    })
-    public ResultEntity updateUser(@RequestBody UserUpdateParam userUpdateParam){
+    public ResultEntity updateUser(@RequestBody @Valid UserUpdateParam userUpdateParam){
         //校验传入参数的合法性
 
         if (userUpdateParam!=null){

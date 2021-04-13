@@ -15,6 +15,7 @@ import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import javax.validation.Valid;
 
 /**
  * <p>
@@ -46,7 +47,7 @@ public class UserInformationController {
     })
 
 
-    public ResultEntity selectUerInformation(){
+    public ResultEntity<UserInformation> selectUerInformation(){
         //获取userId
         Integer userId = GetTokenUtil.getUserId();
 
@@ -75,7 +76,7 @@ public class UserInformationController {
 //
 //    })
 
-    public ResultEntity  updateUserInformation(@RequestBody UpdateUserinformationParam updateUerinformationParam){
+    public ResultEntity  updateUserInformation(@RequestBody @Valid UpdateUserinformationParam updateUerinformationParam){
         //校验用户参数是否错误
         if (!ObjectUtils.isEmpty(updateUerinformationParam)){
             //从jwt中取出userid

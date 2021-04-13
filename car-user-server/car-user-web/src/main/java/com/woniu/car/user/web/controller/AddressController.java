@@ -19,6 +19,7 @@ import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import javax.validation.Valid;
 import java.util.List;
 
 /**
@@ -65,7 +66,7 @@ public class AddressController {
 //
 //
 //    })
-    public ResultEntity addAddress(@RequestBody AddressParam addressParam){
+    public ResultEntity addAddress(@RequestBody @Valid AddressParam addressParam){
         if (!ObjectUtils.isEmpty(addressParam)){
             //复制到address对象
             Address address = BeanCopyUtil.copyOne(addressParam, Address::new);
@@ -108,7 +109,7 @@ public class AddressController {
 //
 //
 //  })
-    public ResultEntity deleteAddress(@RequestBody deleteAddress deleteAddress){
+    public ResultEntity deleteAddress(@RequestBody @Valid deleteAddress deleteAddress){
         //校验
       //获取UserId
       String token = GetTokenUtil.getToken();
@@ -148,7 +149,7 @@ public class AddressController {
 //
 //
 //    })
-    public ResultEntity selectByAddressId(@RequestBody SlectAddressByAdressIdParam selectAddressParam){
+    public ResultEntity selectByAddressId( @Valid SlectAddressByAdressIdParam selectAddressParam){
       //校验输入参数
         //从jwt中获取userId；
         Integer userId = GetTokenUtil.getUserId();
@@ -185,7 +186,7 @@ public class AddressController {
 //
 //
 //    })
-    public ResultEntity selectByUserId(@RequestBody SelectAddressParam selectAddressParam){
+    public ResultEntity<List<Address>>selectByUserId( @Valid SelectAddressParam selectAddressParam){
         //校验输入参数
         //从jwt中获取userId；
         String token = GetTokenUtil.getToken();
@@ -200,12 +201,12 @@ public class AddressController {
             if (!ObjectUtils.isEmpty(userDb)&userDb.getUserAccount().equals(userAccount)) {
                 //校验成功
                 List<Address> addressList = addressService.list(new QueryWrapper<Address>().eq("user_id", userId2));
-                return ResultEntity.buildEntity(List.class).setCode(ConstCode.SELECTADDRESS_SUCCESS).setFlag(true).setMessage("查询用户所有地址成功")
+                return ResultEntity.buildListEntity(Address.class).setCode(ConstCode.SELECTADDRESS_SUCCESS).setFlag(true).setMessage("查询用户所有地址成功")
                         .setData(addressList);
 
             }
         }
-        return ResultEntity.buildEntity().setCode(ConstCode.PARAM_ERROR).setFlag(false).setMessage("输入参数错误");
+        return ResultEntity.buildListEntity(Address.class).setCode(ConstCode.PARAM_ERROR).setFlag(false).setMessage("输入参数错误");
     }
 
     @PutMapping("/update_address")
@@ -235,7 +236,7 @@ public class AddressController {
 //
 //
 //    })
-    public ResultEntity updateAddress(@RequestBody UpdateAddress updateAddress){
+    public ResultEntity updateAddress(@RequestBody @Valid UpdateAddress updateAddress){
       //校验@RequestBody
         //从jwt中获取userId；
         String token = GetTokenUtil.getToken();

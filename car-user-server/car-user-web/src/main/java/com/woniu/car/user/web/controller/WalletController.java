@@ -18,6 +18,7 @@ import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import javax.validation.Valid;
 import java.math.BigDecimal;
 
 /**
@@ -53,7 +54,7 @@ public class WalletController {
 //            @ApiImplicitParam(name = "userId", value = "用户ID", dataType = "integer", paramType = "path", example = "110"),
 //            @ApiImplicitParam(name = "walletMoney",value = "钱包余额",dataType = "BigDecimal",type ="path",example = "100.00"),
 //            @ApiImplicitParam(name = "walletPassword",value = "钱包密码",dataType = "String",type ="path",example = "123232")       })
-    public ResultEntity addWallet(@RequestBody AddwalletParam addwalletParam){
+    public ResultEntity addWallet(@RequestBody @Valid AddwalletParam addwalletParam){
         //校验输入参数
         //从jwt中获取userid
         Integer userId = GetTokenUtil.getUserId();
@@ -88,7 +89,7 @@ public class WalletController {
 //            @ApiImplicitParam(name = "userId", value = "用户ID", dataType = "integer", paramType = "path", example = "110"),
 //            @ApiImplicitParam(name = "walletId", value = "钱包ID", dataType = "integer", type = "path", example = "100.00"),
 //    })
-    public ResultEntity deleteWallet(@RequestBody DeleteWalletParam deleteWalletParam){
+    public ResultEntity deleteWallet(@RequestBody @Valid DeleteWalletParam deleteWalletParam){
         //校验输入参数
         Integer userId = deleteWalletParam.getUserId();
         Integer walletId = deleteWalletParam.getWalletId();
@@ -122,7 +123,7 @@ public class WalletController {
 //            @ApiImplicitParam(name = "walletPassword",value = "钱包密码",dataType = "String",example = "123232")
 //    })
 
-    public ResultEntity updateWallet(@RequestBody UpdateWalletParam updateWalletParam){
+    public ResultEntity updateWallet(@RequestBody @Valid UpdateWalletParam updateWalletParam){
         //参数校验
         Integer userId = GetTokenUtil.getUserId();
 
@@ -159,7 +160,7 @@ public class WalletController {
 //        @ApiImplicitParam(name = "walletId", value = "钱包ID", dataType = "integer", type = "path", example = "100.00"),
 //
 //})
-    public ResultEntity selectWallet(){
+    public ResultEntity<Wallet> selectWallet(){
         //校验参数
 
     //从token中获取userid
@@ -172,7 +173,7 @@ public class WalletController {
         return ResultEntity.buildEntity(Wallet.class).setCode(ConstCode.SELECTWALLET_SUCCESS).setFlag(true).setMessage("查询钱包成功")
                 .setData(walletDb);
     }
-    return ResultEntity.buildEntity().setCode(ConstCode.PARAM_ERROR).setFlag(false).setMessage("输入参数错误");
+    return ResultEntity.buildEntity(Wallet.class).setCode(ConstCode.PARAM_ERROR).setFlag(false).setMessage("输入参数错误");
 }
 }
 

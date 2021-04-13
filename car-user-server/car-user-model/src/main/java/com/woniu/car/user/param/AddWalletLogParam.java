@@ -1,5 +1,6 @@
 package com.woniu.car.user.param;
 
+import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -14,6 +15,7 @@ import java.math.BigDecimal;
  * @Version 1.0
  */
 @Data
+@ApiModel(value = "添加钱包消费日志的参数")
 public class AddWalletLogParam {
     @ApiModelProperty(value = "钱包变化金额")
     @NotNull

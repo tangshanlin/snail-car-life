@@ -1,5 +1,6 @@
 package com.woniu.car.user.param;
 
+import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -13,9 +14,10 @@ import javax.validation.constraints.NotNull;
  * @Version 1.0
  */
 @Data
+@ApiModel(value = "添加行驶证参数")
 public class AddDrivingLicenseParam {
     @NotNull
-    @ApiModelProperty(value = "dr行驶证编号")
+    @ApiModelProperty(value = "行驶证编号")
     private String drivinglicenseCode;
 
     @ApiModelProperty(value = "住址")

@@ -1,6 +1,7 @@
 package com.woniu.car.user.param;
 
 import com.baomidou.mybatisplus.annotation.*;
+import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -15,6 +16,7 @@ import java.sql.Blob;
  * @Version 1.0
  */
 @Data
+@ApiModel(value = "新增驾驶证输入参数")
 public class AddDriverLicenseParam {
 
 

@@ -18,6 +18,7 @@ import io.swagger.annotations.*;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import javax.validation.Valid;
 import java.util.List;
 
 /**
@@ -60,7 +61,7 @@ public class ScoreController {
 //
 //
 //    })
-    public ResultEntity addScore(@RequestBody AddScoreParam addScoreParam){
+    public ResultEntity addScore(@RequestBody @Valid AddScoreParam addScoreParam){
         //校验参数
         //从jwt中获取userId；
         String token = GetTokenUtil.getToken();
@@ -111,12 +112,12 @@ public class ScoreController {
 
     })
 
-    public ResultEntity selectScore(){
+    public ResultEntity<List<Score>> selectScore(){
         //从jwt获取userId
         Integer userId = GetTokenUtil.getUserId();
         //执行查询
         List<Score> userId1 = scoreService.list(new QueryWrapper<Score>().eq("userId", userId));
-        return ResultEntity.buildEntity(List.class).setCode(ConstCode.SELECTSCORE_SUCESS).setFlag(true)
+        return ResultEntity.buildListEntity(Score.class).setCode(ConstCode.SELECTSCORE_SUCESS).setFlag(true)
                 .setMessage("查询积分日志成功").setData(userId1);
 
     }

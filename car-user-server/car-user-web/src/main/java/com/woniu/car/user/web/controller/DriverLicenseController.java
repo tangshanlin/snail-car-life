@@ -13,6 +13,7 @@ import io.swagger.annotations.*;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import javax.validation.Valid;
 
 /**
  * <p>
@@ -56,7 +57,7 @@ public class DriverLicenseController {
 //
 //
 //    })
-    public ResultEntity addDriverLicense(@RequestBody AddDriverLicenseParam addDriverLicenseParam){
+    public ResultEntity addDriverLicense(@RequestBody @Valid AddDriverLicenseParam addDriverLicenseParam){
         //从jwt中获取userid
         Integer userId = GetTokenUtil.getUserId();
         //开始新增
@@ -76,7 +77,7 @@ public class DriverLicenseController {
             @ApiResponse(code =1322,message = "查询驾驶证成功"),
             @ApiResponse(code = 1323,message = "查询驾驶证失败")
     })
-    public ResultEntity selectDriverlicense(){
+    public ResultEntity<DriverLicense> selectDriverlicense(){
         //从jwt中获取userid
         Integer userId = GetTokenUtil.getUserId();
         //执行查询
