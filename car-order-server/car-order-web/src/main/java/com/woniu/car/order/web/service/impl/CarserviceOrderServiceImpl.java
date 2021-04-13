@@ -320,7 +320,7 @@ public class CarserviceOrderServiceImpl extends ServiceImpl<CarserviceOrderMappe
     @Override
     public Boolean updateCarserviceOrderStatusByUseCode(UseCodeVo useCodeVo) {
         UpdateWrapper<CarserviceOrder> wrapper = new UpdateWrapper<>();
-        wrapper.eq("use_code",useCodeVo.getUseCode());
+        wrapper.eq("order_code",useCodeVo.getUseCode());
         wrapper.set("carservice_order_status",OrderCode.ORDER_SERVICEING);
         int row = carserviceOrderMapper.update(null, wrapper);
         return row>0?true:false;

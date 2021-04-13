@@ -3,6 +3,8 @@ package com.woniu.car.order.model.param;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import javax.validation.constraints.NotNull;
+
 /**
  * @ClassName UseCodeVo
  * @Desc TODO
@@ -15,5 +17,6 @@ import lombok.Data;
 public class UseCodeVo {
 
     @ApiModelProperty(value = "使用码")
+    @NotNull(message = "使用码不能为空")
     private String useCode;
 }

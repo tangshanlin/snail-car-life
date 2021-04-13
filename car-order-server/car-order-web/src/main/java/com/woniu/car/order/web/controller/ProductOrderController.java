@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
+import javax.validation.Valid;
 
 /**
  * <p>
@@ -53,21 +54,29 @@ public class ProductOrderController {
      **/
     @RequestMapping(value = "api/update_carservice_order_status_for_sent_by_order_no",method= RequestMethod.POST)
     @ApiOperation("为订单新增物流单号（会更改状商品订单态为已发货）")
-    public ResultEntity updateCarserviceOrderStatusForSentByOrderNo(@RequestBody ExpressNoParams expressNoParams){
+    public ResultEntity updateCarserviceOrderStatusForSentByOrderNo(@RequestBody @Valid ExpressNoParams expressNoParams){
         /*根据商品订单id查询信息*/
         ProductOrder pr = productOrderService.findProductOrderByProductOrderId(expressNoParams.getProductOrderId());
         /*验证订单号是否存在*/
         if(!ObjectUtils.isEmpty(pr)){
-            /*添加快递单号信息*/
-            Boolean aBoolean1 = orderLogisticsService.updateProductOrderExpressNo(expressNoParams);
-            if(aBoolean1){
-                /*修改订单状态为已发货*/
-                Boolean aBoolean = carserviceOrderService.updateOrderStatus(new OrderVo().setOrderStatus(OrderCode.ORDER_SENT).setOrderNo(pr.getProductOrderNo()));
-                if(aBoolean){
-                    return ResultEntity.buildFailEntity()
-                            .setCode(ConstCode.ACCESS_SUCCESS)
-                            .setFlag(true)
-                            .setMessage("修改物流信息成功");
+            /*判断订单状态*/
+            if(pr.getProductOrderStatus().equals(OrderCode.ORDER_NOT_SHIPPED)){
+                /*添加快递单号信息*/
+                Boolean aBoolean1 = orderLogisticsService.updateProductOrderExpressNo(expressNoParams);
+                if(aBoolean1){
+                    /*修改订单状态为已发货*/
+                    Boolean aBoolean = carserviceOrderService.updateOrderStatus(new OrderVo().setOrderStatus(OrderCode.ORDER_SENT).setOrderNo(pr.getProductOrderNo()));
+                    if(aBoolean){
+                        return ResultEntity.buildFailEntity()
+                                .setCode(ConstCode.ACCESS_SUCCESS)
+                                .setFlag(true)
+                                .setMessage("修改物流信息成功");
+                    }else{
+                        return ResultEntity.buildFailEntity()
+                                .setCode(ConstCode.LAST_STAGE)
+                                .setFlag(false)
+                                .setMessage("修改物流信息失败");
+                    }
                 }else{
                     return ResultEntity.buildFailEntity()
                             .setCode(ConstCode.LAST_STAGE)
@@ -78,7 +87,7 @@ public class ProductOrderController {
                 return ResultEntity.buildFailEntity()
                         .setCode(ConstCode.LAST_STAGE)
                         .setFlag(false)
-                        .setMessage("修改物流信息失败");
+                        .setMessage("订单当前状态无法修改");
             }
         }else{
             return ResultEntity.buildFailEntity()
