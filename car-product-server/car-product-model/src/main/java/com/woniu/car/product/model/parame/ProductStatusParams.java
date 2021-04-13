@@ -1,11 +1,12 @@
 package com.woniu.car.product.model.parame;
 
 
-import com.sun.istack.internal.NotNull;
+
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
-import java.lang.reflect.Member;
+import javax.validation.constraints.NotNull;
+
 
 /**
  * Copyright (C), 2021, 温天宇

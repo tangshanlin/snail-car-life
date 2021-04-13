@@ -1,7 +1,6 @@
 package com.woniu.car.product.model.library;
 
 import com.baomidou.mybatisplus.annotation.*;
-import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.elasticsearch.annotations.Document;

@@ -42,6 +42,7 @@
             <artifactId>car-user-model</artifactId>
             <version>1.0.0</version>
         </dependency>
+
         <!--mybatisplus相关依耐-->
         <dependency>
             <groupId>com.baomidou</groupId>

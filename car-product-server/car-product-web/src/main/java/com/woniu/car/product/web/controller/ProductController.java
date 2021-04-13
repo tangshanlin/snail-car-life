@@ -2,11 +2,9 @@ package com.woniu.car.product.web.controller;
 
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.sun.scenario.animation.AnimationPulseMBean;
 import com.woniu.car.commons.core.dto.ResultEntity;
+
 import com.woniu.car.product.model.library.CarProductIndex;
-import com.woniu.car.commons.web.util.BeanCopyUtil;
-import com.woniu.car.product.model.dto.ShowProductDto;
 import com.woniu.car.product.model.parame.ProductStatusParams;
 import com.woniu.car.product.model.parame.ShowProductParame;
 import com.woniu.car.product.web.domain.Product;
