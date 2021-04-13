@@ -35,6 +35,7 @@ import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import javax.validation.Valid;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -68,21 +69,24 @@ public class UserController {
     @ApiOperation(value = "注册方法", notes = "<span style='color:red;'>用来注册用户的接口</span>")
     @ApiResponses({
             @ApiResponse(code = 1306, message = "注册成功"),
-            @ApiResponse(code = 1307, message = "注册失败")
+            @ApiResponse(code = 1307, message = "注册失败"),
+            @ApiResponse(code = 1309, message = "手机号已经存在，请重新输入"),
+            @ApiResponse(code = 1311, message = "账户已经存在，请重新输入")
     })
-    @ApiImplicitParams({
-            //dataType:参数类型
-            //paramType:参数由哪里获取     path->从路径中获取，query->?传参，body->ajax请求
-            @ApiImplicitParam(name = "userAccount", value = "用户账号", dataType = "String", paramType = "path", example = "tom"),
-            @ApiImplicitParam(name = "userPassword", value = "密码", dataType = "String", paramType = "path", example = "111"),
-            @ApiImplicitParam(name = "userTel", value = "用户手机号", dataType = "String", paramType = "path", example = "15578491131")
-    })
+//    @ApiImplicitParams({
+//            //dataType:参数类型
+//            //paramType:参数由哪里获取     path->从路径中获取，query->?传参，body->ajax请求
+//            @ApiImplicitParam(name = "userAccount", value = "用户账号", dataType = "String",  example = "tom"),
+//            @ApiImplicitParam(name = "userPassword", value = "密码", dataType = "String",  example = "111"),
+//            @ApiImplicitParam(name = "userTel", value = "用户手机号", dataType = "String",  example = "15578491131")
+//    })
     @Transactional(rollbackFor = Exception.class)
-    public ResultEntity register(RegisterParam userParam) {
+    public ResultEntity register(@RequestBody @Valid RegisterParam userParam) {
         int register = userService.register(userParam);
         if (register > 0) {
             return ResultEntity.buildEntity().setCode(ConstCode.REGISTER_SUCCESS).setMessage("注册成功");
-        }
+        }if (register==-2) return ResultEntity.buildEntity().setCode(ConstCode.CHECKTEL_FAIL).setMessage("手机号已经存在，请重新输入");
+        if (register==-3) return ResultEntity.buildEntity().setCode(ConstCode.CHECKACCOUNT_FAIL).setMessage("账户已经存在，请重新输入");
         return ResultEntity.buildEntity().setCode(ConstCode.REGISTER_FAIL).setFlag(false).setMessage("注册失败");
     }
 
@@ -93,15 +97,15 @@ public class UserController {
             @ApiResponse(code = 1303, message = "密码错误"),
             @ApiResponse(code = 1400, message = "输入参数错误")
     })
-    @ApiImplicitParams({
-            //dataType:参数类型
-            //paramType:参数由哪里获取     path->从路径中获取，query->?传参，body->ajax请求
-            @ApiImplicitParam(name = "userAccount", value = "用户账号", dataType = "String", paramType = "path", example = "tom"),
-            @ApiImplicitParam(name = "userPassword", value = "密码", dataType = "String", paramType = "path", example = "111"),
+//    @ApiImplicitParams({
+//            //dataType:参数类型
+//            //paramType:参数由哪里获取     path->从路径中获取，query->?传参，body->ajax请求
+//            @ApiImplicitParam(name = "userAccount", value = "用户账号", dataType = "String",  example = "tom"),
+//            @ApiImplicitParam(name = "userPassword", value = "密码", dataType = "String", example = "111"),
+//
+//    })
 
-    })
-
-    public ResultEntity loginByPassword(@RequestBody  LoginPasswordParam loginPasswordParam) {
+    public ResultEntity loginByPassword(@RequestBody @Valid LoginPasswordParam loginPasswordParam) {
         //校验传入参数
         String userAccount = loginPasswordParam.getUserAccount();
         System.out.println(loginPasswordParam);
@@ -153,14 +157,14 @@ public class UserController {
             @ApiResponse(code = 1313, message = "发送失败")
 
     })
-    @ApiImplicitParams({
-            //dataType:参数类型
-            //paramType:参数由哪里获取     path->从路径中获取，query->?传参，body->ajax请求
-            @ApiImplicitParam(name = "userTel", value = "用户电话号", dataType = "String", paramType = "path", example = "15578491030"),
-
-
-    })
-    public ResultEntity<CloseableHttpResponse> sendcode(TelParam telParam) {
+//    @ApiImplicitParams({
+//            //dataType:参数类型
+//            //paramType:参数由哪里获取     path->从路径中获取，query->?传参，body->ajax请求
+//            @ApiImplicitParam(name = "userTel", value = "用户电话号", dataType = "String", paramType = "path", example = "15578491030"),
+//
+//
+//    })
+    public ResultEntity<CloseableHttpResponse> sendcode( @RequestBody @Valid TelParam telParam) {
         //取出电话号码
         String userTel = telParam.getUserTel();
         System.out.println(userTel);
@@ -235,14 +239,14 @@ public class UserController {
             @ApiResponse(code = 1305, message = "验证码错误")
 
     })
-    @ApiImplicitParams({
-            //dataType:参数类型
-            //paramType:参数由哪里获取     path->从路径中获取，query->?传参，body->ajax请求
-            @ApiImplicitParam(name = "userTel", value = "用户电话号", dataType = "String", paramType = "path", example = "15578491030"),
-            @ApiImplicitParam(name = "code", value = "用户填入的4位纯数字验证码", dataType = "String", paramType = "path", example = "15578491030"),
-
-    })
-    public ResultEntity checkByTel(LoginTelParam loginTelParam){
+//    @ApiImplicitParams({
+//            //dataType:参数类型
+//            //paramType:参数由哪里获取     path->从路径中获取，query->?传参，body->ajax请求
+//            @ApiImplicitParam(name = "userTel", value = "用户电话号", dataType = "String", paramType = "path", example = "15578491030"),
+//            @ApiImplicitParam(name = "code", value = "用户填入的4位纯数字验证码", dataType = "String", paramType = "path", example = "15578491030"),
+//
+//    })
+    public ResultEntity checkByTel( @Valid LoginTelParam loginTelParam){
         //取出code 与redis的比较
         String userTel = loginTelParam.getUserTel();
         String code = loginTelParam.getCode();
@@ -259,44 +263,56 @@ public class UserController {
     @ApiOperation(value = "手机号码查重校验接口", notes = "<span style='color:red;'>用来手机号码查重校验接口</span>")
     @ApiResponses({
             @ApiResponse(code = 1308, message = "该手机号未注册，可以使用"),
-            @ApiResponse(code = 1309, message = "手机号已经存在，请更换手机号")
+            @ApiResponse(code = 1309, message = "手机号已经存在，请更换手机号"),
+            @ApiResponse(code = 1400, message = "输入参数错误")
 
     })
-    @ApiImplicitParams({
-            //dataType:参数类型
-            //paramType:参数由哪里获取     path->从路径中获取，query->?传参，body->ajax请求
-            @ApiImplicitParam(name = "userTel", value = "用户电话号", dataType = "String", paramType = "path", example = "15578491030"),
+//    @ApiImplicitParams({
+//            //dataType:参数类型
+//            //paramType:参数由哪里获取     path->从路径中获取，query->?传参，body->ajax请求
+//            @ApiImplicitParam(name = "userTel", value = "用户电话号", dataType = "String", paramType = "path", example = "15578491030"),
+//
+//
+//    })
+    public ResultEntity checkTel(@Valid TelParam telParam){
+        if (!ObjectUtils.isEmpty(telParam)){
 
 
-    })
-    public ResultEntity checkTel(TelParam telParam){
         User user = userService.selectByTel(telParam);
         if (user!=null) return ResultEntity.buildEntity().setCode(ConstCode.CHECKTEL_FAIL).setFlag(false).setMessage("手机号已经存在，请更换手机号");
 
         return ResultEntity.buildEntity().setCode(ConstCode.CHECKTEL_SUCCESS).setFlag(true).setMessage("该手机号未注册，可以使用");
-    }
+        }
+        return ResultEntity.buildEntity().setCode(ConstCode.PARAM_ERROR).setFlag(false).setMessage("输入参数错误");
+        }
     //账号查重校验
     @GetMapping("/checkAccount")
     @ApiOperation(value = "账号名查重校验接口", notes = "<span style='color:red;'>用来账号查重校验接口</span>")
     @ApiResponses({
             @ApiResponse(code = 1323, message = "账户已经存在，请重新输入"),
-            @ApiResponse(code = 1322, message = "账户名可以使用")
+            @ApiResponse(code = 1322, message = "账户名可以使用"),
+            @ApiResponse(code = 1400, message = "输入参数错误")
 
     })
-    @ApiImplicitParams({
-            //dataType:参数类型
-            //paramType:参数由哪里获取     path->从路径中获取，query->?传参，body->ajax请求
-            @ApiImplicitParam(name = "userAccount", value = "用户账户名", dataType = "String", paramType = "path", example = "15578491030"),
+//    @ApiImplicitParams({
+//            //dataType:参数类型
+//            //paramType:参数由哪里获取     path->从路径中获取，query->?传参，body->ajax请求
+//            @ApiImplicitParam(name = "userAccount", value = "用户账户名", dataType = "String", paramType = "path", example = "15578491030"),
+//
+//
+//    })
+
+    public ResultEntity checkAccount(@Valid AccountParam accountParam){
+        if (!ObjectUtils.isEmpty(accountParam)){
 
 
-    })
-
-    public ResultEntity checkAccount(AccountParam accountParam){
         User user_account = userService.getOne(new QueryWrapper<User>().eq("user_account", accountParam.getUserAccount()));
         if (user_account!=null) return ResultEntity.buildEntity().setCode(ConstCode.CHECKACCOUNT_FAIL).setFlag(false)
         .setMessage("账户已经存在，请重新输入");
         return ResultEntity.buildEntity().setCode(ConstCode.CHECKACCOUNT_SUCCESS).setFlag(true).setMessage("账户名可以使用");
-    }
+        }
+        return ResultEntity.buildEntity().setCode(ConstCode.PARAM_ERROR).setFlag(false).setMessage("输入参数错误");
+        }
     //修改密码
     @PutMapping("/update_user")
     @ApiOperation(value = "账户密码及电话号码修改接口", notes = "<span style='color:red;'>用来账户密码及电话号码修改接口,需要接受手机验证码</span>")
@@ -306,17 +322,17 @@ public class UserController {
 
     })
 
-    @ApiImplicitParams({
-            //dataType:参数类型
-            //paramType:参数由哪里获取     path->从路径中获取，query->?传参，body->ajax请求
-
-            @ApiImplicitParam(name = "userAccount", value = "用户账户名", dataType = "String", paramType = "path", example = "tom"),
-            @ApiImplicitParam(name = "userPassword", value = "用户新密码", dataType = "String", paramType = "path", example = "110"),
-            @ApiImplicitParam(name = "userTel", value = "用户电话号码", dataType = "String", paramType = "path", example = "15578491030"),
-            @ApiImplicitParam(name = "code", value = "验证码", dataType = "String", paramType = "path", example = "1234"),
-
-    })
-    public ResultEntity updateUser(UserUpdateParam userUpdateParam){
+//    @ApiImplicitParams({
+//            //dataType:参数类型
+//            //paramType:参数由哪里获取     path->从路径中获取，query->?传参，body->ajax请求
+//
+//            @ApiImplicitParam(name = "userAccount", value = "用户账户名", dataType = "String", paramType = "path", example = "tom"),
+//            @ApiImplicitParam(name = "userPassword", value = "用户新密码", dataType = "String", paramType = "path", example = "110"),
+//            @ApiImplicitParam(name = "userTel", value = "用户电话号码", dataType = "String", paramType = "path", example = "15578491030"),
+//            @ApiImplicitParam(name = "code", value = "验证码", dataType = "String", paramType = "path", example = "1234"),
+//
+//    })
+    public ResultEntity updateUser(@RequestBody @Valid UserUpdateParam userUpdateParam){
         //校验传入参数的合法性
 
         if (userUpdateParam!=null){

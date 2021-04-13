@@ -42,7 +42,7 @@ public class PowerplantOrder implements Serializable {
     private Integer userId;
 
     @ApiModelProperty(value = "充电桩编号")
-    private String stationMumeration;
+    private String stationNumeration;
 
     @ApiModelProperty(value = "充电开始时间")
     private Long chargeStartTime;
@@ -103,9 +103,6 @@ public class PowerplantOrder implements Serializable {
 
     @ApiModelProperty(value = "电桩品牌")
     private String stationBrand;
-
-    @ApiModelProperty(value = "电桩编号")
-    private String stationNumeration;
 
 
 

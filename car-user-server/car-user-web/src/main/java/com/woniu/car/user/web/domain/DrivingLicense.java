@@ -19,7 +19,7 @@ import lombok.EqualsAndHashCode;
  * </p>
  *
  * @author sushanhu
- * @since 2021-04-07
+ * @since 2021-04-13
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
@@ -32,6 +32,8 @@ public class DrivingLicense implements Serializable {
     @ApiModelProperty(value = "行驶证id")
       @TableId(value = "drivinglicense_id", type = IdType.AUTO)
     private Integer drivinglicenseId;
+
+    private Integer userId;
 
     @ApiModelProperty(value = "dr行驶证编号")
     private String drivinglicenseCode;
@@ -49,7 +51,7 @@ public class DrivingLicense implements Serializable {
     private String drivinglicenseCartype;
 
     @ApiModelProperty(value = "持证人")
-    private String userName;
+    private String userRealName;
 
     @ApiModelProperty(value = "使用性质")
     private Integer drivinglicenseType;

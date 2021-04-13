@@ -1,0 +1,21 @@
+server:
+  port: 8600
+  servlet:
+    context-path: /user
+spring:
+  application:
+    name: user-server
+  cloud:
+    nacos:
+      discovery:
+        server-addr: localhost:8848
+
+swagger:
+  base-package: com.woniu.car.user.controller
+  contact:
+    email: "zyy@111.com"
+    host: "http://zyy.com"
+    name: "zyy"
+  description: "用户服务接口"
+  title: "用户服务"
+  version: 1.0
