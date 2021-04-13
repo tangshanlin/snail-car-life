@@ -226,7 +226,7 @@ public class ShopController {
     @ApiImplicitParams({
             //dataType:参数类型
             //paramType:参数由哪里获取     path->从路径中获取，query->?传参，body->ajax请求
-            @ApiImplicitParam(name = "shopId",value = "门店id"),
+            @ApiImplicitParam(name = "shopId",value = "门店id",paramType = "body"),
     })
     @PutMapping("update_shop_integral_by_shop_id")
     public ResultEntity updateShopIntegralByShopId(@RequestBody ShopIdParamVo shopIdParamVo){
@@ -235,13 +235,14 @@ public class ShopController {
             return ResultEntity.buildFailEntity(ShopIntegralDtoVo.class)
                     .setMessage("门店id传入为空");
         }
-
+        System.out.println(shopIdParamVo);
         Boolean boo= shopService.updateShopIntegralByShopId(shopIdParamVo);
+        System.out.println(boo);
         if (boo) {
-            return ResultEntity.buildFailEntity(ShopIntegralDtoVo.class)
+            return ResultEntity.buildSuccessEntity(ShopIntegralDtoVo.class)
                     .setMessage("修改门店信誉积分成功");
         }else{
-            return ResultEntity.buildSuccessEntity(ShopIntegralDtoVo.class)
+            return ResultEntity.buildFailEntity(ShopIntegralDtoVo.class)
                     .setMessage("修改门店信誉积分失败");
         }
     }

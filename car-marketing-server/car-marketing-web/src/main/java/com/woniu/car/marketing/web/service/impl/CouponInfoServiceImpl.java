@@ -16,6 +16,7 @@ import com.woniu.car.marketing.web.mapper.CouponInfoMapper;
 import com.woniu.car.marketing.web.mapper.CouponMapper;
 import com.woniu.car.marketing.web.service.CouponInfoService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.woniu.car.user.web.util.GetTokenUtil;
 import lombok.Synchronized;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -82,7 +83,9 @@ public class CouponInfoServiceImpl extends ServiceImpl<CouponInfoMapper, CouponI
         if(coupon.getCouponNoGetNumber()>0){
             Long nowTime = System.currentTimeMillis();
             CouponInfo couponInfo = BeanCopyUtil.copyOne(addUserGetCoupon, CouponInfo::new);
-            couponInfo.setCouponInfoGetTime(nowTime);//未添加用户昵称
+
+            couponInfo.setCouponInfoGetTime(nowTime);
+            couponInfo.setCouponInfoUserAccount(GetTokenUtil.getUserAccount());//添加用户账号
             couponInfoMapper.insert(couponInfo);
             //修改优惠券类别的领取数量
             coupon.setCouponGetNumber(coupon.getCouponGetNumber()+1);

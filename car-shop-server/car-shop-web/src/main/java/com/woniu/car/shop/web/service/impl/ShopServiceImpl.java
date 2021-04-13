@@ -195,6 +195,7 @@ public class ShopServiceImpl extends ServiceImpl<ShopMapper, Shop> implements Sh
     **/
     @Override
     public Boolean updateShopIntegralByShopId(ShopIdParamVo shopIdParamVo) {
+        System.out.println(shopIdParamVo.getShopId()+"aaaaaaaaaaaaaaaaaa");
         Shop shop = shopMapper.selectById(shopIdParamVo.getShopId());
         shop.setShopIntegral(shop.getShopIntegral()-1);
         int i = shopMapper.updateById(shop);
