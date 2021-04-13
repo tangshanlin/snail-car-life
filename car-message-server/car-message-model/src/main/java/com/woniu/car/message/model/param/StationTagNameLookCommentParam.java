@@ -14,6 +14,7 @@ import java.io.Serializable;
  * @since 2021-04-05
  */
 @Data
+
 public class StationTagNameLookCommentParam implements Serializable {
 
     /**

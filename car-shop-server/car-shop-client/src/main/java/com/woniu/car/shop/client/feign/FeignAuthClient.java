@@ -17,6 +17,6 @@ import org.springframework.web.bind.annotation.PutMapping;
 @FeignClient(name = "car-auth-server")
 public interface FeignAuthClient {
 
-    @PutMapping("/auth/back-user/update_back_add_balance")
-    ResultEntity<BackBalanceDto> updateBackAddBalance(@SpringQueryMap BackBalanceParams backBalanceParams);
+    @PutMapping("/auth/back-balance/update-back-add-balance")
+    ResultEntity<BackBalanceDto> updateBackAddBalance(BackBalanceParams backBalanceParams);
 }

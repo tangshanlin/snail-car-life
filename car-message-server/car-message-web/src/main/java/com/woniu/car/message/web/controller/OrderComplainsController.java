@@ -44,7 +44,7 @@ public class OrderComplainsController {
      * @Since version-1.0
      */
 
-    @GetMapping("add_order_complain")
+    @PostMapping("add_order_complain")
     @ApiOperation(value = "添加订单投诉",notes = "<span style='color:red;'>用来添加订单投诉的接口</span>")
     @ApiResponses({
             @ApiResponse(code = 200,message = "添加订单投诉成功"),
@@ -57,7 +57,7 @@ public class OrderComplainsController {
             @ApiImplicitParam(name="complainType",value = "投诉类型（1.服务质量，2 服务人员，3自然灾害，4.服务设备(下拉框选择，传入固定值)",dataType = "String",paramType = "query",example = "自然灾害"),
             @ApiImplicitParam(name = " complainResult",value = "投诉具体内容",dataType = "String",paramType = "query",example = "服务人员态度恶劣"),
     })
-    public ResultEntity<?> addOrderComplain(OrderComplainsParam orderComplainsParam){
+    public ResultEntity<?> addOrderComplain(@RequestBody OrderComplainsParam orderComplainsParam){
         Boolean isadd=orderComplainsService.addOrderComplains(orderComplainsParam);
         if(isadd){
             return ResultEntity.buildSuccessEntity().setMessage("添加订单投诉成功");

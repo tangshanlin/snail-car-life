@@ -15,6 +15,7 @@ import com.woniu.car.shop.web.mapper.ShopMapper;
 import com.woniu.car.shop.web.mapper.ShopServiceEarningsMapper;
 import com.woniu.car.shop.web.service.ShopEarningsInfoService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.woniu.car.user.web.util.GetTokenUtil;
 import io.seata.spring.annotation.GlobalTransactional;
 import lombok.Synchronized;
 import org.springframework.stereotype.Service;
@@ -78,14 +79,17 @@ public class ShopEarningsInfoServiceImpl extends ServiceImpl<ShopEarningsInfoMap
         entity.setPayTime(payTime);
         entity.setCarServicePrice(carServicePrice);
         entity.setShopServiceInfoPlatformMoney(shopServiceInfoPlatformMoney);
+        //entity.setUserAccount(GetTokenUtil.getUserAccount());//添加用户账号
         entity.setUserAccount(null);//添加用户账号
 
-        Integer i = shopEarningsInfoMapper.insert(entity);
+
 
         //调用修改门店余额的方法
         updateShopBalance(addShopEarningsInfoParamVo,carServicePrice,shopServiceInfoPlatformMoney);
 
-        return null;
+        Integer i = shopEarningsInfoMapper.insert(entity);
+        if (i==1) return true;
+        return false;
     }
 
     @MyLock(key = "com:woniu.car:shop:shopEarningsInfo:t_shop_earnings_info:id",methodParam = "shopId")
@@ -124,8 +128,11 @@ public class ShopEarningsInfoServiceImpl extends ServiceImpl<ShopEarningsInfoMap
                 //平台余额增加
                 BackBalanceParams backBalanceParams = new BackBalanceParams();
                 //将平台提成金额添加进去
+                System.out.println("平台提成金额"+shopServiceInfoPlatformMoney);
                 backBalanceParams.setBackBalance(shopServiceInfoPlatformMoney);
                 feignAuthClient.updateBackAddBalance(backBalanceParams);
+                System.out.println("aaaaaa");
+
 
                 //修改门店余额
                 Shop shop = new Shop();

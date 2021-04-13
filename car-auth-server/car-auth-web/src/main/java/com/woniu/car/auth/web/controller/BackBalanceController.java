@@ -37,7 +37,7 @@ public class BackBalanceController {
     @PutMapping("/update-back-add-balance")
     @ApiOperation(value = "修改后台余额",notes = "通过金额修改后台余额")
 //    @ApiImplicitParam(name = "bigDecimal", value = "余额", dataType = "BackBalanceParams", required = true)
-    @GlobalTransactional(timeoutMills = 10000, name = "car-auth-web")
+
     public ResultEntity updateBackAddBalance(@Validated @RequestBody  BackBalanceParams bigDecimal) {
         System.out.println(bigDecimal.getBackBalance());
         if (bigDecimal != null) {

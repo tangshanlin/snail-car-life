@@ -1,5 +1,6 @@
 package com.woniu.car.message.model.param;
 
+import io.swagger.annotations.ApiModel;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -16,6 +17,7 @@ import java.math.BigDecimal;
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
+@ApiModel(value = "添加商品评论参数信息")
 public class PowerplantOrder implements Serializable {
     private static final long serialVersionUID = 1L;
 

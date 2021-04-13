@@ -2,7 +2,6 @@ server:
   port: 9102
   servlet:
     context-path: /station
-
 spring:
   application:
     name: car-station-server

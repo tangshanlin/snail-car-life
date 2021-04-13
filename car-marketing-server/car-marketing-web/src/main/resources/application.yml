@@ -4,6 +4,8 @@ server:
     context-path: /marketing
 
 spring:
+  main:
+    allow-bean-definition-overriding: true
   datasource:
     type: com.alibaba.druid.pool.DruidDataSource
     url: jdbc:mysql://119.23.75.195:3306/car-marketing-server?useUnicode=true&useSSL=false&characterEncoding=utf-8

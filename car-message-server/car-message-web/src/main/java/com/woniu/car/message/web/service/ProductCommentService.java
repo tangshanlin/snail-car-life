@@ -7,6 +7,7 @@ import com.woniu.car.message.model.param.CommentPageParam;
 import com.woniu.car.message.model.param.ProductCommentParam;
 import com.woniu.car.message.model.param.ProductTagNameLookCommentParam;
 import com.woniu.car.message.web.domain.ProductComment;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -67,6 +68,6 @@ public interface ProductCommentService extends IService<ProductComment> {
     IPage<ProductCommentDto> lookSomeProductComments(CommentPageParam pageParam);
 
 
-
+    Boolean addProductPicture(MultipartFile[] file);
 
 }

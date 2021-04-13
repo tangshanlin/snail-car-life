@@ -35,7 +35,6 @@ public class AdvertisingController {
     @Resource
     private AdvertisingService advertisingService;
 
-
     /*
     * @Author TangShanLin
     * @Description TODO 活动创建申请

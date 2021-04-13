@@ -4,6 +4,8 @@ server:
     context-path: /shop
 
 spring:
+  main:
+    allow-bean-definition-overriding: true
   datasource:
     type: com.alibaba.druid.pool.DruidDataSource
     username: root

@@ -44,7 +44,7 @@ public class PowerplantController {
     @PostMapping("/get_one_powerplant")
     @ApiOperation(value = "根据电站id查询电站信息",notes = "传入要查询的电站id")
     @ApiImplicitParam(name = "getPowerplantParam",value = "要查询的电站id",required = true,dataType = "GetPowerplantParam")
-    public ResultEntity getOnePowerplant(@RequestBody GetPowerplantParam getPowerplantParam){
+    public ResultEntity<Powerplant> getOnePowerplant(@RequestBody GetPowerplantParam getPowerplantParam){
         //复制param参数到实体类
         Powerplant powerplant = new Powerplant();
         BeanUtils.copyProperties(getPowerplantParam,powerplant);
