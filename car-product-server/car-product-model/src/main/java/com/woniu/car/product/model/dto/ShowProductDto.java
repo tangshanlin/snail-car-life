@@ -12,4 +12,5 @@ public class ShowProductDto {
     private String productName;
     private String productDetail;
     private JSONObject cateImages;
+    private Integer productStatus;
 }
