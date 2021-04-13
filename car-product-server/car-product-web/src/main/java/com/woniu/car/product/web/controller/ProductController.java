@@ -200,6 +200,8 @@ public class ProductController {
      * @return
      */
     @PutMapping("product_up")
+    @ApiOperation(value = "商品上架下架", notes = "选择商品上架或者下架 上架1 下架2 ")
+    @ApiImplicitParam(name = "ProductStatusParams",value = "上架下架和商品id",dataType = "ProductStatusParams",required = true)
     public ResultEntity productUp(@RequestBody ProductStatusParams ProductStatusParams) {
         ShowProductParame parame = new ShowProductParame();
         parame.setProductId(ProductStatusParams.getProductId());
