@@ -154,7 +154,8 @@ public class AddressController {
     public ResultEntity selectByAddressId(SlectAddressByAdressIdParam selectAddressParam){
       //校验输入参数
         //从jwt中获取userId；
-        Integer userId = GetTokenUtil.getUserId();
+//        Integer userId = GetTokenUtil.getUserId();
+        Integer userId = 1;
         //校验
         Address addressDb = addressService.getById(selectAddressParam.getAddressId());
         if (!ObjectUtils.isEmpty(addressDb)&addressDb.getUserId()==userId){
