@@ -1,7 +1,10 @@
 package com.woniu.car.user.param;
 
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 
 /**
@@ -12,11 +15,10 @@ import java.math.BigDecimal;
  * @Version 1.0
  */
 @Data
+@ApiModel(value = "钱包密码更新的参数")
 public class UpdateWalletParam {
-    private Integer walletId;
-    private Integer userId;
 
-    private BigDecimal walletMoney;
 
+    @ApiModelProperty(value = "钱包密码")
     private String walletPassword;
 }

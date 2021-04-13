@@ -1,6 +1,10 @@
 package com.woniu.car.user.param;
 
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+
+import javax.validation.constraints.NotNull;
 
 /**
  * @ClassName DeleteWalletParam
@@ -10,7 +14,12 @@ import lombok.Data;
  * @Version 1.0
  */
 @Data
+@ApiModel(value = "删除钱包的参数")
 public class DeleteWalletParam {
+    @ApiModelProperty(value = "用户id")
+    @NotNull
     private Integer userId;
+    @ApiModelProperty(value = "钱包id")
+    @NotNull
     private Integer walletId;
 }

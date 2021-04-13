@@ -1,9 +1,11 @@
 package com.woniu.car.user.param;
 
+import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import javax.annotation.security.DenyAll;
+import javax.validation.constraints.NotNull;
 
 /**
  * @ClassName DeleteMycarParam
@@ -13,10 +15,13 @@ import javax.annotation.security.DenyAll;
  * @Version 1.0
  */
 @Data
+@ApiModel(value = "删除爱车的参数")
 public class DeleteMycarParam {
     @ApiModelProperty(value = "我的车id")
+    @NotNull
     private Integer mycarId;
 
     @ApiModelProperty(value = "用户id")
+    @NotNull
     private Integer userId;
 }

@@ -53,6 +53,7 @@ public class OrderLogisticsServiceImpl extends ServiceImpl<OrderLogisticsMapper,
      **/
     @Override
     public Boolean updateProductOrderExpressNo(ExpressNoParams expressNoParams) {
+        System.out.println(expressNoParams);
         UpdateWrapper<OrderLogistics> wrapper = new UpdateWrapper<>();
         wrapper.eq("product_order_id",expressNoParams.getProductOrderId());
         wrapper.set("express_no",expressNoParams.getExpressNo());

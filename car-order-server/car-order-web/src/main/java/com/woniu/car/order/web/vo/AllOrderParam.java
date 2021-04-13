@@ -3,6 +3,7 @@ package com.woniu.car.order.web.vo;
 import com.woniu.car.order.web.entity.CarserviceOrder;
 import com.woniu.car.order.web.entity.PowerplantOrder;
 import com.woniu.car.order.web.entity.ProductOrder;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
@@ -19,9 +20,12 @@ import java.util.List;
 @Accessors(chain = true)
 public class AllOrderParam {
 
+    @ApiModelProperty(value = "服务订单集合")
     public CarserviceOrder carserviceOrder;
 
+    @ApiModelProperty(value = "商品订单集合")
     public ProductOrder productOrder;
 
+    @ApiModelProperty(value = "订单订单集合")
     public PowerplantOrder powerplantOrder;
 }

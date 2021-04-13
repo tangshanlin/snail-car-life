@@ -39,7 +39,7 @@ public class CouponInfo implements Serializable {
       private Integer couponInfoUserId;
 
       @ApiModelProperty(value = "关联的用户昵称")
-      private String couponInfoUserNickname;
+      private String couponInfoUserAccount;
 
       @ApiModelProperty(value = "领取时间")
       private Long couponInfoGetTime;

@@ -12,11 +12,6 @@
     <artifactId>car-commons-web</artifactId>
 
     <dependencies>
-        <dependency>
-            <groupId>com.alipay.sdk</groupId>
-            <artifactId>alipay-sdk-java</artifactId>
-            <version>4.9.28.ALL</version>
-        </dependency>
         <!--        MP-->
         <dependency>
             <groupId>com.baomidou</groupId>

@@ -1,7 +1,10 @@
 package com.woniu.car.user.param;
 
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 
 /**
@@ -12,22 +15,23 @@ import java.math.BigDecimal;
  * @Version 1.0
  */
 @Data
+@ApiModel(value = "添加钱包消费日志的参数")
 public class AddWalletLogParam {
-
-
-    private Integer walletId;
-
-
+    @ApiModelProperty(value = "钱包变化金额")
+    @NotNull
     private BigDecimal walletChange;
 
 
 
     //变化事件
+    @ApiModelProperty(value = "钱包变化事件")
+    @NotNull
     private String walletlogEvent;
 
 
-    private Integer userId;
 
     //"类型(1充值2消费3退款4提现)"
+    @ApiModelProperty(value = "变化类型（1充值2消费3退款4提现）")
+    @NotNull
     private Integer walletlogType;
 }
