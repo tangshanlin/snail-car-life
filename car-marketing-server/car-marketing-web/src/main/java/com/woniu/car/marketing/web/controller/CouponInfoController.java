@@ -17,6 +17,7 @@ import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import javax.validation.Valid;
 import java.util.List;
 
 /**
@@ -41,14 +42,8 @@ public class CouponInfoController {
      * @return
      */
     @ApiOperation(value = "用户在订单中展示所有符合条件的优惠券")
-    @ApiImplicitParams({
-            //dataType:参数类型
-            //paramType:参数由哪里获取     path->从路径中获取，query->?传参，body->ajax请求
-            @ApiImplicitParam(name = "couponGoods",value = "发行来源(0平台-其他对应门店id)"),
-            @ApiImplicitParam(name="couponInfoUserId",value = "关联用户id"),
-    })
     @GetMapping("/list_coupon_info_by_user_id")
-    public ResultEntity<List<GetCouponInfoByIdDtoVo>> getCouponInfoByUserIdAll(GetCouponInfoByUserIdAndSourceParamVo getCouponInfoByUserIdAndSourceParamVo){
+    public ResultEntity<List<GetCouponInfoByIdDtoVo>> getCouponInfoByUserIdAll(@Valid GetCouponInfoByUserIdAndSourceParamVo getCouponInfoByUserIdAndSourceParamVo){
         List<GetCouponInfoByIdDtoVo> getCouponInfoByIdDtoVoList = couponInfoService.getCouponInfoByUserIdAll(getCouponInfoByUserIdAndSourceParamVo);
         return ResultEntity.buildListSuccessEntity(GetCouponInfoByIdDtoVo.class)
                 .setData(getCouponInfoByIdDtoVoList)
@@ -60,14 +55,9 @@ public class CouponInfoController {
      * @param getCouponInfoByIdParamVo
      * @return
      */
-    @ApiOperation(value = "通过用户优惠券主键id查优惠券信息")
-    @ApiImplicitParams({
-            //dataType:参数类型
-            //paramType:参数由哪里获取     path->从路径中获取，query->?传参，body->ajax请求
-            @ApiImplicitParam(name = "couponInfoId",value = "关联用户某个优惠券id"),
-    })
+    @ApiOperation(value = "通过用户领取优惠券表主键id查优惠券信息")
     @GetMapping("/get_coupon_info_by_id")
-    public ResultEntity<GetCouponInfoByIdDtoVo> getCouponInfoById(GetCouponInfoByIdParamVo getCouponInfoByIdParamVo){
+    public ResultEntity<GetCouponInfoByIdDtoVo> getCouponInfoById(@Valid GetCouponInfoByIdParamVo getCouponInfoByIdParamVo){
         GetCouponInfoByIdDtoVo getCouponInfoByIdDtoVo = couponInfoService.getCouponInfoById(getCouponInfoByIdParamVo);
         return ResultEntity.buildSuccessEntity(GetCouponInfoByIdDtoVo.class)
                 .setData(getCouponInfoByIdDtoVo)
@@ -82,14 +72,8 @@ public class CouponInfoController {
     * @return com.woniu.car.commons.core.dto.ResultEntity
     **/
     @ApiOperation(value = "用户领取优惠券接口")
-    @ApiImplicitParams({
-            //dataType:参数类型
-            //paramType:参数由哪里获取     path->从路径中获取，query->?传参，body->ajax请求
-            @ApiImplicitParam(name = "couponId",value = "关联优惠卷表id"),
-            @ApiImplicitParam(name = "couponInfoUserId",value = "关联用户id"),
-    })
     @PutMapping("/add_user_get_coupon")
-    public ResultEntity addUserGetCoupon(@RequestBody AddUserGetCoupon addUserGetCoupon){
+    public ResultEntity addUserGetCoupon(@RequestBody @Valid AddUserGetCoupon addUserGetCoupon){
         Boolean verdict = couponInfoService.addUserGetCoupon(addUserGetCoupon);
         if(verdict){
             return ResultEntity.buildSuccessEntity().setMessage("领取成功");
@@ -106,13 +90,8 @@ public class CouponInfoController {
     * @return com.woniu.car.commons.core.dto.ResultEntity<java.util.List<com.woniu.car.marketing.model.dtoVo.GetCouponInfoByUserIdDtoVo>>
     **/
     @ApiOperation(value = "根据用户id返回未过期的优惠券信息")
-    @ApiImplicitParams({
-            //dataType:参数类型
-            //paramType:参数由哪里获取     path->从路径中获取，query->?传参，body->ajax请求
-            @ApiImplicitParam(name = "couponInfoUserId",value = "关联用户id"),
-    })
     @GetMapping("list_coupon_info_by_user_id_all")
-    public ResultEntity<List<GetCouponInfoByUserIdDtoVo>> listCouponInfoByUserId(CouponInfoByUserIdParamVo couponInfoByUserIdParamVo){
+    public ResultEntity<List<GetCouponInfoByUserIdDtoVo>> listCouponInfoByUserId(@Valid CouponInfoByUserIdParamVo couponInfoByUserIdParamVo){
         List<GetCouponInfoByUserIdDtoVo> getCouponInfoByUserIdDtoVoList = couponInfoService.listCouponInfoByUserId(couponInfoByUserIdParamVo);
         if (ObjectUtils.isEmpty(getCouponInfoByUserIdDtoVoList)) {
             return ResultEntity.buildListFailEntity(GetCouponInfoByUserIdDtoVo.class)

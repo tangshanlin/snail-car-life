@@ -1,5 +1,6 @@
 package com.woniu.car.shop.model.dtoVo;
 
+import io.swagger.annotations.ApiModel;
 import lombok.Data;
 import org.springframework.web.multipart.MultipartFile;
 

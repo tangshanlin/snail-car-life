@@ -10,11 +10,13 @@ import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
+import javax.validation.Valid;
 
 /**
  * <p>
@@ -39,15 +41,9 @@ public class ShopServiceEarningsController {
     * @Param []
     * @return com.woniu.car.commons.core.dto.ResultEntity
     **/
-    @ApiOperation(value = "新增服务完成后添加门店服务具体收益数据")
-    @ApiImplicitParams({
-            //dataType:参数类型
-            //paramType:参数由哪里获取     path->从路径中获取，query->?传参，body->ajax请求
-            @ApiImplicitParam(name = "shopId",value = "关联门店id"),
-            @ApiImplicitParam(name="carServiceName",value = "服务名称"),
-    })
+    @ApiOperation(value = "添加门店服务具体收益数据",notes = "新增服务完成后添加门店服务具体收益数据")
     @PostMapping("add_shop_service_earnings")
-    public ResultEntity addShopServiceEarnings(AddShopServiceEarningsParamVo addShopServiceEarningsParamVo){
+    public ResultEntity addShopServiceEarnings(@RequestBody @Valid AddShopServiceEarningsParamVo addShopServiceEarningsParamVo){
         Boolean boo = shopServiceEarningsService.addShopServiceEarnings(addShopServiceEarningsParamVo);
         if(boo){
             return ResultEntity.buildSuccessEntity().setMessage("添加门店服务收益数据成功");
