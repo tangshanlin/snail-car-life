@@ -6,17 +6,14 @@ import com.woniu.car.commons.core.code.ConstCode;
 import com.woniu.car.commons.core.dto.ResultEntity;
 import com.woniu.car.commons.web.util.BeanCopyUtil;
 import com.woniu.car.user.param.AddWalletLogParam;
-import com.woniu.car.user.param.SelectWalletLogParam;
 import com.woniu.car.user.web.domain.Wallet;
 import com.woniu.car.user.web.domain.Walletlog;
 import com.woniu.car.user.web.service.WalletService;
 import com.woniu.car.user.web.service.WalletlogService;
+import com.woniu.car.user.web.util.GetTokenUtil;
 import io.swagger.annotations.*;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.util.ObjectUtils;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import java.math.BigDecimal;
@@ -48,30 +45,32 @@ public class WalletlogController {
 
 })
 
-@ApiImplicitParams({
-        //dataType:参数类型
-        //paramType:参数由哪里获取     path->从路径中获取，query->?传参，body->ajax请求
-        @ApiImplicitParam(name = "userId", value = "用户ID", dataType = "integer", paramType = "path", example = "110"),
-        @ApiImplicitParam(name = "walletId", value = "钱包ID", dataType = "integer", paramType = "path", example = "110"),
-        @ApiImplicitParam(name = "walletEvent", value = "变化事件", dataType = "String", paramType = "path", example = "3月1日14点充值"),
-        @ApiImplicitParam(name = "walletChange", value = "变化的数量", dataType = "BigDecimal", paramType = "path", example = "10.00"),
-        @ApiImplicitParam(name = "walletType", value = "日志的类型（1充值2消费3退款4提现）", dataType = "integer", paramType = "path", example = "1"),
+//@ApiImplicitParams({
+//        //dataType:参数类型
+//        //paramType:参数由哪里获取     path->从路径中获取，query->?传参，body->ajax请求
+//        @ApiImplicitParam(name = "userId", value = "用户ID", dataType = "integer",  example = "110"),
+//        @ApiImplicitParam(name = "walletId", value = "钱包ID", dataType = "integer",  example = "110"),
+//        @ApiImplicitParam(name = "walletEvent", value = "变化事件", dataType = "String",  example = "3月1日14点充值"),
+//        @ApiImplicitParam(name = "walletChange", value = "变化的数量", dataType = "BigDecimal",  example = "10.00"),
+//        @ApiImplicitParam(name = "walletType", value = "日志的类型（1充值2消费3退款4提现）", dataType = "integer",  example = "1"),
+//
+//})
 
-})
-
-    public ResultEntity addWalletLog(AddWalletLogParam addWalletLogParam){
+    public ResultEntity addWalletLog(@RequestBody AddWalletLogParam addWalletLogParam){
     //校验
-    Integer userId = addWalletLogParam.getUserId();
-    Integer walletId = addWalletLogParam.getWalletId();
-    Wallet walletDb = walletService.getById(walletId);
+    //从jwt中获取userid
+    Integer userId = GetTokenUtil.getUserId();
+    //根据userid获取钱包id
+    Wallet walletDb = walletService.getOne(new QueryWrapper<Wallet>().eq("user_id",userId));
 
-    if (walletDb.getUserId()==userId){
+    if (!ObjectUtils.isEmpty(walletDb)){
          //校验完成
         //判断执行更改
         Walletlog walletlog = BeanCopyUtil.copyOne(addWalletLogParam, Walletlog::new);
         Integer walletlogType = addWalletLogParam.getWalletlogType();
         walletlog.setWalletOld(walletDb.getWalletMoney());
         BigDecimal walletChange = addWalletLogParam.getWalletChange();
+
 
         //如果walletlogtype是1充值3退款
         if (walletlogType==1||walletlogType==3){
@@ -89,6 +88,8 @@ public class WalletlogController {
             walletDb.setWalletMoney(subtract);
         }
         //执行钱包日志的添加和钱包余额的修改
+        walletlog.setUserId(userId);
+        walletlog.setWalletId(walletDb.getWalletId());
         boolean save = walletlogService.save(walletlog);
         if (save){
             boolean b = walletService.updateById(walletDb);
@@ -111,22 +112,22 @@ public class WalletlogController {
 
     })
 
-    @ApiImplicitParams({
-            //dataType:参数类型
-            //paramType:参数由哪里获取     path->从路径中获取，query->?传参，body->ajax请求
-            @ApiImplicitParam(name = "userId", value = "用户ID", dataType = "integer", paramType = "path", example = "110"),
-            @ApiImplicitParam(name = "walletId", value = "钱包ID", dataType = "integer", paramType = "path", example = "110"),
+//    @ApiImplicitParams({
+//            //dataType:参数类型
+//            //paramType:参数由哪里获取     path->从路径中获取，query->?传参，body->ajax请求
+//            @ApiImplicitParam(name = "userId", value = "用户ID", dataType = "integer", paramType = "path", example = "110"),
+//            @ApiImplicitParam(name = "walletId", value = "钱包ID", dataType = "integer", paramType = "path", example = "110"),
+//
+//
+//    })
 
-
-    })
-
-    public ResultEntity selectWalletLog(SelectWalletLogParam selectWalletLogParam){
+    public ResultEntity selectWalletLog(){
     //校验参数
-        Integer walletId = selectWalletLogParam.getWalletId();
-        Wallet walletDb = walletService.getById(walletId);
-        if (walletDb.getUserId()==selectWalletLogParam.getUserId()){
+        //从token获取userid
+        Integer userId = GetTokenUtil.getUserId();
+        if (userId!=null){
             //校验成功 执行查询
-            List<Walletlog> walletlogList = walletlogService.list(new QueryWrapper<Walletlog>().eq("wallet_id", walletId));
+            List<Walletlog> walletlogList = walletlogService.list(new QueryWrapper<Walletlog>().eq("user_id", userId));
             //返回
             if (walletlogList!=null) return ResultEntity.buildEntity(List.class).setCode(ConstCode.SELECTWALLETLOG_SUCCESS).setFlag(true)
             .setMessage("查询钱包日志成功").setData(walletlogList);

@@ -15,11 +15,7 @@ import com.woniu.car.user.web.service.UserInformationService;
 import com.woniu.car.user.web.util.GetTokenUtil;
 import com.woniu.car.user.web.util.JwtUtils;
 import io.swagger.annotations.*;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import java.util.List;
@@ -52,19 +48,19 @@ public class ScoreController {
 
     })
 
-    @ApiImplicitParams({
-            //dataType:参数类型
-            //paramType:参数由哪里获取     path->从路径中获取，query->?传参，body->ajax请求
-            @ApiImplicitParam(name = "addressId", value = "地址ID", dataType = "integer", paramType = "path", example = "110"),
-
-            @ApiImplicitParam(name = "scoreNumber", value = "积分变化数", dataType = "Integer", paramType = "path", example = "10"),
-            @ApiImplicitParam(name = "scoreChange", value = "积分变化事件", dataType = "String", paramType = "path", example = "兑换五十的优惠券"),
-            @ApiImplicitParam(name = "scoreChangeType" , value = "积分变化类型（1消费获取积分2兑换消费券消耗积分）", dataType = "String", paramType = "path", example = "2"),
-
-
-
-    })
-    public ResultEntity addScore(AddScoreParam addScoreParam){
+//    @ApiImplicitParams({
+//            //dataType:参数类型
+//            //paramType:参数由哪里获取     path->从路径中获取，query->?传参，body->ajax请求
+//            @ApiImplicitParam(name = "addressId", value = "地址ID", dataType = "integer", paramType = "path", example = "110"),
+//
+//            @ApiImplicitParam(name = "scoreNumber", value = "积分变化数", dataType = "Integer", example = "10"),
+//            @ApiImplicitParam(name = "scoreChange", value = "积分变化事件", dataType = "String", example = "兑换五十的优惠券"),
+//            @ApiImplicitParam(name = "scoreChangeType" , value = "积分变化类型（1消费获取积分2兑换消费券消耗积分）", dataType = "String",  example = "2"),
+//
+//
+//
+//    })
+    public ResultEntity addScore(@RequestBody AddScoreParam addScoreParam){
         //校验参数
         //从jwt中获取userId；
         String token = GetTokenUtil.getToken();

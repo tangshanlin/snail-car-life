@@ -1,5 +1,6 @@
 package com.woniu.car.user.param;
 
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 /**
@@ -11,6 +12,6 @@ import lombok.Data;
  */
 @Data
 public class SelectAddressParam {
-
+    @ApiModelProperty(value = "用户帐户名")
     private String userAccount;
 }

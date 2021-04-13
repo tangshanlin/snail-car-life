@@ -7,14 +7,13 @@ import com.woniu.car.commons.core.dto.ResultEntity;
 import com.woniu.car.commons.web.util.BeanCopyUtil;
 import com.woniu.car.user.param.AddwalletParam;
 import com.woniu.car.user.param.DeleteWalletParam;
-import com.woniu.car.user.param.SelectWalletParam;
 import com.woniu.car.user.param.UpdateWalletParam;
 import com.woniu.car.user.web.domain.User;
 import com.woniu.car.user.web.domain.Wallet;
 import com.woniu.car.user.web.service.UserService;
 import com.woniu.car.user.web.service.WalletService;
+import com.woniu.car.user.web.util.GetTokenUtil;
 import io.swagger.annotations.*;
-import org.bouncycastle.crypto.tls.UseSRTPData;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.*;
 
@@ -48,15 +47,16 @@ public class WalletController {
 
     })
 
-    @ApiImplicitParams({
-            //dataType:参数类型
-            //paramType:参数由哪里获取     path->从路径中获取，query->?传参，body->ajax请求
-            @ApiImplicitParam(name = "userId", value = "用户ID", dataType = "integer", paramType = "path", example = "110"),
-            @ApiImplicitParam(name = "walletMoney",value = "钱包余额",dataType = "BigDecimal",type ="path",example = "100.00"),
-            @ApiImplicitParam(name = "walletPassword",value = "钱包密码",dataType = "String",type ="path",example = "123232")       })
-    public ResultEntity addWallet(AddwalletParam addwalletParam){
+//    @ApiImplicitParams({
+//            //dataType:参数类型
+//            //paramType:参数由哪里获取     path->从路径中获取，query->?传参，body->ajax请求
+//            @ApiImplicitParam(name = "userId", value = "用户ID", dataType = "integer", paramType = "path", example = "110"),
+//            @ApiImplicitParam(name = "walletMoney",value = "钱包余额",dataType = "BigDecimal",type ="path",example = "100.00"),
+//            @ApiImplicitParam(name = "walletPassword",value = "钱包密码",dataType = "String",type ="path",example = "123232")       })
+    public ResultEntity addWallet(@RequestBody AddwalletParam addwalletParam){
         //校验输入参数
-        Integer userId = addwalletParam.getUserId();
+        //从jwt中获取userid
+        Integer userId = GetTokenUtil.getUserId();
         User userDb = userService.getById(userId);
         if (!ObjectUtils.isEmpty(userDb)){
             //校验成功执行新增
@@ -82,13 +82,13 @@ public class WalletController {
             @ApiResponse(code = 1400, message = "输入参数错误")
 
     })
-    @ApiImplicitParams({
-            //dataType:参数类型
-            //paramType:参数由哪里获取     path->从路径中获取，query->?传参，body->ajax请求
-            @ApiImplicitParam(name = "userId", value = "用户ID", dataType = "integer", paramType = "path", example = "110"),
-            @ApiImplicitParam(name = "walletId", value = "钱包ID", dataType = "integer", type = "path", example = "100.00"),
-    })
-    public ResultEntity deleteWallet(DeleteWalletParam deleteWalletParam){
+//    @ApiImplicitParams({
+//            //dataType:参数类型
+//            //paramType:参数由哪里获取     path->从路径中获取，query->?传参，body->ajax请求
+//            @ApiImplicitParam(name = "userId", value = "用户ID", dataType = "integer", paramType = "path", example = "110"),
+//            @ApiImplicitParam(name = "walletId", value = "钱包ID", dataType = "integer", type = "path", example = "100.00"),
+//    })
+    public ResultEntity deleteWallet(@RequestBody DeleteWalletParam deleteWalletParam){
         //校验输入参数
         Integer userId = deleteWalletParam.getUserId();
         Integer walletId = deleteWalletParam.getWalletId();
@@ -106,34 +106,33 @@ public class WalletController {
 
     //修改余额的方法
     @PutMapping("/updateWallet")
-    @ApiOperation(value = "修改钱包余额和密码的接口",notes = "<span style='color:red;'>用来修改钱包余额或者密码的接口</span>" )
+    @ApiOperation(value = "修改钱包密码的接口",notes = "<span style='color:red;'>用来修改钱包密码的接口</span>" )
     @ApiResponses({
             @ApiResponse(code = 1364, message = "修改钱包成功"),
             @ApiResponse(code = 1365, message = "修改钱包失败"),
             @ApiResponse(code = 1400, message = "输入参数错误")
 
     })
-    @ApiImplicitParams({
-            //dataType:参数类型
-            //paramType:参数由哪里获取     path->从路径中获取，query->?传参，body->ajax请求
-            @ApiImplicitParam(name = "userId", value = "用户ID", dataType = "integer", paramType = "path", example = "110"),
-            @ApiImplicitParam(name = "walletId", value = "钱包ID", dataType = "integer", type = "path", example = "100.00"),
-            @ApiImplicitParam(name = "walletMoney",value = "钱包余额",dataType = "BigDecimal",type ="path",example = "100.00"),
-            @ApiImplicitParam(name = "walletPassword",value = "钱包密码",dataType = "String",type ="path",example = "123232")
-    })
+//    @ApiImplicitParams({
+//            //dataType:参数类型
+//            //paramType:参数由哪里获取     path->从路径中获取，query->?传参，body->ajax请求
+//            @ApiImplicitParam(name = "userId", value = "用户ID", dataType = "integer",  example = "110"),
+//            @ApiImplicitParam(name = "walletId", value = "钱包ID", dataType = "integer",  example = "100.00"),
+//            @ApiImplicitParam(name = "walletMoney",value = "钱包余额",dataType = "BigDecimal",example = "100.00"),
+//            @ApiImplicitParam(name = "walletPassword",value = "钱包密码",dataType = "String",example = "123232")
+//    })
 
-    public ResultEntity updateWallet(UpdateWalletParam updateWalletParam){
+    public ResultEntity updateWallet(@RequestBody UpdateWalletParam updateWalletParam){
         //参数校验
-        Integer userId = updateWalletParam.getUserId();
-        Integer walletId = updateWalletParam.getWalletId();
-        Wallet walletDb = walletService.getById(walletId);
-        if (!ObjectUtils.isEmpty(walletDb)&walletDb.getUserId()==userId){
+        Integer userId = GetTokenUtil.getUserId();
+
+        Wallet walletDb = walletService.getOne(new QueryWrapper<Wallet>().eq("user_id",userId));
+        if (!ObjectUtils.isEmpty(walletDb)){
             //校验成功 进行修改
-            BigDecimal walletMoney = updateWalletParam.getWalletMoney();
+
             String walletPassword = updateWalletParam.getWalletPassword();
-            if (walletMoney!=null){
-                walletDb.setWalletMoney(walletMoney);
-            }if (walletPassword!=null){
+
+            if (walletPassword!=null){
                 walletDb.setWalletPassword(walletPassword);
             }
             boolean b = walletService.updateById(walletDb);
@@ -153,26 +152,26 @@ public class WalletController {
         @ApiResponse(code = 1400, message = "输入参数错误")
 
 })
-@ApiImplicitParams({
-        //dataType:参数类型
-        //paramType:参数由哪里获取     path->从路径中获取，query->?传参，body->ajax请求
-        @ApiImplicitParam(name = "userId", value = "用户ID", dataType = "integer", paramType = "path", example = "110"),
-        @ApiImplicitParam(name = "walletId", value = "钱包ID", dataType = "integer", type = "path", example = "100.00"),
-
-})
-    public ResultEntity selectWallet(SelectWalletParam selectWalletParam){
+//@ApiImplicitParams({
+//        //dataType:参数类型
+//        //paramType:参数由哪里获取     path->从路径中获取，query->?传参，body->ajax请求
+//        @ApiImplicitParam(name = "userId", value = "用户ID", dataType = "integer", paramType = "path", example = "110"),
+//        @ApiImplicitParam(name = "walletId", value = "钱包ID", dataType = "integer", type = "path", example = "100.00"),
+//
+//})
+    public ResultEntity selectWallet(){
         //校验参数
 
-    Integer userId = selectWalletParam.getUserId();
-    Integer walletId = selectWalletParam.getWalletId();
-    Wallet walletDb = walletService.getById(walletId);
+    //从token中获取userid
+    Integer userId = GetTokenUtil.getUserId();
 
-    if (!ObjectUtils.isEmpty(walletDb)&walletDb.getUserId()==userId){
+
+    if (userId!=null){
         //校验成功执行查询
+        Wallet walletDb = walletService.getOne(new QueryWrapper<Wallet>().eq("user_id", userId));
         return ResultEntity.buildEntity(Wallet.class).setCode(ConstCode.SELECTWALLET_SUCCESS).setFlag(true).setMessage("查询钱包成功")
                 .setData(walletDb);
-    }if (ObjectUtils.isEmpty(walletDb)) return ResultEntity.buildEntity().setCode(ConstCode.SELECTWALLET_FAIL)
-    .setFlag(false).setMessage("查询钱包失败");
+    }
     return ResultEntity.buildEntity().setCode(ConstCode.PARAM_ERROR).setFlag(false).setMessage("输入参数错误");
 }
 }

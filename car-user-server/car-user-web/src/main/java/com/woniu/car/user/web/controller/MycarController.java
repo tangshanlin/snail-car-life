@@ -61,24 +61,24 @@ public class MycarController {
             @ApiResponse(code = 1335,message = "新增我的爱车失败"),
             @ApiResponse(code = 1400,message = "输入参数有误")
     })
-    @ApiImplicitParams({
-            //dataType:参数类型
-            //paramType:参数由哪里获取     path->从路径中获取，query->?传参，body->ajax请求
-
-            @ApiImplicitParam(name = "userId", value = "用户Id", dataType = "Integer", paramType = "path", example = "1"),
-            @ApiImplicitParam(name = "mycarTypeId", value = "车型ID", dataType = "Integer", paramType = "path", example = "77"),
-            @ApiImplicitParam(name = "mycarBrand" , value = "车品牌", dataType = "String", paramType = "path", example = "宝马"),
-            @ApiImplicitParam(name = "mucarType", value = "款型", dataType = "String", paramType = "path", example = "宝马740"),
-            @ApiImplicitParam(name = "mycarImage", value = "爱车图片", dataType = "String", paramType = "path", example = "baidu.com"),
-            @ApiImplicitParam(name = "mycarKm", value = "里程", dataType = "Integr", paramType = "path", example = "110"),
-            @ApiImplicitParam(name = "mycarCode", value = "车牌号", dataType = "String", paramType = "path", example = "渝A110"),
-            @ApiImplicitParam(name = "mycarProductionDate", value = "生产年份", dataType = "Long", paramType = "path", example = "2016"),
-            @ApiImplicitParam(name = "mycarOntheroadTime", value = "爱车上路时间", dataType = "Long", paramType = "path", example = "2020年10月"),
-            @ApiImplicitParam(name = "mycarRegisterTime", value = "注册时间", dataType = "String", paramType = "path", example = "2020年10月"),
-            @ApiImplicitParam(name = "mycarEngineCapaciTy", value = "发动机排量", dataType = "String", paramType = "path", example = "2L"),
-
-    })
-    public ResultEntity addMycar(AddMycarParam addMycarParam){
+//    @ApiImplicitParams({
+//            //dataType:参数类型
+//            //paramType:参数由哪里获取     path->从路径中获取，query->?传参，body->ajax请求
+//
+//            @ApiImplicitParam(name = "userId", value = "用户Id", dataType = "Integer",  example = "1"),
+//            @ApiImplicitParam(name = "mycarTypeId", value = "车型ID", dataType = "Integer", example = "77"),
+//            @ApiImplicitParam(name = "mycarBrand" , value = "车品牌", dataType = "String",example = "宝马"),
+//            @ApiImplicitParam(name = "mucarType", value = "款型", dataType = "String",  example = "宝马740"),
+//            @ApiImplicitParam(name = "mycarImage", value = "爱车图片", dataType = "String", example = "baidu.com"),
+//            @ApiImplicitParam(name = "mycarKm", value = "里程", dataType = "Integr", example = "110"),
+//            @ApiImplicitParam(name = "mycarCode", value = "车牌号", dataType = "String",example = "渝A110"),
+//            @ApiImplicitParam(name = "mycarProductionDate", value = "生产年份", dataType = "Long", example = "2016"),
+//            @ApiImplicitParam(name = "mycarOntheroadTime", value = "爱车上路时间", dataType = "Long", example = "2020年10月"),
+//            @ApiImplicitParam(name = "mycarRegisterTime", value = "注册时间", dataType = "String",  example = "2020年10月"),
+//            @ApiImplicitParam(name = "mycarEngineCapaciTy", value = "发动机排量", dataType = "String",  example = "2L"),
+//
+//    })
+    public ResultEntity addMycar(@RequestBody AddMycarParam addMycarParam){
         //校验输入参数
         Integer userId = addMycarParam.getUserId();
         //从jwt中获取useid
@@ -106,11 +106,11 @@ public class MycarController {
             @ApiResponse(code = 1336,message = "修改我的爱车失败"),
             @ApiResponse(code = 1400,message = "输入参数错误")
     })
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "userId", value = "用户Id", dataType = "Integer", paramType = "path", example = "1"),
-            @ApiImplicitParam(name = "mycarKm", value = "里程", dataType = "Integr", paramType = "path", example = "2700")
-    })
-    public ResultEntity updateMycar(UpdateMyCarParam updateMyCarParam){
+//    @ApiImplicitParams({
+//            @ApiImplicitParam(name = "userId", value = "用户Id", dataType = "Integer",  example = "1"),
+//            @ApiImplicitParam(name = "mycarKm", value = "里程", dataType = "Integr",  example = "2700")
+//    })
+    public ResultEntity updateMycar(@RequestBody UpdateMyCarParam updateMyCarParam){
         //校验参数
         Integer userId = updateMyCarParam.getUserId();
         Integer mycarKm = updateMyCarParam.getMycarKm();
@@ -139,11 +139,11 @@ public class MycarController {
             @ApiResponse(code = 1338,message = "删除爱车成功"),
             @ApiResponse(code = 1339,message = "删除爱车失败")
     })
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "userId", value = "用户Id", dataType = "Integer", paramType = "path", example = "1"),
-            @ApiImplicitParam(name = "mycarId", value = "爱车ID", dataType = "Integr", paramType = "path", example = "1")
-    })
-    public ResultEntity deleteMycar(DeleteMycarParam deleteMycarParam){
+//    @ApiImplicitParams({
+//            @ApiImplicitParam(name = "userId", value = "用户Id", dataType = "Integer",  example = "1"),
+//            @ApiImplicitParam(name = "mycarId", value = "爱车ID", dataType = "Integr",  example = "1")
+//    })
+    public ResultEntity deleteMycar(@RequestBody DeleteMycarParam deleteMycarParam){
         Integer mycarId = deleteMycarParam.getMycarId();
         Integer userId = deleteMycarParam.getUserId();
         if (mycarId!=null&userId!=null){

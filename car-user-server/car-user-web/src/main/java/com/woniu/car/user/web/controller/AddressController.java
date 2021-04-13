@@ -38,7 +38,7 @@ public class AddressController {
     private AddressService addressService;
     @Resource
     private UserService userService;
-    @PostMapping("/addAddress")
+    @PostMapping("/add_address")
 
     @ApiOperation(value = "新增地址接口", notes = "<span style='color:red;'>用来新增地址接口</span>")
     @ApiResponses({
@@ -48,35 +48,32 @@ public class AddressController {
 
     })
 
-    @ApiImplicitParams({
-            //dataType:参数类型
-            //paramType:参数由哪里获取     path->从路径中获取，query->?传参，body->ajax请求
-
-            @ApiImplicitParam(name = "addressContactName", value = "收件人名字", dataType = "String", paramType = "path", example = "tom"),
-            @ApiImplicitParam(name = "addressContactTel", value = "收件人电话", dataType = "String", paramType = "path", example = "15578491030"),
-            @ApiImplicitParam(name = "addressZip" , value = "邮编", dataType = "String", paramType = "path", example = "400020"),
-            @ApiImplicitParam(name = "addressProvince", value = "省份", dataType = "String", paramType = "path", example = "重庆市"),
-            @ApiImplicitParam(name = "addressCity", value = "城市", dataType = "String", paramType = "path", example = "重庆市"),
-            @ApiImplicitParam(name = "addressDistrict", value = "分区", dataType = "String", paramType = "path", example = "江北区"),
-            @ApiImplicitParam(name = "addressStreet", value = "街道", dataType = "String", paramType = "path", example = "红锦大道"),
-            @ApiImplicitParam(name = "addressDetail", value = "详细地址", dataType = "String", paramType = "path", example = "理想大厦蜗牛"),
-            @ApiImplicitParam(name = "isDefaultAddress", value = "是否为默认地址（0为默认，1为非默认）", dataType = "String", paramType = "path", example = "1"),
-
-
-
-    })
-    public ResultEntity addAddress(AddressParam addressParam){
+//    @ApiImplicitParams({
+//            //dataType:参数类型
+//            //paramType:参数由哪里获取     path->从路径中获取，query->?传参，body->ajax请求
+//
+//            @ApiImplicitParam(name = "addressContactName", value = "收件人名字", dataType = "String", example = "tom"),
+//            @ApiImplicitParam(name = "addressContactTel", value = "收件人电话", dataType = "String",  example = "15578491030"),
+//            @ApiImplicitParam(name = "addressZip" , value = "邮编", dataType = "String",  example = "400020"),
+//            @ApiImplicitParam(name = "addressProvince", value = "省份", dataType = "String",  example = "重庆市"),
+//            @ApiImplicitParam(name = "addressCity", value = "城市", dataType = "String", example = "重庆市"),
+//            @ApiImplicitParam(name = "addressDistrict", value = "分区", dataType = "String", example = "江北区"),
+//            @ApiImplicitParam(name = "addressStreet", value = "街道", dataType = "String",  example = "红锦大道"),
+//            @ApiImplicitParam(name = "addressDetail", value = "详细地址", dataType = "String",  example = "理想大厦蜗牛"),
+//            @ApiImplicitParam(name = "isDefaultAddress", value = "是否为默认地址（0为默认，1为非默认）", dataType = "String", example = "1"),
+//
+//
+//
+//    })
+    public ResultEntity addAddress(@RequestBody AddressParam addressParam){
         if (!ObjectUtils.isEmpty(addressParam)){
             //复制到address对象
             Address address = BeanCopyUtil.copyOne(addressParam, Address::new);
             //获取用户ID
-            String token = GetTokenUtil.getToken();
-            DecodedJWT decodeToken = JwtUtils.getDecodeToken(token);
-            Claim userId = decodeToken.getClaims().get("userId");
-            Integer userId2 = Integer.valueOf(userId.asString());
-            address.setUserId(userId2);
+            Integer userId = GetTokenUtil.getUserId();
+            address.setUserId(userId);
             //测试用
-            System.out.println(userId2);
+            System.out.println(userId);
             boolean save = addressService.save(address);
             if (save) return ResultEntity.buildEntity().setCode(ConstCode.ADDADDRESS_SUCCESS).setFlag(true)
                     .setMessage("新增地址成功");
@@ -93,7 +90,7 @@ public class AddressController {
  * @Param []
  * @return com.woniu.car.commons.core.dto.ResultEntity
  **/
-  @DeleteMapping("/deleteAddress")
+  @DeleteMapping("/delete_address")
   @ApiOperation(value = "删除地址接口", notes = "<span style='color:red;'>用来删除地址接口</span>")
   @ApiResponses({
           @ApiResponse(code = 1352, message = "删除地址成功"),
@@ -102,16 +99,16 @@ public class AddressController {
 
   })
 
-  @ApiImplicitParams({
-          //dataType:参数类型
-          //paramType:参数由哪里获取     path->从路径中获取，query->?传参，body->ajax请求
-
-          @ApiImplicitParam(name = "addressId", value = "地址id", dataType = "integer", paramType = "path", example = "110")
-
-
-
-  })
-    public ResultEntity deleteAddress(deleteAddress deleteAddress){
+//  @ApiImplicitParams({
+//          //dataType:参数类型
+//          //paramType:参数由哪里获取     path->从路径中获取，query->?传参，body->ajax请求
+//
+//          @ApiImplicitParam(name = "addressId", value = "地址id", dataType = "integer", example = "110")
+//
+//
+//
+//  })
+    public ResultEntity deleteAddress(@RequestBody deleteAddress deleteAddress){
         //校验
       //获取UserId
       String token = GetTokenUtil.getToken();
@@ -142,20 +139,19 @@ public class AddressController {
 
     })
 
-    @ApiImplicitParams({
-            //dataType:参数类型
-            //paramType:参数由哪里获取     path->从路径中获取，query->?传参，body->ajax请求
-
-            @ApiImplicitParam(name = "addressId;", value = "地址Id", dataType = "Integer", paramType = "path", example = "110")
-
-
-
-    })
-    public ResultEntity selectByAddressId(SlectAddressByAdressIdParam selectAddressParam){
+//    @ApiImplicitParams({
+//            //dataType:参数类型
+//            //paramType:参数由哪里获取     path->从路径中获取，query->?传参，body->ajax请求
+//
+//            @ApiImplicitParam(name = "addressId;", value = "地址Id", dataType = "Integer",example = "110")
+//
+//
+//
+//    })
+    public ResultEntity selectByAddressId(@RequestBody SlectAddressByAdressIdParam selectAddressParam){
       //校验输入参数
         //从jwt中获取userId；
-//        Integer userId = GetTokenUtil.getUserId();
-        Integer userId = 1;
+        Integer userId = GetTokenUtil.getUserId();
         //校验
         Address addressDb = addressService.getById(selectAddressParam.getAddressId());
         if (!ObjectUtils.isEmpty(addressDb)&addressDb.getUserId()==userId){
@@ -171,7 +167,7 @@ public class AddressController {
         return ResultEntity.buildEntity().setCode(ConstCode.PARAM_ERROR).setFlag(false).setMessage("输入参数错误");
     }
 
-    @GetMapping("/selectByUserId")
+    @GetMapping("/select_by_userId")
     @ApiOperation(value = "查询用户地址接口", notes = "<span style='color:red;'>用来查询地址接口</span>")
     @ApiResponses({
             @ApiResponse(code = 1354, message = "查询用户所有地址成功"),
@@ -180,16 +176,16 @@ public class AddressController {
 
     })
 
-    @ApiImplicitParams({
-            //dataType:参数类型
-            //paramType:参数由哪里获取     path->从路径中获取，query->?传参，body->ajax请求
-
-            @ApiImplicitParam(name = "userAccount", value = "用户账号", dataType = "String", paramType = "path", example = "110")
-
-
-
-    })
-    public ResultEntity selectByUserId(SelectAddressParam selectAddressParam){
+//    @ApiImplicitParams({
+//            //dataType:参数类型
+//            //paramType:参数由哪里获取     path->从路径中获取，query->?传参，body->ajax请求
+//
+//            @ApiImplicitParam(name = "userAccount", value = "用户账号", dataType = "String", example = "110")
+//
+//
+//
+//    })
+    public ResultEntity selectByUserId(@RequestBody SelectAddressParam selectAddressParam){
         //校验输入参数
         //从jwt中获取userId；
         String token = GetTokenUtil.getToken();
@@ -212,7 +208,7 @@ public class AddressController {
         return ResultEntity.buildEntity().setCode(ConstCode.PARAM_ERROR).setFlag(false).setMessage("输入参数错误");
     }
 
-    @PutMapping("/updateAddress")
+    @PutMapping("/update_address")
     @ApiOperation(value = "修改地址接口", notes = "<span style='color:red;'>用来修改地址接口</span>")
     @ApiResponses({
             @ApiResponse(code = 1356, message = "修改地址成功"),
@@ -221,26 +217,26 @@ public class AddressController {
 
     })
 
-    @ApiImplicitParams({
-            //dataType:参数类型
-            //paramType:参数由哪里获取     path->从路径中获取，query->?传参，body->ajax请求
-            @ApiImplicitParam(name = "addressId", value = "地址ID", dataType = "integer", paramType = "path", example = "110"),
-
-            @ApiImplicitParam(name = "addressContactName", value = "收件人名字", dataType = "String", paramType = "path", example = "tom"),
-            @ApiImplicitParam(name = "addressContactTel", value = "收件人电话", dataType = "String", paramType = "path", example = "15578491030"),
-            @ApiImplicitParam(name = "addressZip" , value = "邮编", dataType = "String", paramType = "path", example = "400020"),
-            @ApiImplicitParam(name = "addressProvince", value = "省份", dataType = "String", paramType = "path", example = "重庆市"),
-            @ApiImplicitParam(name = "addressCity", value = "城市", dataType = "String", paramType = "path", example = "重庆市"),
-            @ApiImplicitParam(name = "addressDistrict", value = "分区", dataType = "String", paramType = "path", example = "江北区"),
-            @ApiImplicitParam(name = "addressStreet", value = "街道", dataType = "String", paramType = "path", example = "红锦大道"),
-            @ApiImplicitParam(name = "addressDetail", value = "详细地址", dataType = "String", paramType = "path", example = "理想大厦蜗牛"),
-            @ApiImplicitParam(name = "isDefaultAddress", value = "是否为默认地址（0为默认，1为非默认）", dataType = "String", paramType = "path", example = "1"),
-
-
-
-    })
-    public ResultEntity updateAddress(UpdateAddress updateAddress){
-      //校验
+//    @ApiImplicitParams({
+//            //dataType:参数类型
+//            //paramType:参数由哪里获取     path->从路径中获取，query->?传参，body->ajax请求
+//            @ApiImplicitParam(name = "addressId", value = "地址ID", dataType = "integer", paramType = "path", example = "110"),
+//
+//            @ApiImplicitParam(name = "addressContactName", value = "收件人名字", dataType = "String", example = "tom"),
+//            @ApiImplicitParam(name = "addressContactTel", value = "收件人电话", dataType = "String",  example = "15578491030"),
+//            @ApiImplicitParam(name = "addressZip" , value = "邮编", dataType = "String",example = "400020"),
+//            @ApiImplicitParam(name = "addressProvince", value = "省份", dataType = "String",  example = "重庆市"),
+//            @ApiImplicitParam(name = "addressCity", value = "城市", dataType = "String",  example = "重庆市"),
+//            @ApiImplicitParam(name = "addressDistrict", value = "分区", dataType = "String",  example = "江北区"),
+//            @ApiImplicitParam(name = "addressStreet", value = "街道", dataType = "String",  example = "红锦大道"),
+//            @ApiImplicitParam(name = "addressDetail", value = "详细地址", dataType = "String", example = "理想大厦蜗牛"),
+//            @ApiImplicitParam(name = "isDefaultAddress", value = "是否为默认地址（0为默认，1为非默认）", dataType = "String", example = "1"),
+//
+//
+//
+//    })
+    public ResultEntity updateAddress(@RequestBody UpdateAddress updateAddress){
+      //校验@RequestBody
         //从jwt中获取userId；
         String token = GetTokenUtil.getToken();
         DecodedJWT decodeToken = JwtUtils.getDecodeToken(token);

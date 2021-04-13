@@ -1,6 +1,9 @@
 package com.woniu.car.user.param;
 
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+
+import javax.validation.constraints.NotNull;
 
 /**
  * @ClassName SlectAddressByAdressIdParam
@@ -11,5 +14,7 @@ import lombok.Data;
  */
 @Data
 public class SlectAddressByAdressIdParam {
+    @ApiModelProperty(value = "地址ID")
+    @NotNull
     private Integer addressId;
 }

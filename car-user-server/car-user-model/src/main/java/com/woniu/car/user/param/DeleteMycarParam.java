@@ -4,6 +4,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import javax.annotation.security.DenyAll;
+import javax.validation.constraints.NotNull;
 
 /**
  * @ClassName DeleteMycarParam
@@ -15,8 +16,10 @@ import javax.annotation.security.DenyAll;
 @Data
 public class DeleteMycarParam {
     @ApiModelProperty(value = "我的车id")
+    @NotNull
     private Integer mycarId;
 
     @ApiModelProperty(value = "用户id")
+    @NotNull
     private Integer userId;
 }

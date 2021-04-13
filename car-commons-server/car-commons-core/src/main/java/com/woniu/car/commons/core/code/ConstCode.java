@@ -18,6 +18,7 @@ public class ConstCode {
      */
     public static final Integer NAME_ALREADY_EXISTS = 5001;
 
+
     /**
      * 返回标签代码成功
      */
@@ -41,22 +42,7 @@ public class ConstCode {
     /**
      * 该评论已经添加过标签
      */
-    public static final Integer Last_ADD_Tags=1605;
-
-    /**
-     * 没有该商品标签的评论
-     */
-    public static final Integer No_Peoduct_BY_Tags=1606;
-    /**
-     * 没有该服务标签的评论
-     */
-    public static final Integer No_Service_BY_Tags=1607;
-    /**
-     * 没有该电站标签的评论
-     */
-    public static final Integer No_Power_BY_Tags=1608;
-
-
+    public static final Integer Last_ADD_Tags=1603;
     /*登陆成功*/
     public static final Integer LOGIN_SUCCESS=1301;
     /*登陆失败账户未找到*/

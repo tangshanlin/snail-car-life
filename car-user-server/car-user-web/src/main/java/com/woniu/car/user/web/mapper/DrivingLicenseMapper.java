@@ -9,7 +9,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
  * </p>
  *
  * @author sushanhu
- * @since 2021-04-07
+ * @since 2021-04-13
  */
 public interface DrivingLicenseMapper extends BaseMapper<DrivingLicense> {
 
