@@ -46,5 +46,11 @@
         <version>1.5.20</version>
         <scope>compile</scope>
     </dependency>
+        <!---->
+        <dependency>
+            <groupId>com.woniu.car</groupId>
+            <artifactId>car-user-web</artifactId>
+            <version>1.0.0</version>
+        </dependency>
 </dependencies>
 </project>
