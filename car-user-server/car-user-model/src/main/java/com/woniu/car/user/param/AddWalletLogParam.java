@@ -20,6 +20,9 @@ public class AddWalletLogParam {
     @ApiModelProperty(value = "钱包变化金额")
     @NotNull
     private BigDecimal walletChange;
+    @ApiModelProperty(value = "钱包密码")
+    @NotNull
+    private String walletPassword;
 
 
 

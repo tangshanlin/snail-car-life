@@ -125,6 +125,11 @@ public class ConstCode {
     public static final Integer DELETEMYCAR_SUCCESS=1338;
     /*删除爱车失败*/
     public static final Integer DELETEMYCAR_FAIL=1339;
+    /*钱包余额不足*/
+    public static final Integer CKECKWALLETMONEY_FAIL=1341;
+    /*钱包密码不对*/
+    public static final Integer CKECKWALLETPASSWORD_FAIL=1343;
+
 
     /*添加地址成功*/
     public static final Integer ADDADDRESS_SUCCESS=1350;
