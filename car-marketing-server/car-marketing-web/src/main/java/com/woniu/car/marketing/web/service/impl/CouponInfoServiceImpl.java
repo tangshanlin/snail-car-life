@@ -50,7 +50,8 @@ public class CouponInfoServiceImpl extends ServiceImpl<CouponInfoMapper, CouponI
     @Override
     public List<GetCouponInfoByIdDtoVo> getCouponInfoByUserIdAll(GetCouponInfoByUserIdAndSourceParamVo getCouponInfoByUserIdAndSourceParamVo) {
         Long nowTime = System.currentTimeMillis();
-        List<GetCouponInfoByIdDtoVo> getCouponInfoByIdDtoVoList = couponInfoMapper.getCouponInfoByUserIdAll(getCouponInfoByUserIdAndSourceParamVo,nowTime);
+        Integer userId = GetTokenUtil.getUserId();
+        List<GetCouponInfoByIdDtoVo> getCouponInfoByIdDtoVoList = couponInfoMapper.getCouponInfoByUserIdAll(getCouponInfoByUserIdAndSourceParamVo,userId,nowTime);
         return getCouponInfoByIdDtoVoList;
     }
 

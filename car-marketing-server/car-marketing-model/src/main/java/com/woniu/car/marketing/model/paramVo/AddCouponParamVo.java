@@ -37,12 +37,12 @@ public class AddCouponParamVo {
     private BigDecimal couponCondition;
 
     @ApiModelProperty(value = "发行来源(0平台-其他对应门店id)")
-    @Min(value = 0)
+    @Min(value = 0,message = "发行来源必须大于等于0")
     @NotNull(message = "发行来源不能为空")
     private Integer couponGoods;
 
     @ApiModelProperty(value = "总发行量")
-    @Min(value = 50)
+    @Min(value = 50,message = "总发行量必须大于等于50")
     @NotNull(message = "总发行量不能为空")
     private Integer couponNumber;
 

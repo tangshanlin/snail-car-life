@@ -124,11 +124,18 @@ public class ShopServiceImpl extends ServiceImpl<ShopMapper, Shop> implements Sh
     @Override
     public List<FindShopByClassDtoVo> findShopByClass(FindShopByClassParamVo findShopByClass) {
         QueryWrapper queryWrapper = new QueryWrapper();
-        queryWrapper.eq("shop_class",findShopByClass.getShopClass());
-        //queryWrapper.eq("shop_brand",findShopByClass.getShopBrand());
-        List<Shop> listShop = shopMapper.selectList(queryWrapper);
-        List<FindShopByClassDtoVo> listFindShopByClassDtoVo = BeanCopyUtil.copyList(listShop, FindShopByClassDtoVo::new);
-        return listFindShopByClassDtoVo;
+        queryWrapper.eq("shop_class",1);//查询条件必须是4s门店
+        if(findShopByClass.getShopBrand()==null){ //没传品牌查所有4s门店信息
+            List<Shop> listShop = shopMapper.selectList(queryWrapper);
+            List<FindShopByClassDtoVo> listFindShopByClassDtoVo = BeanCopyUtil.copyList(listShop, FindShopByClassDtoVo::new);
+            return listFindShopByClassDtoVo;
+        }else {
+            queryWrapper.eq("shop_brand",findShopByClass.getShopBrand());
+            List<Shop> listShop = shopMapper.selectList(queryWrapper);
+            List<FindShopByClassDtoVo> listFindShopByClassDtoVo = BeanCopyUtil.copyList(listShop, FindShopByClassDtoVo::new);
+            return listFindShopByClassDtoVo;
+        }
+
     }
 
     /*

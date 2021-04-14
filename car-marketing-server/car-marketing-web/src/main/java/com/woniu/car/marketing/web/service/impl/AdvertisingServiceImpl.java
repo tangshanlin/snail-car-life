@@ -69,6 +69,8 @@ public class AdvertisingServiceImpl extends ServiceImpl<AdvertisingMapper, Adver
         Advertising advertising = BeanCopyUtil.copyOne(addAdvertising, Advertising::new);
 
         advertising.setAdvertisingImage(shopImages);
+        addAdvertising.setAdvertisingBeginTime(addAdvertising.getAdvertisingEndTime());
+        addAdvertising.setAdvertisingEndTime(addAdvertising.getAdvertisingEndTime());
         int insert = advertisingMapper.insert(advertising);
         if(insert!=0) return true;
         return false;

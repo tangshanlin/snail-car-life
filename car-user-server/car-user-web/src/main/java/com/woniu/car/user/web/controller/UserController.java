@@ -104,19 +104,20 @@ public class UserController {
 //            @ApiImplicitParam(name = "userPassword", value = "密码", dataType = "String", example = "111"),
 //
 //    })
-
+    @Transactional(rollbackFor = Exception.class)
     public ResultEntity loginByPassword(@RequestBody @Valid LoginPasswordParam loginPasswordParam) {
         //校验传入参数
         String userAccount = loginPasswordParam.getUserAccount();
         System.out.println(loginPasswordParam);
         if (loginPasswordParam != null & userAccount != null) {
             User userDb = userService.getOne(new QueryWrapper<User>().eq("user_account", userAccount));
-            System.out.println(userDb);
+            System.out.println("数据库查询的userdb"+userDb);
             if (!ObjectUtils.isEmpty(userDb)) {
                 //直接校验
                 Md5Hash md5Hash = new Md5Hash(loginPasswordParam.getUserPassword(), userDb.getUserSalt(), 2048);
-                System.out.println(md5Hash);//
+                System.out.println("加密后的MD5" +md5Hash);//
                 if (md5Hash.toHex().equals(userDb.getUserPassword())) {
+                    System.out.println("密码校验成功");
                     //与数据库校验成功，创建jwttoken
                     Map<String, String> tokenmap = new LinkedHashMap<>();
                     tokenmap.put("userAccount", userDb.getUserAccount());
@@ -124,7 +125,7 @@ public class UserController {
 
 
                     String s = JwtUtils.careatToken(tokenmap);
-                    System.out.println(s);
+                    System.out.println("加密后的token"+s);
 
                         //记录本次的登陆时间
                         long l = System.currentTimeMillis();
@@ -136,12 +137,12 @@ public class UserController {
                         //登陆成功返回jwttoken
                         if (b) return ResultEntity.buildEntity(String.class).setCode(ConstCode.LOGIN_SUCCESS).setFlag(true)
                                 .setMessage("登陆成功").setData(s);
-                        return ResultEntity.buildEntity().setCode(ConstCode.LOGIN_FAIL_PASSWORDWRONG).setFlag(false).setMessage("密码错误");
+
 
 
 
                 }
-
+                return ResultEntity.buildEntity().setCode(ConstCode.LOGIN_FAIL_PASSWORDWRONG).setFlag(false).setMessage("密码错误");
 
             }
 
@@ -229,7 +230,7 @@ public class UserController {
 
             }
         }
-        return ResultEntity.buildEntity(CloseableHttpResponse.class).setCode(ConstCode.SENDCODE_SUCCESS).setFlag(true).setMessage("连接成功")
+        return ResultEntity.buildEntity(CloseableHttpResponse.class).setCode(ConstCode.SENDCODE_SUCCESS).setFlag(true).setMessage("发送成功")
                 ;
     }
     @GetMapping("/checkByTel")
@@ -274,7 +275,7 @@ public class UserController {
 //
 //
 //    })
-    public ResultEntity checkTel(@Valid TelParam telParam){
+    public ResultEntity checkTel( TelParam telParam){
         if (!ObjectUtils.isEmpty(telParam)){
 
 
@@ -332,6 +333,7 @@ public class UserController {
 //            @ApiImplicitParam(name = "code", value = "验证码", dataType = "String", paramType = "path", example = "1234"),
 //
 //    })
+    @Transactional(rollbackFor = Exception.class)
     public ResultEntity updateUser(@RequestBody @Valid UserUpdateParam userUpdateParam){
         //校验传入参数的合法性
 
