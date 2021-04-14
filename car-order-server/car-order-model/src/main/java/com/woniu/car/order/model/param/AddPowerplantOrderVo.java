@@ -32,7 +32,6 @@ public class AddPowerplantOrderVo {
     private Integer powerplantId;
 
     @ApiModelProperty(value = "用户id")
-    @NotNull(message = "用户id不能为空")
     private Integer userId;
 
     @ApiModelProperty(value = "充电开始时间")

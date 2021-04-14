@@ -14,7 +14,7 @@ import java.util.List;
 
 @Data
 @NoArgsConstructor
-public class AllOrder {
+public class AllOrderDto {
     @ApiModelProperty(value = "服务订单集合")
     public List<CarserviceOrder> carserviceOrders;
 
@@ -24,7 +24,7 @@ public class AllOrder {
     @ApiModelProperty(value = "电站订单集合")
     public List<PowerplantOrder> powerplantOrders;
 
-    public AllOrder(List<CarserviceOrder> carserviceOrders, List<ProductOrder> productOrders, List<PowerplantOrder> powerplantOrders) {
+    public AllOrderDto(List<CarserviceOrder> carserviceOrders, List<ProductOrder> productOrders, List<PowerplantOrder> powerplantOrders) {
         carserviceOrders = carserviceOrders;
         this.productOrders = productOrders;
         this.powerplantOrders = powerplantOrders;

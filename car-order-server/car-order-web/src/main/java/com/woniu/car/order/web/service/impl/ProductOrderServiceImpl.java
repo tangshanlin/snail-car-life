@@ -102,4 +102,18 @@ public class ProductOrderServiceImpl extends ServiceImpl<ProductOrderMapper, Pro
         ProductOrder productOrder = productOrderMapper.selectOne(wrapper);
         return productOrder;
     }
+
+
+    /**
+     * @Author WangPeng
+     * @Description TODO 查询所有商品订单
+     * @Date  11:25
+     * @Param []
+     * @return java.util.List<com.woniu.car.order.web.entity.ProductOrder>
+     **/
+
+    @Override
+    public List<ProductOrder> findAllProductOrder() {
+        return productOrderMapper.selectList(null);
+    }
 }

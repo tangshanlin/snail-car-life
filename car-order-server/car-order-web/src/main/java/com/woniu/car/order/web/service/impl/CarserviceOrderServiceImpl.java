@@ -326,4 +326,15 @@ public class CarserviceOrderServiceImpl extends ServiceImpl<CarserviceOrderMappe
         return row>0?true:false;
     }
 
+    /**
+     * @Author WangPeng
+     * @Description TODO 查询所有商品订单
+     * @Date  11:23
+     * @Param []
+     * @return java.util.List<com.woniu.car.order.web.entity.CarserviceOrder>
+     **/
+    @Override
+    public List<CarserviceOrder> findAllCarserviceOrder() {
+        return  carserviceOrderMapper.selectList(null);
+    }
 }
