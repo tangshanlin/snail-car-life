@@ -129,6 +129,13 @@ public class ConstCode {
     public static final Integer CKECKWALLETMONEY_FAIL=1341;
     /*钱包密码不对*/
     public static final Integer CKECKWALLETPASSWORD_FAIL=1343;
+    /*查询所有车品牌成功*/
+    public static final Integer SELECTCARBRAND_SUCESS=1344;
+    /*根据车品牌id查询所有车系成功*/
+    public static final Integer SELECTCARSERIES_SUCESS=1346;
+    /*根据车系id查询所有车型成功*/
+    public static final Integer SELECTCARINFORMATION_SUCESS=1348;
+
 
 
     /*添加地址成功*/
@@ -179,6 +186,7 @@ public class ConstCode {
     public static final Integer SELECTSCORE_FAIL=1383;
     /*查询积分日志成功*/
     public static final Integer SELECTSCORE_SUCESS=1382;
+
 
    /*输入参数错误*/
     public static final Integer PARAM_ERROR=1400;

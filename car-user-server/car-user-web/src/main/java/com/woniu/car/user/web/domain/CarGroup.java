@@ -1,6 +1,5 @@
 package com.woniu.car.user.web.domain;
 
-import java.math.BigDecimal;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.Version;
@@ -16,39 +15,32 @@ import lombok.EqualsAndHashCode;
 
 /**
  * <p>
- * 用户信息明细表
+ * 车群表
  * </p>
  *
  * @author sushanhu
- * @since 2021-04-07
+ * @since 2021-04-14
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
-@TableName("t_user_information")
-@ApiModel(value="UserInformation对象", description="用户信息明细表")
-public class UserInformation implements Serializable {
+@TableName("t_car_group")
+@ApiModel(value="CarGroup对象", description="车群表")
+public class CarGroup implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    @ApiModelProperty(value = "用户详情页Id")
-      @TableId(value = "user_information_id", type = IdType.AUTO)
-    private Integer userInformationId;
+    @ApiModelProperty(value = "车群id1")
+      @TableId(value = "cargroup_id", type = IdType.AUTO)
+    private Integer cargroupId;
 
-    private Integer userId;
+    @ApiModelProperty(value = "车品牌id")
+    private Integer carbrandId;
 
-    @ApiModelProperty(value = "用户生日")
-    private Long userBirthday;
+    @ApiModelProperty(value = "车群名")
+    private String cargroupName;
 
-    @ApiModelProperty(value = "用户手机号")
-    private String userTel;
-
-
-
-    @ApiModelProperty(value = "用户积分")
-    private Integer userScore;
-
-    @ApiModelProperty(value = "用户头像")
-    private String userImage;
+    @ApiModelProperty(value = "车群首字母")
+    private String cargroupFirstletter;
 
     @ApiModelProperty(value = "创建时间")
       @TableField(fill = FieldFill.INSERT)
@@ -61,12 +53,6 @@ public class UserInformation implements Serializable {
     @ApiModelProperty(value = "删除")
     @TableLogic
     private Integer deleted;
-
-    @ApiModelProperty(value = "钱包余额")
-    private BigDecimal walletMoney;
-
-    @ApiModelProperty(value = "用户名(昵称)")
-    private String userName;
 
 
 }
