@@ -79,14 +79,8 @@ public class CouponController {
     * @return com.woniu.car.commons.core.dto.ResultEntity
     **/
     @ApiOperation(value = "订单支付后优惠券信息的修改接口")
-    @ApiImplicitParams({
-            //dataType:参数类型
-            //paramType:参数由哪里获取     path->从路径中获取，query->?传参，body->ajax请求
-            @ApiImplicitParam(name = "couponId",value = "优惠券主键id"),
-            @ApiImplicitParam(name="couponInfoId",value = "用户优惠券详情id"),
-    })
     @PutMapping("update_coupon_by_pay_success")
-    public ResultEntity updateCouponByPaySuccess(@RequestBody UpdatePaySuccessCouponParamVo updatePaySuccessCouponParamVo){
+    public ResultEntity updateCouponByPaySuccess(@RequestBody @Valid UpdatePaySuccessCouponParamVo updatePaySuccessCouponParamVo){
         /*System.out.println(ObjectUtils.isEmpty(updatePaySuccessCouponParamVo));
         if (updatePaySuccessCouponParamVo.getCouponId()==null||updatePaySuccessCouponParamVo.getCouponInfoId()==null) {
             return ResultEntity.buildFailEntity().setMessage("传入参数为空");
@@ -105,13 +99,8 @@ public class CouponController {
     * @return com.woniu.car.commons.core.dto.ResultEntity<java.util.List<com.woniu.car.marketing.model.dtoVo.GetCouponBySourceDtoVo>>
     **/
     @ApiOperation(value = "根据门店id查询当前门店可用的优惠券接口")
-    @ApiImplicitParams({
-            //dataType:参数类型
-            //paramType:参数由哪里获取     path->从路径中获取，query->?传参，body->ajax请求
-            @ApiImplicitParam(name = "couponGoods",value = "发行来源(0平台-其他对应门店id)"),
-    })
     @GetMapping("list_coupon_by_source")
-    public ResultEntity<List<GetCouponBySourceDtoVo>> getCouponBySource(GetCouponBySourceParamVo getCouponBySourceParamVo){
+    public ResultEntity<List<GetCouponBySourceDtoVo>> getCouponBySource(@Valid GetCouponBySourceParamVo getCouponBySourceParamVo){
         List<GetCouponBySourceDtoVo> getCouponBySourceDtoVoList = couponService.getCouponBySource(getCouponBySourceParamVo);
         if (ObjectUtils.isEmpty(getCouponBySourceDtoVoList)) {
             return ResultEntity.buildListFailEntity(GetCouponBySourceDtoVo.class)
@@ -131,13 +120,8 @@ public class CouponController {
     * @return com.woniu.car.commons.core.dto.ResultEntity<com.woniu.car.marketing.model.dtoVo.GetCouponNameDtoVo>
     **/
     @ApiOperation(value = "通过优惠券类别id查询名称接口")
-    @ApiImplicitParams({
-            //dataType:参数类型
-            //paramType:参数由哪里获取     path->从路径中获取，query->?传参，body->ajax请求
-            @ApiImplicitParam(name = "couponId",value = "优惠券类别id"),
-    })
     @GetMapping("get_coupon_name_by_coupon_id")
-    public ResultEntity<GetCouponNameDtoVo> getCouponNameByCouponId(GetCouponIdParamVo getCouponIdParamVo){
+    public ResultEntity<GetCouponNameDtoVo> getCouponNameByCouponId(@Valid GetCouponIdParamVo getCouponIdParamVo){
         GetCouponNameDtoVo couponNameDtoVo = couponService.getCouponNameByCouponId(getCouponIdParamVo);
         if (ObjectUtils.isEmpty(couponNameDtoVo)) {
             return ResultEntity.buildFailEntity(GetCouponNameDtoVo.class)
@@ -157,13 +141,8 @@ public class CouponController {
     * @return com.woniu.car.commons.core.dto.ResultEntity<com.woniu.car.marketing.model.dtoVo.GetCouponBySourceDtoVo>
     **/
     @ApiOperation(value = "通过优惠券分类id查看优惠券信息")
-    @ApiImplicitParams({
-            //dataType:参数类型
-            //paramType:参数由哪里获取     path->从路径中获取，query->?传参，body->ajax请求
-            @ApiImplicitParam(name = "couponId",value = "优惠券类别id"),
-    })
     @GetMapping("get_coupon_by_id")
-    public ResultEntity<GetCouponBySourceDtoVo> getCouponById(GetCouponIdParamVo getCouponIdParamVo){
+    public ResultEntity<GetCouponBySourceDtoVo> getCouponById(@Valid GetCouponIdParamVo getCouponIdParamVo){
         GetCouponBySourceDtoVo CouponBySourceDtoVo = couponService.getCouponById(getCouponIdParamVo);
         if (ObjectUtils.isEmpty(CouponBySourceDtoVo)) {
             return ResultEntity.buildFailEntity(GetCouponBySourceDtoVo.class)

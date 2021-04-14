@@ -4,7 +4,11 @@ package com.woniu.car.message.web.controller;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.woniu.car.commons.core.code.ConstCode;
 import com.woniu.car.commons.core.dto.ResultEntity;
+import com.woniu.car.message.client.UserClient;
 import com.woniu.car.message.model.dto.ServiceCommentDto;
+import com.woniu.car.message.model.dto.UserInformation;
+import com.woniu.car.message.model.feign.CommentPageParam;
+import com.woniu.car.message.model.feign.ServiceTagNameLookCommentParam;
 import com.woniu.car.message.model.param.*;
 import com.woniu.car.message.web.service.ServiceCommentService;
 import io.swagger.annotations.*;
@@ -29,6 +33,8 @@ public class ServiceCommentController {
 
     @Resource
     private ServiceCommentService serviceCommentService;
+    @Resource
+    private UserClient userClient;
 
     /**
      * 添加服务评论
@@ -94,7 +100,12 @@ public class ServiceCommentController {
             //paramType:参数由哪里获取     path->从路径中获取，query->?传参，body->ajax请求
             @ApiImplicitParam(name = "userId",value = "用户编号",dataType = "Integer",paramType = "path",example = "1"),
     })
-    public ResultEntity<List<ServiceCommentDto>> findYourselfServiceComment(@PathVariable UserIdParam userId){
+    public ResultEntity<List<ServiceCommentDto>> findYourselfServiceComment(UserIdParam userId){
+//        UserInformation data = userClient.selectUerInformation().getData();
+//        if(!ObjectUtils.isEmpty(data)){
+//            Integer userId = data.getUserId();
+//
+//        }
         if (!ObjectUtils.isEmpty(userId)){
             List<ServiceCommentDto> serviceComments=serviceCommentService.lookUserServiceComments(userId.getUserId());
             if (!ObjectUtils.isEmpty(serviceComments)){

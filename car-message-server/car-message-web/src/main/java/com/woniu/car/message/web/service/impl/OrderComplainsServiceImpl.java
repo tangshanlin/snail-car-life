@@ -6,6 +6,11 @@ import com.woniu.car.commons.core.code.ConstCode;
 import com.woniu.car.commons.core.dto.ResultEntity;
 import com.woniu.car.commons.web.util.BeanCopyUtil;
 import com.woniu.car.message.client.OrderClient;
+import com.woniu.car.message.client.UserClient;
+import com.woniu.car.message.model.dto.UserInformation;
+import com.woniu.car.message.model.feign.AllOrderParam;
+import com.woniu.car.message.model.feign.CarserviceOrder;
+import com.woniu.car.message.model.feign.PowerplantOrder;
 import com.woniu.car.message.model.param.*;
 import com.woniu.car.message.web.domain.OrderComplains;
 import com.woniu.car.message.web.domain.ProducerMessage;
@@ -19,6 +24,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.ObjectUtils;
 
 import javax.annotation.Resource;
 import java.util.Date;
@@ -54,28 +60,41 @@ public class OrderComplainsServiceImpl extends ServiceImpl<OrderComplainsMapper,
   producer:
     group: orderComplains
     mq:
-  ordercomplains:
+  ordercomplains:mq:
+  shopordercomplains:
+    consumer:
     consumer:
       group: order_consumer_complain
     tag: order_complains
-    topic: orderComplainsTopic
+    topic: orderComplainsTopic   powerordercomplains: producerordercomplains:
      */
     @Value("${rocketmq.producer.group}")
     private String goropName;
-    @Value("${mq.ordercomplains.tag}")
-    private String msgTag;
-    @Value("${mq.ordercomplains.topic}")
-    private String msgTopic;
+    @Value("${mq.shopordercomplains.tag}")
+    private String shopTag;
+    @Value("${mq.shopordercomplains.topic}")
+    private String shopTopic;
 
-    private ProducerMessage getProducerMessage(OrderComplainsParam orderComplainsParam){
+    @Value("${mq.powerordercomplains.tag}")
+    private String powerTag;
+    @Value("${mq.powerordercomplains.topic}")
+    private String powerTopic;
+
+    @Value("${mq.producerordercomplains.tag}")
+    private String proTag;
+    @Value("${mq.producerordercomplains.topic}")
+    private String proTopic;
+
+    @Resource
+    private UserClient userClient;
+
+    private ProducerMessage getProducerMessage(OrderComplains orderComplainsParam){
         ProducerMessage producerMessage = new ProducerMessage();
         producerMessage.setGroupName(goropName);
         producerMessage.setId(UUID.randomUUID().toString());
         producerMessage.setMsgBody(JSON.toJSONString(orderComplainsParam));
-        producerMessage.setMsgTag(msgTag);
         producerMessage.setMsgCreateTime(new Date());
         producerMessage.setMsgStatus(1);
-        producerMessage.setMsgTopic(msgTopic);
         return producerMessage;
     }
 
@@ -83,36 +102,104 @@ public class OrderComplainsServiceImpl extends ServiceImpl<OrderComplainsMapper,
     @Override
     public Boolean addOrderComplains(OrderComplainsParam orderComplainsParam) {
         OrderComplains orderComplains = BeanCopyUtil.copyOne(orderComplainsParam, OrderComplains::new);
-        orderComplains.setComplainTime(new Date().getTime());
-        int insert = orderComplainsMapper.insert(orderComplains);
-        if(insert>0){
-            //根据订单编号查询订单详情
-            OrderVoP orderVo = new OrderVoP();
-            orderVo.setOrderNo(orderComplainsParam.getComplaintOrderCode());
-            // orderVo.setOrderStatus("");
-            ResultEntity<AllOrderParam> orderInfoByOrderNo = orderClient.findOrderInfoByOrderNo(orderVo);
-            System.out.println("orderInfoByOrderNo===>>>>"+orderInfoByOrderNo.getCode());
-            System.out.println("ConstCode.FIND_CARSERVICE_ORDER_SUCCESS\n"+ConstCode.FIND_CARSERVICE_ORDER_SUCCESS);
 
-            if(orderInfoByOrderNo.getCode().equals(ConstCode.FIND_CARSERVICE_ORDER_SUCCESS)){
 
-                //门店
-                //给某个门店发送投诉消息
-                CarserviceOrder carserviceOrder = orderInfoByOrderNo.getData().getCarserviceOrder();
+//        UserInformation userInformation = userClient.selectUerInformation().getData();
+//        if(!ObjectUtils.isEmpty(userInformation)) {
+//            orderComplains.setComplainUserId(userInformation.getUserId());
+//            orderComplains.setComplainUsername(userInformation.getUserName());
 
-                Integer shopId = carserviceOrder.getShopId();
-                orderComplainsParam.setComplainId(shopId);
-                System.out.println("门店======================================"+shopId);
-                ProducerMessage producerMessage = getProducerMessage(orderComplainsParam);
+            orderComplains.setComplainTime(new Date().getTime());
+            int insert = orderComplainsMapper.insert(orderComplains);
+            if(insert>0){
+                //根据订单编号查询订单详情
+                OrderVoP orderVo = new OrderVoP();
+                orderVo.setOrderNo(orderComplains.getComplaintOrderCode());
+                // orderVo.setOrderStatus("");
+                ResultEntity<AllOrderParam> orderInfoByOrderNo = orderClient.findOrderInfoByOrderNo(orderVo);
+                System.out.println("orderInfoByOrderNo===>>>>"+orderInfoByOrderNo.getCode());
+                if(orderInfoByOrderNo.getCode().equals(ConstCode.FIND_CARSERVICE_ORDER_SUCCESS)){
+
+                    //门店
+                    //给某个门店发送投诉消息
+
+                    CarserviceOrder carserviceOrder = orderInfoByOrderNo.getData().getCarserviceOrder();
+                    Integer shopId = carserviceOrder.getShopId();
+                    orderComplains.setComplainId(shopId);
+                    System.out.println("门店======================================"+shopId);
+
+                    ProducerMessage producerMessage = getProducerMessage(orderComplains);
+                    String msgKey = UUID.randomUUID().toString();
+                    producerMessage.setMsgKey(msgKey);
+                    producerMessage.setMsgTag(shopTag);
+                    producerMessage.setMsgTopic(shopTopic);
+                    int insert1 = producerMessageMapper.insert(producerMessage);
+                    if(insert1>0){
+                        //添加消费者信息
+                        rocketMQTemplate.asyncSend(shopTopic,
+                                MessageBuilder.withPayload(ResultEntity.buildEntity(ProducerMessage.class).setData(producerMessage)
+                                        .setMessage("用户服务投诉信息来了！！！"))
+                                        .setHeader("KEYS",msgKey).build(),
+                                new SendCallback() {
+                                    @Override
+                                    public void onSuccess(SendResult sendResult) {
+                                        System.out.println("发送成功: " + sendResult);
+                                    }
+                                    @Override
+                                    public void onException(Throwable e) {
+                                        System.out.println("发送失败: " + e.getMessage());
+                                    }
+                                });
+                    }
+                    return true;
+                }
+
+                if(orderInfoByOrderNo.getCode().equals( ConstCode.FIND_POWERPLANT_ORDER_SUCCESS)){
+                    //电桩
+                    //给某个电桩发送投诉消息
+                    PowerplantOrder powerplantOrder = orderInfoByOrderNo.getData().getPowerplantOrder();
+                    Integer powerplantId = powerplantOrder.getPowerplantId();
+                    orderComplains.setComplainId(powerplantId);
+                    System.out.println("电桩======================================"+powerplantId);
+                    ProducerMessage producerMessage = getProducerMessage(orderComplains);
+                    String msgKey = UUID.randomUUID().toString();
+                    producerMessage.setMsgKey(msgKey);
+                    producerMessage.setMsgTag(powerTag);
+                    producerMessage.setMsgTopic(powerTopic);
+                    int insert1 = producerMessageMapper.insert(producerMessage);
+                    if(insert1>0){
+                        //添加消费者信息
+                        rocketMQTemplate.asyncSend(powerTopic,
+                                MessageBuilder.withPayload(ResultEntity.buildEntity(ProducerMessage.class).setData(producerMessage)
+                                        .setMessage("用户电站投诉信息来了！！！"))
+                                        .setHeader("KEYS",msgKey).build(),
+                                new SendCallback() {
+                                    @Override
+                                    public void onSuccess(SendResult sendResult) {
+                                        System.out.println("发送成功: " + sendResult);
+                                    }
+                                    @Override
+                                    public void onException(Throwable e) {
+                                        System.out.println("发送失败: " + e.getMessage());
+                                    }
+                                });
+                    }
+                    return true;
+                }
+                //给平台发送投诉消息,平台管理商品的管理员id=2
+                Integer productManager=2;
+                orderComplains.setComplainId(productManager);
+                ProducerMessage producerMessage = getProducerMessage(orderComplains);
                 String msgKey = UUID.randomUUID().toString();
                 producerMessage.setMsgKey(msgKey);
+                producerMessage.setMsgTag(proTag);
+                producerMessage.setMsgTopic(proTopic);
                 int insert1 = producerMessageMapper.insert(producerMessage);
-
                 if(insert1>0){
                     //添加消费者信息
-                    rocketMQTemplate.asyncSend(msgTopic,
+                    rocketMQTemplate.asyncSend(proTopic,
                             MessageBuilder.withPayload(ResultEntity.buildEntity(ProducerMessage.class).setData(producerMessage)
-                            .setMessage("用户投诉信息来了！！！"))
+                                    .setMessage("用户商品投诉信息来了！！！"))
                                     .setHeader("KEYS",msgKey).build(),
                             new SendCallback() {
                                 @Override
@@ -125,52 +212,9 @@ public class OrderComplainsServiceImpl extends ServiceImpl<OrderComplainsMapper,
                                 }
                             });
                 }
+                return true;
             }
-            if(orderInfoByOrderNo.getCode().equals( ConstCode.FIND_POWERPLANT_ORDER_SUCCESS)){
-                //电桩
-                //给某个电桩发送投诉消息
-                System.out.println("电桩======================================");
-                PowerplantOrder powerplantOrder = orderInfoByOrderNo.getData().getPowerplantOrder();
-
-                Integer powerplantId = powerplantOrder.getPowerplantId();
-                orderComplainsParam.setComplainId(powerplantId);
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-            }
-            //给平台发送投诉消息,平台管理商品的管理员id=2
-            Integer productManager=2;
-            orderComplainsParam.setComplainId(productManager);
-
-
-
-
-            return true;
-        }
+//        }
         return false;
     }
 }

@@ -12,6 +12,7 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import org.springframework.util.ObjectUtils;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -65,7 +66,7 @@ public class TagController {
             @ApiResponse(code=1603,message = "给某一条评论添加标签失败")
 
     })
-    public ResultEntity<?> addListTags(@RequestBody AddTagsForCommentParam addTagsParam){
+    public ResultEntity<?> addListTags(@RequestBody @Validated AddTagsForCommentParam addTagsParam){
         System.out.println("add-------------------"+addTagsParam);
         Integer isAdd=tagService.addSomeTagsForComment(addTagsParam);
         if(isAdd==2){

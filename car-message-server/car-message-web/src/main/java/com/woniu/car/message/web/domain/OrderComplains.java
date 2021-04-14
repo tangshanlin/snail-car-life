@@ -46,6 +46,10 @@ public class OrderComplains implements Serializable {
     @ApiModelProperty(value = "投诉时间")
     private Long complainTime;
 
+    @ApiModelProperty(value = "送达编号")
+    @TableField(exist = false)
+    private Integer ComplainId;
+
     @TableField(fill = FieldFill.INSERT)
     private Long gmtCreate;
     @TableField(fill = FieldFill.INSERT_UPDATE)
