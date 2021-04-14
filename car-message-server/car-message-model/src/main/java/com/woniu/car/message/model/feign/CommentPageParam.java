@@ -1,4 +1,4 @@
-package com.woniu.car.message.model.param;
+package com.woniu.car.message.model.feign;
 
 import lombok.Data;
 

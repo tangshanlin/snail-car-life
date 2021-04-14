@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
+import javax.validation.Valid;
 
 /**
  * <p>
@@ -39,24 +40,14 @@ public class ShopEarningsInfoController {
      * @Param [addShopServiceEarningsParamVo]
      * @return com.woniu.car.commons.core.dto.ResultEntity
      **/
-    @ApiOperation(value = "门店完成服务新增门店服务具体收益数据")
-    @ApiImplicitParams({
-            //dataType:参数类型
-            //paramType:参数由哪里获取     path->从路径中获取，query->?传参，body->ajax请求
-            @ApiImplicitParam(name = "shopId",value = "关联门店id"),
-            @ApiImplicitParam(name="carServiceName",value = "服务名称"),
-            @ApiImplicitParam(name="carServiceMoney",value = "服务金额"),
-            @ApiImplicitParam(name="payTime",value = "付款时间"),
-            @ApiImplicitParam(name="couponMoney",value = "优惠券面额(元)"),
-            @ApiImplicitParam(name="couponGoods",value = "发行来源(0平台-其他对应门店id)"),
-    })
+    @ApiOperation(value = "新增门店服务具体收益数据",notes = "feign：门店完成服务新增门店服务具体收益数据")
     @PostMapping("add_shop_earnings_info")
-    public ResultEntity addShopEarningsInfo(AddShopEarningsInfoParamVo addShopEarningsInfoParamVo){
+    public ResultEntity addShopEarningsInfo(@RequestBody @Valid AddShopEarningsInfoParamVo addShopEarningsInfoParamVo){
         Boolean boo = shopEarningsInfoService.addShopEarningsInfo(addShopEarningsInfoParamVo);
         if(boo){
             return ResultEntity.buildSuccessEntity().setMessage("新增门店服务收益成功");
         }else {
-            return ResultEntity.buildSuccessEntity().setMessage("新增门店服务收益失败");
+            return ResultEntity.buildFailEntity().setMessage("新增门店服务收益失败");
         }
     }
 }

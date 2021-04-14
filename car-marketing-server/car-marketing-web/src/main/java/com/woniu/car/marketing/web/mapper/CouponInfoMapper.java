@@ -47,10 +47,10 @@ public interface CouponInfoMapper extends BaseMapper<CouponInfo> {
             "ON c.coupon_id = ci.coupon_id " +
             "WHERE c.coupon_goods = 0 " +
             "OR c.coupon_goods = #{getCouponInfoByUserIdAndSourceParamVo.couponGoods} " +
-            "AND ci.coupon_info_user_id = #{getCouponInfoByUserIdAndSourceParamVo.couponInfoUserId} " +
+            "AND ci.coupon_info_user_id = #{userId} " +
             "AND c.coupon_begin_time < #{nowTime} " +
             "AND c.coupon_end_time > #{nowTime}")
-    List<GetCouponInfoByIdDtoVo> getCouponInfoByUserIdAll(GetCouponInfoByUserIdAndSourceParamVo getCouponInfoByUserIdAndSourceParamVo,Long nowTime);
+    List<GetCouponInfoByIdDtoVo> getCouponInfoByUserIdAll(GetCouponInfoByUserIdAndSourceParamVo getCouponInfoByUserIdAndSourceParamVo,Integer userId,Long nowTime);
 
     /*
     * @Author TangShanLin

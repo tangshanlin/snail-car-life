@@ -17,7 +17,7 @@ import java.io.Serializable;
  * @since 2021-04-05
  */
 @Data
-@ApiModel(value = "标签名字参数信息")
+@ApiModel(value = "商品标签名字参数信息")
 public class ProductTagNameLookCommentParam implements Serializable {
 
     /**
@@ -26,6 +26,7 @@ public class ProductTagNameLookCommentParam implements Serializable {
     @ApiModelProperty(value = "标签名字")
     @NotNull(message="标签名字不能为空")
     private String tagName;
+
     /**
      * 商品编号
      */

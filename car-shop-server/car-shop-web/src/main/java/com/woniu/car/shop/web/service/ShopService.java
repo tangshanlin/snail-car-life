@@ -39,4 +39,5 @@ public interface ShopService extends IService<Shop> {
 
     List<FindShopInfoByStateDtoVo> listShopInfoByState();
 
+    Integer updateShopAccountStart(ShopIdParamVo shopId);
 }

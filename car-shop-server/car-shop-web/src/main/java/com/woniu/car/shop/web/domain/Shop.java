@@ -34,7 +34,7 @@ public class Shop implements Serializable {
       private String shopName;
 
       @ApiModelProperty(value = "关联门店账号")
-      private Integer shopAccount;
+      private String shopAccount;
 
       @ApiModelProperty(value = "账户状态(1已审核0未审核)")
       private Integer shopAccountStart;

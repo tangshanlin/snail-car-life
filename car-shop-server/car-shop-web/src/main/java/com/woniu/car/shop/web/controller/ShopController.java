@@ -9,9 +9,11 @@ import com.woniu.car.shop.model.paramVo.*;
 import com.woniu.car.shop.web.service.ShopService;
 import io.swagger.annotations.*;
 import org.springframework.util.ObjectUtils;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import javax.validation.Valid;
 import java.util.List;
 
 /**
@@ -37,20 +39,7 @@ public class ShopController {
      */
     @PostMapping("add_shop")
     @ApiOperation(value = "申请成为门店接口")
-    @ApiImplicitParams({
-            //dataType:参数类型
-            //paramType:参数由哪里获取     path->从路径中获取，query->?传参，body->ajax请求
-            @ApiImplicitParam(name = "shopName",value = "门店名称"),
-            @ApiImplicitParam(name="file",value = "门店图片"),
-            @ApiImplicitParam(name="shopTime",value = "营业时间(json)"),
-            @ApiImplicitParam(name="shopLngLat",value = "经纬度(json)"),
-            @ApiImplicitParam(name="shopAddress",value = "门店地址"),
-            @ApiImplicitParam(name="shopTag",value = "标签（json存服务标签）"),
-            @ApiImplicitParam(name="shopClass",value = "所属类型（0非4s 1是4s店）"),
-            @ApiImplicitParam(name="shopBrand",value = "所属品牌"),
-            @ApiImplicitParam(name="shopTel",value = "联系电话")
-    })
-    public ResultEntity addShop(AddShopParamVo addShopParamVo){
+    public ResultEntity addShop(@Valid AddShopParamVo addShopParamVo){
         int i = shopService.addShopParamVo(addShopParamVo);
         //根据返回码判断是信息重复还是成功
         if(i== ConstCode.ADD_SHOP_NAME_FAIL){
@@ -75,6 +64,33 @@ public class ShopController {
 
     }
 
+    /*
+    * @Author TangShanLin
+    * @Description TODO 门店通过审核接口
+    * @Date  16:52
+    * @Param [shopId]
+    * @return com.woniu.car.commons.core.dto.ResultEntity
+    **/
+    @ApiOperation(value = "门店通过审核接口")
+    @PutMapping("update_shop_account_start")
+    public ResultEntity updateShopAccountStart(@RequestBody @Valid ShopIdParamVo shopId){
+        System.out.println(shopId);
+        Integer state = shopService.updateShopAccountStart(shopId);
+        System.out.println(state+"------------");
+        if(state == ConstCode.ACCESS_SUCCESS){
+            return ResultEntity.buildSuccessEntity()
+                    .setMessage("审核通过");
+        } else if (state == ConstCode.GET_ACCOUNT_ROLE_FAIL){
+            return ResultEntity.buildFailEntity()
+                    .setCode(ConstCode.GET_ACCOUNT_ROLE_FAIL)
+                    .setMessage("账号授予角色失败");
+        }else {
+            return ResultEntity.buildFailEntity()
+                    .setCode(ConstCode.ADD_END_ACCOUNT_FAIL)
+                    .setMessage("新增后台账户失败");
+        }
+    }
+
 
     /**
      * 根据门店id查询详细信息接口
@@ -82,13 +98,8 @@ public class ShopController {
      * @return
      */
     @ApiOperation(value = "根据门店id查询详细信息接口")
-    @ApiImplicitParams({
-            //dataType:参数类型
-            //paramType:参数由哪里获取     path->从路径中获取，query->?传参，body->ajax请求
-            @ApiImplicitParam(name = "shopId",value = "门店id"),
-    })
     @GetMapping("get_shop_info")
-    public ResultEntity<FindShopInfoVo> findShopInfo(ShopIdParamVo shopId){
+    public ResultEntity<FindShopInfoVo> findShopInfo(@Validated ShopIdParamVo shopId){
         FindShopInfoVo findShopInfoVo = shopService.findShopInfo(shopId);
         return ResultEntity.buildSuccessEntity(FindShopInfoVo.class)
                 .setData(findShopInfoVo)
@@ -100,15 +111,9 @@ public class ShopController {
      * @param findShopByClass
      * @return
      */
-    @ApiOperation(value = "查询对应品牌的4s门店接口")
-    @ApiImplicitParams({
-            //dataType:参数类型
-            //paramType:参数由哪里获取     path->从路径中获取，query->?传参，body->ajax请求
-            @ApiImplicitParam(name = "shopClass",value = "所属类型（0非4s 1是4s店）"),
-            @ApiImplicitParam(name="shopBrand",value = "所属品牌"),
-    })
+    @ApiOperation(value = "查询对应品牌的4s门店接口",notes = "如果没传品牌就查所有所有4s门店信息")
     @GetMapping("list_shop_by_class")
-    public ResultEntity<List<FindShopByClassDtoVo>> findShopByClass(FindShopByClassParamVo findShopByClass){
+    public ResultEntity<List<FindShopByClassDtoVo>> findShopByClass(@Valid FindShopByClassParamVo findShopByClass){
         List<FindShopByClassDtoVo> findShopByClassDtoVoList = shopService.findShopByClass(findShopByClass);
         if(ObjectUtils.isEmpty(findShopByClassDtoVoList)){
             return ResultEntity.buildListFailEntity(FindShopByClassDtoVo.class).setMessage("未查询到该品牌下的4s门店");
@@ -125,7 +130,7 @@ public class ShopController {
     * @Param []
     * @return com.woniu.car.commons.core.dto.ResultEntity<java.util.List<com.woniu.car.shop.model.dtoVo.FindShopByIntegralDtoVo>>
     **/
-    @ApiOperation(value = "查询优选好店接口")
+    @ApiOperation(value = "查询优选好店接口",notes = "是展示门店信誉分在90之上的门店信息")
     @GetMapping("list_shop_by_integral")
     public ResultEntity<List<FindShopByIntegralDtoVo>> findShopByIntegral(){
         List<FindShopByIntegralDtoVo> findShopByIntegralDtoVoList = shopService.findShopByIntegral();
@@ -141,15 +146,9 @@ public class ShopController {
     * @Param [meLngLat]
     * @return com.woniu.car.commons.core.dto.ResultEntity<java.util.List<com.woniu.car.shop.model.dtoVo.FindShopInfoAll>>
     **/
-    @ApiOperation(value = "查询所有附近门店接口")
-    @ApiImplicitParams({
-            //dataType:参数类型
-            //paramType:参数由哪里获取     path->从路径中获取，query->?传参，body->ajax请求
-            @ApiImplicitParam(name = "lng",value = "经度"),
-            @ApiImplicitParam(name="Lat",value = "纬度"),
-    })
+    @ApiOperation(value = "查询所有附近门店接口",notes = "功能暂时未完成")
     @GetMapping("list_shop_info_all")
-    public ResultEntity<List<FindShopInfoAll>> findShopInfoAll(FindShopInfoByMeLngLat meLngLat){
+    public ResultEntity<List<FindShopInfoAll>> findShopInfoAll(@Valid FindShopInfoByMeLngLat meLngLat){
         List<FindShopInfoAll> findShopInfoAllList = shopService.findShopInfoAll(meLngLat);
         return ResultEntity.buildListSuccessEntity(FindShopInfoAll.class)
                 .setData(findShopInfoAllList)
@@ -165,13 +164,8 @@ public class ShopController {
     * @return com.woniu.car.commons.core.dto.ResultEntity<com.woniu.car.shop.model.dtoVo.ShopNameDtoVo>
     **/
     @ApiOperation(value = "通过门店id查询门店名称接口")
-    @ApiImplicitParams({
-            //dataType:参数类型
-            //paramType:参数由哪里获取     path->从路径中获取，query->?传参，body->ajax请求
-            @ApiImplicitParam(name = "shopId",value = "门店id"),
-    })
     @GetMapping("get_shop_name_by_shop_id")
-    public ResultEntity<ShopNameDtoVo> getShopNameByShopId(ShopIdParamVo shopIdParamVo){
+    public ResultEntity<ShopNameDtoVo> getShopNameByShopId(@Valid ShopIdParamVo shopIdParamVo){
         ShopNameDtoVo shopNameDtoVo = shopService.getShopNameByShopId(shopIdParamVo);
         if (ObjectUtils.isEmpty(shopIdParamVo)) {
             return ResultEntity.buildFailEntity(ShopNameDtoVo.class)
@@ -191,13 +185,8 @@ public class ShopController {
     * @return com.woniu.car.commons.core.dto.ResultEntity<com.woniu.car.shop.model.dtoVo.ShopIntegralDtoVo>
     **/
     @ApiOperation(value = "通过门店id查询门店信誉分接口")
-    @ApiImplicitParams({
-            //dataType:参数类型
-            //paramType:参数由哪里获取     path->从路径中获取，query->?传参，body->ajax请求
-            @ApiImplicitParam(name = "shopId",value = "门店id"),
-    })
     @GetMapping("get_shop_integral_by_shop_id")
-    public ResultEntity<ShopIntegralDtoVo> getShopIntegralByShopId(ShopIdParamVo shopIdParamVo){
+    public ResultEntity<ShopIntegralDtoVo> getShopIntegralByShopId(@Valid ShopIdParamVo shopIdParamVo){
         //先判断传入值是否为空
         if (ObjectUtils.isEmpty(shopIdParamVo)) {
             return ResultEntity.buildFailEntity(ShopIntegralDtoVo.class)
@@ -223,13 +212,8 @@ public class ShopController {
     * @return com.woniu.car.commons.core.dto.ResultEntity
     **/
     @ApiOperation(value = "修改门店信誉分接口")
-    @ApiImplicitParams({
-            //dataType:参数类型
-            //paramType:参数由哪里获取     path->从路径中获取，query->?传参，body->ajax请求
-            @ApiImplicitParam(name = "shopId",value = "门店id",paramType = "body"),
-    })
     @PutMapping("update_shop_integral_by_shop_id")
-    public ResultEntity updateShopIntegralByShopId(@RequestBody ShopIdParamVo shopIdParamVo){
+    public ResultEntity updateShopIntegralByShopId(@RequestBody @Valid ShopIdParamVo shopIdParamVo){
         //先判断传入值是否为空
         if (ObjectUtils.isEmpty(shopIdParamVo)) {
             return ResultEntity.buildFailEntity(ShopIntegralDtoVo.class)
@@ -254,7 +238,7 @@ public class ShopController {
     * @Param [shopStateParamVo]
     * @return com.woniu.car.commons.core.dto.ResultEntity<java.util.List<com.woniu.car.shop.model.dtoVo.FindShopInfoByStateDtoVo>>
     **/
-    @ApiOperation(value = "查询所有未审核的门店信息")
+    @ApiOperation(value = "查询所有未审核的门店信息",notes = "后端：根据审核状态字段为未审核查询所有门店信息")
     @GetMapping("api/list_shop_info_by_state")
     public ResultEntity<List<FindShopInfoByStateDtoVo>> listShopInfoByState(){
         List<FindShopInfoByStateDtoVo> findShopInfoByStateDtoVos = shopService.listShopInfoByState();

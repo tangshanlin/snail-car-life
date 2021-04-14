@@ -24,14 +24,14 @@ public class OrderComplainsParam implements Serializable {
      * 投诉人编号
      */
     @ApiModelProperty(value = "投诉人编号")
-    @NotNull(message="投诉人编号不能为空")
+    @Null(message="投诉人编号从token中获取")
     private Integer complainUserId;
 
     /**
      * 投诉人姓名
      */
     @ApiModelProperty(value = "投诉人姓名")
-    @NotEmpty(message="投诉人姓名不能为空")
+    @Null(message="投诉人姓名从数据库中获取")
     private String complainUsername;
 
     /**

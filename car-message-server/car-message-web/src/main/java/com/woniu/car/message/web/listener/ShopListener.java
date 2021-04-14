@@ -7,7 +7,7 @@ import org.apache.rocketmq.spring.core.RocketMQListener;
 import org.springframework.stereotype.Component;
 
 @Component
-@RocketMQMessageListener(consumerGroup = "${mq.ordercomplains.consumer.group}",topic = "${mq.ordercomplains.topic}"
+@RocketMQMessageListener(consumerGroup = "${mq.shopordercomplains.consumer.group}",topic = "${mq.shopordercomplains.topic}"
         // ,selectorExpression = "order_pay"
         //设置顺序(单线程)消费,默认是多线程异步消费
         //,consumeMode = ConsumeMode.ORDERLY
@@ -17,7 +17,7 @@ import org.springframework.stereotype.Component;
 public class ShopListener implements RocketMQListener<ResultEntity> {
     @Override
     public void onMessage(ResultEntity message) {
-        System.out.println("消费消息");
+        System.out.println("用户投诉信息来了");
         System.out.println(message.getMessage());
         System.out.println(message.getData());
     }

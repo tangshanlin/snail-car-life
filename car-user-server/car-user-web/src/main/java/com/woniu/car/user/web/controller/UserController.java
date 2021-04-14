@@ -65,7 +65,6 @@ public class UserController {
     private JwtToken jwtToken;
 
     @PostMapping("/register")
-
     @ApiOperation(value = "注册方法", notes = "<span style='color:red;'>用来注册用户的接口</span>")
     @ApiResponses({
             @ApiResponse(code = 1306, message = "注册成功"),
@@ -233,6 +232,8 @@ public class UserController {
         return ResultEntity.buildEntity(CloseableHttpResponse.class).setCode(ConstCode.SENDCODE_SUCCESS).setFlag(true).setMessage("发送成功")
                 ;
     }
+
+
     @GetMapping("/checkByTel")
     @ApiOperation(value = "手机短信验证码校验接口", notes = "<span style='color:red;'>用来校验短信验证码的接口</span>")
     @ApiResponses({

@@ -1,6 +1,11 @@
 package com.woniu.car.marketing.model.paramVo;
 
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
 
 /**
  * Created with IntelliJ IDEA.
@@ -10,9 +15,12 @@ import lombok.Data;
  * @Description: 用户领取优惠券传入的参数param
  */
 @Data
+@ApiModel(value = "用户领取优惠券传入的参数")
 public class AddUserGetCoupon {
 
-    private Integer couponId;//关联优惠卷表id
+    @NotNull(message = "优惠卷表id不能为空")
+    @Min(value = 0,message = "优惠卷表id必须大于等于0")
+    @ApiModelProperty(value = "优惠卷表id值")
+    private Integer couponId;
 
-    private Integer couponInfoUserId;//关联用户id
 }
