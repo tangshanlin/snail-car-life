@@ -29,7 +29,7 @@ import java.util.stream.Collectors;
  * @Since version-1.0
  */
 
-@Component
+//@Component
 @Slf4j
 public class MyWeightRibbon extends AbstractLoadBalancerRule {
 

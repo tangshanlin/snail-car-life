@@ -10,6 +10,7 @@ import com.woniu.car.order.web.entity.CarserviceOrder;
 import com.woniu.car.order.web.entity.CarserviceReturns;
 import com.woniu.car.order.web.service.CarserviceOrderService;
 import com.woniu.car.order.web.service.CarserviceReturnsService;
+import com.woniu.car.user.web.util.GetTokenUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.util.ObjectUtils;
@@ -47,6 +48,8 @@ public class CarserviceReturnsController {
     @ApiOperation(value = "服务退款申请接口")
     @RequestMapping(value ="insert_carservice_return_money_order",method = RequestMethod.POST)
     public ResultEntity insertCarserviceReturnMoneyOrder(@RequestBody @Valid AddCarServiceReturnVo addCarServiceReturnVo){
+        addCarServiceReturnVo.setUserId(GetTokenUtil.getUserId());
+
         /*根据服务订单编号查询订单信息*/
         CarserviceOrder carserviceOrder
                 = carserviceOrderService.findCarserviceOrderByOrderNo(new OrderVo().setOrderNo(addCarServiceReturnVo.getCarserviceOrderNo()));

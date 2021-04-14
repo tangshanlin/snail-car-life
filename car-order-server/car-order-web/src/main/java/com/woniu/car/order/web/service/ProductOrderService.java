@@ -62,4 +62,14 @@ public interface ProductOrderService extends IService<ProductOrder> {
      * @return com.woniu.car.order.web.entity.ProductOrder
      **/
     public ProductOrder findProductOrderByProductOrderId(Integer productOrderId);
+    
+    /**
+     * @Author WangPeng
+     * @Description TODO 查询所有商品订单
+     * @Date  10:35
+     * @Param []
+     * @return com.woniu.car.order.web.entity.ProductOrder
+     **/
+    
+    public List<ProductOrder> findAllProductOrder();
 }
