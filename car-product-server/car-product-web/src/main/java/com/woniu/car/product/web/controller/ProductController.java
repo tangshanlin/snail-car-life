@@ -17,6 +17,8 @@ import com.woniu.car.product.web.elasticsearch.ProductRepository;
 import com.woniu.car.product.web.service.ProductCateService;
 import com.woniu.car.product.web.service.ProductService;
 import io.swagger.annotations.*;
+import org.elasticsearch.index.query.QueryBuilders;
+import org.springframework.data.elasticsearch.core.query.NativeSearchQueryBuilder;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -261,9 +263,35 @@ public class ProductController {
         System.out.println(save);
     }
 
+    /**
+     * 通过id从es删除
+     * @param id
+     */
     public void deleteEs(Integer id){
         repository.deleteById(id);
     }
+
+    /**
+     * 搜索框
+     * @param text
+     * @return
+     */
+    @GetMapping("search")
+    @ApiOperation(value = "商城搜索框", notes = "商品 ES全文检索 ")
+    @ApiImplicitParam(name = "text",value = "商城搜索框",dataType = "String",required = true)
+    public Iterable<CarProductIndex> search(String text) {
+        //产生一个条件构建对象
+        NativeSearchQueryBuilder builder = new NativeSearchQueryBuilder();
+        //从fieldNames 中进行 文本关键词匹配
+        builder.withQuery(QueryBuilders.multiMatchQuery(text,
+                "productName",
+                "productDetail",
+                "productBrand"
+        ));
+        return repository.search(builder.build());
+    }
+
+
 
 }
 
