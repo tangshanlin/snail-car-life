@@ -32,7 +32,4 @@ public interface ProductOrderDetailService extends IService<ProductOrderDetail> 
      * @return java.lang.Boolean
      **/
     public Boolean insertProductOrderDetail(ProductOrderDetail productOrderDetail);
-
-
-
 }

@@ -42,7 +42,9 @@ public class WalletlogController {
 @ApiResponses({
         @ApiResponse(code = 1370, message = "添加钱包日志成功"),
         @ApiResponse(code = 1371, message = "添加钱包日志失败"),
-        @ApiResponse(code = 1400, message = "输入参数错误")
+        @ApiResponse(code = 1400, message = "输入参数错误"),
+        @ApiResponse(code = 1341, message = "钱包余额不足"),
+        @ApiResponse(code = 1343, message = "钱包密码校验失败")
 
 })
 
@@ -82,12 +84,40 @@ public class WalletlogController {
             walletDb.setWalletMoney(add);
 
         }if (walletlogType==2||walletlogType==4){
+            //判断密码
+            System.out.println(walletDb.getWalletPassword());
+            System.out.println(addWalletLogParam.getWalletPassword());
+            boolean equals = walletDb.getWalletPassword().equals(addWalletLogParam.getWalletPassword());
+            System.out.println(equals);
+            if (!equals){
+                return ResultEntity.buildEntity().setCode(ConstCode.CKECKWALLETPASSWORD_FAIL).setFlag(false)
+                        .setMessage("钱包密码不匹配");
+            }
+
+
+
             //如果walletlogtype是2消费3体现
-            BigDecimal subtract = walletDb.getWalletMoney().subtract(walletChange);
-            walletlog.setWalletMoney(subtract);
-            //修改钱包余额
-            walletDb.setWalletMoney(subtract);
+            //判断余额是否不足
+                System.out.println("密码匹配成功");
+            int i = walletChange.compareTo(walletDb.getWalletMoney());
+                System.out.println(i);
+            if (i==1){
+                System.out.println("钱包余额不足");
+               return ResultEntity.buildEntity().setCode(ConstCode.CKECKWALLETMONEY_FAIL).setFlag(false)
+                       .setMessage("钱包余额不足");
+
+            }else {
+                BigDecimal subtract = walletDb.getWalletMoney().subtract(walletChange);
+                walletlog.setWalletMoney(subtract);
+                //修改钱包余额
+                walletDb.setWalletMoney(subtract);
+                System.out.println("开始消费");
+            }
+
+
         }
+
+
         //执行钱包日志的添加和钱包余额的修改
         walletlog.setUserId(userId);
         walletlog.setWalletId(walletDb.getWalletId());
@@ -100,6 +130,7 @@ public class WalletlogController {
                     .setMessage("添加日志失败");
         }
     }
+
     return ResultEntity.buildEntity().setCode(ConstCode.PARAM_ERROR).setFlag(false).setMessage("输入参数错误");
     }
 

@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.woniu.car.order.model.param.AddPowerplantOrderVo;
 import com.woniu.car.order.model.param.OrderVo;
 import com.woniu.car.order.model.param.UserVo;
+import com.woniu.car.order.web.entity.CarserviceOrder;
 import com.woniu.car.order.web.entity.PowerplantOrder;
 
 import java.util.List;
@@ -63,4 +64,13 @@ public interface PowerplantOrderService extends IService<PowerplantOrder> {
 //     **/
 //
 //    public PowerplantOrder findPowerplantOrderByOrderNo(OrderVo orderVo);
+
+ /**
+  * @Author WangPeng
+  * @Description TODO 查询所有电站订单
+  * @Date  10:32
+  * @Param []
+  * @return com.woniu.car.order.web.entity.CarserviceOrder
+  **/
+ public List<PowerplantOrder> findAllPowerplantOrder();
 }

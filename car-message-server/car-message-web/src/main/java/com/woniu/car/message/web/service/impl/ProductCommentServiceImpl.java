@@ -103,8 +103,8 @@ public class ProductCommentServiceImpl extends ServiceImpl<ProductCommentMapper,
         ProductComment productComment1 = productCommentMapper.selectOne(queryWrapper);
         if (!ObjectUtils.isEmpty(param)){
             if(!ObjectUtils.isEmpty(productComment1)){
- //               UserInformation information = userClient.selectUerInformation().getData();
-  //              System.out.println("information========================="+information);
+                UserInformation information = userClient.selectUerInformation().getData();
+                System.out.println("information========================="+information);
 //                if (!ObjectUtils.isEmpty(information)) {
 
 //                    productComment1.setCommentTime(new Date().getTime());

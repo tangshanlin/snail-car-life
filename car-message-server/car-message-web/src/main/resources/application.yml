@@ -25,11 +25,11 @@ spring:
 # minio 参数配置
 
 minio:
-  endpoint: http://119.23.75.195:9000
+  endpoint: http://119.23.75.79:9000
   bucketName: message
 
 rocketmq:
-  name-server: 192.168.10.61:9876
+  name-server: 192.168.10.38:9876
   producer:
     group: orderComplains
 

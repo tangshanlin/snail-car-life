@@ -55,3 +55,9 @@ seata:
 minio:
   endpoint: http://119.23.75.195:9000
   bucketName: station
+feign:
+  client:
+    config:
+      default:
+        connectTimeout: 10000
+        readTimeout: 600000

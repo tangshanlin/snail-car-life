@@ -23,7 +23,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@RestControllerAdvice
+//@RestControllerAdvice
 public class GlobalExceptionHandler {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(GlobalExceptionHandler.class);
@@ -110,7 +110,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(UnexpectedTypeException.class)
     @ResponseStatus(code = HttpStatus.INTERNAL_SERVER_ERROR )
-    public ResultEntity<?> IndexOutOfBoundsExceptionHandler(UnexpectedTypeException e){
+    public ResultEntity<?> UnexpectedTypeExceptionHandler(UnexpectedTypeException e){
         System.out.println(e.getMessage());
         return new ResultEntity<>("参数不能为空",ResultEnum.RES_FAIL.getCode());
     }

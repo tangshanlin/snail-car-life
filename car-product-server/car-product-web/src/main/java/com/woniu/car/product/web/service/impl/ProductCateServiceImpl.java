@@ -17,7 +17,7 @@ import java.util.List;
 
 /**
  * <p>
- *  服务实现类
+ * 服务实现类
  * </p>
  *
  * @author cx
@@ -31,12 +31,13 @@ public class ProductCateServiceImpl extends ServiceImpl<ProductCateMapper, Produ
 
     /**
      * 查询一级分类
+     *
      * @return
      */
     @Override
     public List<ProductCateDto> getProductCate() {
         QueryWrapper<ProductCate> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("parent_id",0);
+        queryWrapper.eq("parent_id", 0);
         List<ProductCate> productCates = productCateMapper.selectList(queryWrapper);
         List<ProductCateDto> productCateDtos = BeanCopyUtil.copyList(productCates, ProductCateDto::new);
 
@@ -45,27 +46,27 @@ public class ProductCateServiceImpl extends ServiceImpl<ProductCateMapper, Produ
     }
 
     @Override
-    public List<ProductCateOneDto> getTwoProductCate1(){
+    public List<ProductCateOneDto> getTwoProductCate1() {
 
         List<ProductCate> productCates = productCateMapper.selectList(null);
         List<ProductCateOneDto> dtos = BeanCopyUtil.copyList(productCates, ProductCateOneDto::new);
 
-        for (int i=0;i<productCates.size();i++){
+        for (int i = 0; i < productCates.size(); i++) {
             JSONObject jsonObject = JSONObject.parseObject(productCates.get(i).getCateImage());
             dtos.get(i).setCateImage(null);
             dtos.get(i).setCateImages(jsonObject);
         }
         ArrayList<ProductCateOneDto> needproductCatess = new ArrayList<>();
         dtos.forEach(productCate -> {
-            if(productCate.getLevel()==1){
+            if (productCate.getLevel() == 1) {
                 needproductCatess.add(productCate);
                 productCate.setChildcateList(new ArrayList<ProductCateOneDto>());
             }
         });
 
         dtos.forEach(productCate -> {
-            needproductCatess.forEach(first->{
-                if(productCate.getParentId()==first.getCateId()){
+            needproductCatess.forEach(first -> {
+                if (productCate.getParentId().equals(first.getCateId())) {
                     first.getChildcateList().add(productCate);
                 }
             });
@@ -73,13 +74,7 @@ public class ProductCateServiceImpl extends ServiceImpl<ProductCateMapper, Produ
 
         return needproductCatess;
 
-
-
-
-
     }
-
-
 
 
 //    @Override

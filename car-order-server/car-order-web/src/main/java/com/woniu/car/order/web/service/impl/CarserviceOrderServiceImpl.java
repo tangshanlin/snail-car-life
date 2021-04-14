@@ -281,7 +281,7 @@ public class CarserviceOrderServiceImpl extends ServiceImpl<CarserviceOrderMappe
         InputStream qr = null;
         try {
             log.debug("根据使用码生成二维码");
-            qr = QRUtil.createQR(useCode, "jpg", "http://192.168.90.240:9000/order/logo.png");
+            qr = QRUtil.createQR(useCode, "jpg", "http://192.168.10.22:9000/order/logo.png");
             log.debug("生成二维码成功");
             return qr;
         } catch (Exception e) {
@@ -326,4 +326,15 @@ public class CarserviceOrderServiceImpl extends ServiceImpl<CarserviceOrderMappe
         return row>0?true:false;
     }
 
+    /**
+     * @Author WangPeng
+     * @Description TODO 查询所有商品订单
+     * @Date  11:23
+     * @Param []
+     * @return java.util.List<com.woniu.car.order.web.entity.CarserviceOrder>
+     **/
+    @Override
+    public List<CarserviceOrder> findAllCarserviceOrder() {
+        return  carserviceOrderMapper.selectList(null);
+    }
 }

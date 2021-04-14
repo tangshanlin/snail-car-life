@@ -99,6 +99,18 @@ public class PowerplantOrderServiceImpl extends ServiceImpl<PowerplantOrderMappe
         return row>0?true:false;
     }
 
+    /**
+     * @Author WangPeng
+     * @Description TODO 查询所有电站订单
+     * @Date  11:00
+     * @Param []
+     * @return java.util.List<com.woniu.car.order.web.entity.PowerplantOrder>
+     **/
+    @Override
+    public List<PowerplantOrder> findAllPowerplantOrder() {
+        return powerplantOrderMapper.selectList(null);
+    }
+
 //    /**
 //     * @Author WangPeng
 //     * @Description TODO 根据订单编号查询订单详情信息

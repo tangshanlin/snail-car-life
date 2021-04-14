@@ -25,6 +25,7 @@ import com.woniu.car.product.web.domain.Product;
 import com.woniu.car.product.model.dto.ProductOrderDto;
 import com.woniu.car.user.param.SlectAddressByAdressIdParam;
 import com.woniu.car.user.web.domain.Address;
+import com.woniu.car.user.web.util.GetTokenUtil;
 import io.seata.spring.annotation.GlobalTransactional;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -86,6 +87,8 @@ public class ProductOrderDetailController {
     @ApiOperation("新增商品订单")
     @RequestMapping(value = "insert_product_order",method = RequestMethod.POST)
     public ResultEntity insertProductOrder(@RequestBody @Valid AddProductOrderVo addProductOrderVo){
+       addProductOrderVo.setUserId(GetTokenUtil.getUserId());
+
         /*生成商品订单编号*/
         String productOrderNo = InsertOrderNoUtil.InsertProductOrderNo();
         /*商品总数量*/
