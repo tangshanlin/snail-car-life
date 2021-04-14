@@ -281,7 +281,7 @@ public class CarserviceOrderServiceImpl extends ServiceImpl<CarserviceOrderMappe
         InputStream qr = null;
         try {
             log.debug("根据使用码生成二维码");
-            qr = QRUtil.createQR(useCode, "jpg", "http://192.168.90.240:9000/order/logo.png");
+            qr = QRUtil.createQR(useCode, "jpg", "http://192.168.10.22:9000/order/logo.png");
             log.debug("生成二维码成功");
             return qr;
         } catch (Exception e) {

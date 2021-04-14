@@ -15,6 +15,7 @@ import com.woniu.car.user.web.service.UserService;
 import com.woniu.car.user.web.util.GetTokenUtil;
 import com.woniu.car.user.web.util.JwtUtils;
 import io.swagger.annotations.*;
+import io.swagger.models.auth.In;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.*;
 
@@ -152,7 +153,8 @@ public class AddressController {
     public ResultEntity selectByAddressId( @Valid SlectAddressByAdressIdParam selectAddressParam){
       //校验输入参数
         //从jwt中获取userId；
-        Integer userId = GetTokenUtil.getUserId();
+//        Integer userId = GetTokenUtil.getUserId();
+        Integer userId =1;
         //校验
         Address addressDb = addressService.getById(selectAddressParam.getAddressId());
         if (!ObjectUtils.isEmpty(addressDb)&addressDb.getUserId()==userId){
