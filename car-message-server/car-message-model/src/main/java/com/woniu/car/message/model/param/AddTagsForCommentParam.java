@@ -29,7 +29,7 @@ public class AddTagsForCommentParam implements Serializable {
     /**
      * 评论编码
      */
-    @NotNull
+    @NotNull(message = "commentCode不能为空")
     @ApiModelProperty(value = "评论编码")
     private String commentCode;
 

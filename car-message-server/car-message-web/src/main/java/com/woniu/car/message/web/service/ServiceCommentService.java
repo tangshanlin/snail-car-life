@@ -3,9 +3,9 @@ package com.woniu.car.message.web.service;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.woniu.car.message.model.dto.ServiceCommentDto;
-import com.woniu.car.message.model.param.CommentPageParam;
+import com.woniu.car.message.model.feign.CommentPageParam;
 import com.woniu.car.message.model.param.ServiceCommentParam;
-import com.woniu.car.message.model.param.ServiceTagNameLookCommentParam;
+import com.woniu.car.message.model.feign.ServiceTagNameLookCommentParam;
 import com.woniu.car.message.model.param.SeviceNameCommentParam;
 import com.woniu.car.message.web.domain.ServiceComment;
 

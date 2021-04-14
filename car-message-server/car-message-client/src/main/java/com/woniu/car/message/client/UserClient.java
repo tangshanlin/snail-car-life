@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 @FeignClient("user-server")
 public interface UserClient {
 
-    @GetMapping("selectUerInformation")
+    @GetMapping("/user/user-information/selectUerInformation")
     public ResultEntity<UserInformation> selectUerInformation();
 
 
