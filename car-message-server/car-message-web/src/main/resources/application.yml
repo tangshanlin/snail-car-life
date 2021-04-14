@@ -25,21 +25,31 @@ spring:
 # minio 参数配置
 
 minio:
-  endpoint: http://192.168.10.22:9000
+  endpoint: http://192.168.10.27:9000
   bucketName: message
 
 rocketmq:
-  name-server: 192.168.10.61:9876
+  name-server: 192.168.10.38:9876
   producer:
     group: orderComplains
 
 
 mq:
-  ordercomplains:
+  shopordercomplains:
     consumer:
-      group: order_consumer_complain
-    tag: order_complains
-    topic: orderComplainsTopic
+      group: order_shop_consumer_complain
+    tag: order_shop_complains
+    topic: orderShopComplainsTopic
+  powerordercomplains:
+    consumer:
+      group: order_power_consumer_complain
+    tag: order_power_complains
+    topic: orderPowerComplainsTopic
+  producerordercomplains:
+    consumer:
+      group: order_producer_consumer_complain
+    tag: order_producer_complains
+    topic: orderProducerComplainsTopic
 
 swagger:
   base-package: com.woniu.car.message.web.controller
@@ -55,3 +65,4 @@ seata:
   enabled: true
   tx-service-group: my_test_tx_group
   enable-auto-data-source-proxy: true
+

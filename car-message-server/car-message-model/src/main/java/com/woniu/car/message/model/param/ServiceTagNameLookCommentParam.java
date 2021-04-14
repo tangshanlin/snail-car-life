@@ -1,7 +1,10 @@
 package com.woniu.car.message.model.param;
 
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 
 /**
@@ -13,18 +16,20 @@ import java.io.Serializable;
  * @since 2021-04-05
  */
 @Data
-
+@ApiModel(value = "服务标签名字参数信息")
 public class ServiceTagNameLookCommentParam implements Serializable {
 
     /**
      * 标签名字
      */
-
+    @ApiModelProperty(value = "标签名字")
+    @NotNull(message="标签名字不能为空")
     private String tagName;
     /**
      * 服务编号
      */
-
+    @ApiModelProperty(value = "服务编号")
+    @NotNull(message="服务编号不能为空")
     private Integer serviceCode;
 
 }

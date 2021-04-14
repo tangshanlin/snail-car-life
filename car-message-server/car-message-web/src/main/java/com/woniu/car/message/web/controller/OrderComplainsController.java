@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.woniu.car.commons.core.dto.ResultEntity;
 import com.woniu.car.commons.web.util.BeanCopyUtil;
 import com.woniu.car.message.client.OrderClient;
+import com.woniu.car.message.client.UserClient;
 import com.woniu.car.message.model.dto.OrderComplainsDto;
 import com.woniu.car.message.model.param.OrderComplainsParam;
 import com.woniu.car.message.model.param.OrderVoP;
@@ -13,6 +14,7 @@ import com.woniu.car.message.web.domain.OrderComplains;
 import com.woniu.car.message.web.service.OrderComplainsService;
 import io.swagger.annotations.*;
 import org.springframework.util.ObjectUtils;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -35,6 +37,7 @@ public class OrderComplainsController {
     @Resource
     private OrderComplainsService orderComplainsService;
 
+
     /**
      * @Author Lints
      * @Date 2021/4/9/009 11:06
@@ -50,14 +53,7 @@ public class OrderComplainsController {
             @ApiResponse(code = 200,message = "添加订单投诉成功"),
             @ApiResponse(code=500,message = "添加订单投诉失败")
     })
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "complaintOrderCode",value = "投诉订单编号",dataType = "String",paramType = "query",example = "se123456789"),
-            @ApiImplicitParam(name="complainUserId",value = "投诉人编号",dataType = "Integer",paramType = "query",example = "1"),
-            @ApiImplicitParam(name="complainUsername",value = "投诉人姓名",dataType = "String",paramType = "query",example = "tom"),
-            @ApiImplicitParam(name="complainType",value = "投诉类型（1.服务质量，2 服务人员，3自然灾害，4.服务设备(下拉框选择，传入固定值)",dataType = "String",paramType = "query",example = "自然灾害"),
-            @ApiImplicitParam(name = " complainResult",value = "投诉具体内容",dataType = "String",paramType = "query",example = "服务人员态度恶劣"),
-    })
-    public ResultEntity<?> addOrderComplain(@RequestBody OrderComplainsParam orderComplainsParam){
+    public ResultEntity<?> addOrderComplain(@RequestBody  @Validated OrderComplainsParam orderComplainsParam){
         Boolean isadd=orderComplainsService.addOrderComplains(orderComplainsParam);
         if(isadd){
             return ResultEntity.buildSuccessEntity().setMessage("添加订单投诉成功");
@@ -74,7 +70,7 @@ public class OrderComplainsController {
     @ApiImplicitParams({
             @ApiImplicitParam(name = "userId",value = "用户ID",dataType = "Integer",paramType = "query",example = "1"),
     })
-    public ResultEntity<List<OrderComplainsDto>> getYourSelfOrderComplains(UserIdParam userIdParam){
+    public ResultEntity<List<OrderComplainsDto>> getYourSelfOrderComplains(@Validated UserIdParam userIdParam){
         QueryWrapper<OrderComplains> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("complain_user_id",userIdParam);
         List<OrderComplains> orderComplains = orderComplainsService.list(queryWrapper);

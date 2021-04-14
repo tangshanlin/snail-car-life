@@ -1,6 +1,10 @@
 package com.woniu.car.shop.model.paramVo;
 
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+
+import javax.validation.constraints.NotNull;
 
 /**
  * Created with IntelliJ IDEA.
@@ -10,7 +14,13 @@ import lombok.Data;
  * @Description: 用户上传自己经纬度
  */
 @Data
+@ApiModel(value = "传经纬度")
 public class FindShopInfoByMeLngLat {
+    @ApiModelProperty(value = "经度")
+    @NotNull(message = "经度不能为空")
     private String lng;//经度
+
+    @ApiModelProperty(value = "纬度")
+    @NotNull(message = "纬度不能为空")
     private String Lat;//纬度
 }

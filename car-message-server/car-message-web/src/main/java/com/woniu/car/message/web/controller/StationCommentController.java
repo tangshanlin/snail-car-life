@@ -3,8 +3,10 @@ package com.woniu.car.message.web.controller;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.woniu.car.commons.core.dto.ResultEntity;
-import com.woniu.car.commons.web.discributelock.MyLock;
+import com.woniu.car.message.client.UserClient;
 import com.woniu.car.message.model.dto.StationCommentDto;
+import com.woniu.car.message.model.dto.UserInformation;
+import com.woniu.car.message.model.feign.CommentPageParam;
 import com.woniu.car.message.model.param.*;
 import com.woniu.car.message.web.service.StationCommentService;
 import io.swagger.annotations.*;
@@ -12,7 +14,6 @@ import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
-import javax.validation.Valid;
 import java.util.List;
 
 /**
@@ -29,6 +30,9 @@ import java.util.List;
 public class StationCommentController {
     @Resource
     private StationCommentService stationCommentService;
+
+    @Resource
+    private UserClient userClient;
 
     @PostMapping("upload")
     @ApiOperation(value = "添加电站评论",notes = "<span style='color:red;'>用来添加电站评论的接口</span>")
@@ -87,6 +91,12 @@ public class StationCommentController {
             @ApiImplicitParam(name = "userId",value = "用户编号",dataType = "Integer",paramType = "path",example = "1"),
     })
     public ResultEntity<List<StationCommentDto>> findMyselfServiceComment(UserIdParam userId){
+
+//        UserInformation data = userClient.selectUerInformation().getData();
+//        if(!ObjectUtils.isEmpty(data)){
+//            Integer userId = data.getUserId();
+//
+//        }
         if (!ObjectUtils.isEmpty(userId)){
             List<StationCommentDto> serviceComments=stationCommentService.lookUserStationComments(userId.getUserId());
             if (!ObjectUtils.isEmpty(serviceComments)){

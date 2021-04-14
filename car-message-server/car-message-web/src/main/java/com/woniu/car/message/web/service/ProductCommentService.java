@@ -3,7 +3,7 @@ package com.woniu.car.message.web.service;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.woniu.car.message.model.dto.ProductCommentDto;
-import com.woniu.car.message.model.param.CommentPageParam;
+import com.woniu.car.message.model.feign.CommentPageParam;
 import com.woniu.car.message.model.param.ProductCommentParam;
 import com.woniu.car.message.model.param.ProductTagNameLookCommentParam;
 import com.woniu.car.message.web.domain.ProductComment;

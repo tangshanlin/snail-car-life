@@ -7,7 +7,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.woniu.car.commons.web.util.BeanCopyUtil;
 import com.woniu.car.message.model.dto.StationCommentDto;
-import com.woniu.car.message.model.param.CommentPageParam;
+import com.woniu.car.message.model.feign.CommentPageParam;
 import com.woniu.car.message.model.param.StationCommentParam;
 import com.woniu.car.message.model.param.StationTagNameLookCommentParam;
 import com.woniu.car.message.web.domain.CommentTagConnection;

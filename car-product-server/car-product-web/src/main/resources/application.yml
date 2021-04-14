@@ -23,6 +23,10 @@ spring:
     username: root
     password: root
 
+  elasticsearch:
+    rest:
+      uris: http://localhost:9200
+
 swagger:
   base-package: com.woniu.car.product.web.controller
   contact:
@@ -44,3 +48,4 @@ seata:
   tx-service-group: my_test_tx_group
   enable-auto-data-source-proxy: true
   application-id: ${spring.application.name}
+

@@ -17,7 +17,7 @@ import java.io.Serializable;
  * @since 2021-04-05
  */
 @Data
-@ApiModel(value = "标签名字参数信息")
+@ApiModel(value = "商品标签名字参数信息")
 public class ProductTagNameLookCommentParam implements Serializable {
 
     /**
