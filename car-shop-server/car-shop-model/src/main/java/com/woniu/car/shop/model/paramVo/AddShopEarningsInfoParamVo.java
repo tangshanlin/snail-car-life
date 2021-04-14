@@ -20,7 +20,7 @@ import java.math.BigDecimal;
 @ApiModel(value = "门店完成服务新增门店服务具体收益数据需要传入的参数")
 public class AddShopEarningsInfoParamVo {
 
-    @ApiModelProperty(value = "门店id")
+    @ApiModelProperty(value = "门店id",example = "1")
     @Min(value = 1,message = "门店id必须大于等于1")
     @NotNull(message = "门店id不能为空")
     private Integer shopId;//关联门店id
@@ -40,11 +40,9 @@ public class AddShopEarningsInfoParamVo {
 
     @ApiModelProperty(value = "优惠券面额(元)")
     @Min(value = 1,message = "优惠券面额必须大于等于1")
-    @NotNull(message = "优惠券面额不能为空")
     private BigDecimal couponMoney;//优惠券面额(元)
 
-    @ApiModelProperty(value = "发行来源(0平台-其他对应门店id)")
+    @ApiModelProperty(value = "发行来源(0平台-其他对应门店id)",example = "1")
     @Min(value = 0,message = "发行来源必须大于等于1")
-    @NotNull(message = "发行来源不能为空")
     private Integer couponGoods;//发行来源(0平台-其他对应门店id)
 }

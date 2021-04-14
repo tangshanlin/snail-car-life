@@ -39,7 +39,7 @@ public class AddShopParamVo {
     @NotNull(message = "标签不能为空")
     private String shopTag;//标签（json存服务标签）
 
-    @ApiModelProperty(value = "所属类型（0非4s 1是4s店）")
+    @ApiModelProperty(value = "所属类型（0非4s 1是4s店）",example = "1")
     @NotNull(message = "所属类型不能为空")
     @Size(min = 0,max = 1,message = "数字范围在0~1之间")
     private Integer shopClass;//所属类型（0非4s 1是4s店）
@@ -47,7 +47,7 @@ public class AddShopParamVo {
     @ApiModelProperty(value = "所属品牌")
     private String shopBrand;//所属品牌
 
-    @ApiModelProperty(value = "联系电话")
+    @ApiModelProperty(value = "联系电话",example = "18888888888")
     @NotNull(message = "联系电话不能为空")
     @Pattern(regexp = "^1([38][0-9]|4[579]|5[^4]|6[6]|7[0135678]|9[89])\\d{8}$",message = "不是正确的11位手机号")
     private Long shopTel;//联系电话

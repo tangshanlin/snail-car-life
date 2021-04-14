@@ -1,17 +1,18 @@
 package com.woniu.car.marketing.web.controller;
 
 
+import com.woniu.car.commons.core.code.ConstCode;
 import com.woniu.car.commons.core.dto.ResultEntity;
+import com.woniu.car.marketing.client.feign.FeignUserClient;
 import com.woniu.car.marketing.model.dtoVo.GetCouponInfoByIdDtoVo;
 import com.woniu.car.marketing.model.dtoVo.GetCouponInfoByUserIdDtoVo;
 import com.woniu.car.marketing.model.paramVo.AddUserGetCoupon;
-import com.woniu.car.marketing.model.paramVo.CouponInfoByUserIdParamVo;
 import com.woniu.car.marketing.model.paramVo.GetCouponInfoByIdParamVo;
 import com.woniu.car.marketing.model.paramVo.GetCouponInfoByUserIdAndSourceParamVo;
 import com.woniu.car.marketing.web.service.CouponInfoService;
+import com.woniu.car.user.web.domain.UserInformation;
+import com.woniu.car.user.web.util.GetTokenUtil;
 import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiImplicitParam;
-import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.*;
@@ -72,7 +73,7 @@ public class CouponInfoController {
     * @return com.woniu.car.commons.core.dto.ResultEntity
     **/
     @ApiOperation(value = "用户领取优惠券接口")
-    @PutMapping("/add_user_get_coupon")
+    @PostMapping("/add_user_get_coupon")
     public ResultEntity addUserGetCoupon(@RequestBody @Valid AddUserGetCoupon addUserGetCoupon){
         Boolean verdict = couponInfoService.addUserGetCoupon(addUserGetCoupon);
         if(verdict){
@@ -91,8 +92,8 @@ public class CouponInfoController {
     **/
     @ApiOperation(value = "根据用户id返回未过期的优惠券信息")
     @GetMapping("list_coupon_info_by_user_id_all")
-    public ResultEntity<List<GetCouponInfoByUserIdDtoVo>> listCouponInfoByUserId(@Valid CouponInfoByUserIdParamVo couponInfoByUserIdParamVo){
-        List<GetCouponInfoByUserIdDtoVo> getCouponInfoByUserIdDtoVoList = couponInfoService.listCouponInfoByUserId(couponInfoByUserIdParamVo);
+    public ResultEntity<List<GetCouponInfoByUserIdDtoVo>> listCouponInfoByUserId(){
+        List<GetCouponInfoByUserIdDtoVo> getCouponInfoByUserIdDtoVoList = couponInfoService.listCouponInfoByUserId();
         if (ObjectUtils.isEmpty(getCouponInfoByUserIdDtoVoList)) {
             return ResultEntity.buildListFailEntity(GetCouponInfoByUserIdDtoVo.class)
                     .setMessage("没有可使用的优惠券");
@@ -103,7 +104,31 @@ public class CouponInfoController {
         }
     }
 
+    /*
+    * @Author TangShanLin
+    * @Description TODO 消耗积分领取优惠券
+    * @Date  13:12
+    * @Param [addUserGetCoupon]
+    * @return com.woniu.car.commons.core.dto.ResultEntity
+    **/
+    @ApiOperation(value = "用户通过积分领取优惠券接口")
+    @PostMapping("/add_user_get_coupon_by_credits")
+    public ResultEntity addUserGetCouponByCredits(@RequestBody @Valid AddUserGetCoupon addUserGetCoupon){
+        Integer verdict = couponInfoService.addUserGetCouponByCredits(addUserGetCoupon);
+        if(verdict==1){
+            return ResultEntity.buildSuccessEntity()
+                    .setMessage("领取成功");
 
+        }else if (verdict==0){
+            return ResultEntity.buildFailEntity()
+                    .setMessage("该优惠券发放完毕，领取失败")
+                    .setCode(ConstCode.ADD_COUPON_GET_FAIL);
+        }else {
+            return ResultEntity.buildFailEntity()
+                    .setMessage("积分不足兑换该优惠券")
+                    .setCode(ConstCode.NOT_ENOUGH_POINTS_FAIL);
+        }
+    }
 
 
 

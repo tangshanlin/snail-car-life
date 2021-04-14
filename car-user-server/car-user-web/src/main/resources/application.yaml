@@ -51,3 +51,4 @@ seata:
   tx-service-group: my_test_tx_group
   enable-auto-data-source-proxy: true
   application-id: ${spring.application.name}
+
