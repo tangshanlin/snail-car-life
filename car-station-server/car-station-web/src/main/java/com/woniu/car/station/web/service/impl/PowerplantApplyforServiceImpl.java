@@ -1,8 +1,11 @@
 package com.woniu.car.station.web.service.impl;
 
+import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+import com.woniu.car.station.model.dto.LongitudeAndLatitude;
 import com.woniu.car.station.model.dto.PowerplantApplyforDto;
+import com.woniu.car.station.model.dto.PowerplantApplyforVoDto;
 import com.woniu.car.station.model.entity.Powerplant;
 import com.woniu.car.station.model.entity.PowerplantApplyfor;
 import com.woniu.car.station.model.finalcode.PowerplantApplyforStatus;
@@ -43,7 +46,7 @@ public class PowerplantApplyforServiceImpl extends ServiceImpl<PowerplantApplyfo
     @Resource
     private StationFileUpload stationFileUpload;
 
-    /*
+    /**
      * @Author HuangZhengXing
      * @Description 新增电站申请表
      * @Date  2021/4/9
@@ -79,7 +82,7 @@ public class PowerplantApplyforServiceImpl extends ServiceImpl<PowerplantApplyfo
         return result;
     }
 
-    /*
+    /**
      * @Author HuangZhengXing
      * @Description 修改电站申请表的审核状态
      * @Date  2021/4/9
@@ -124,7 +127,7 @@ public class PowerplantApplyforServiceImpl extends ServiceImpl<PowerplantApplyfo
         return b;
     }
 
-    /*
+    /**
      * @Author HuangZhengXing
      * @Description 根据电站申请id查询对应的申请表
      * @Date  2021/4/9
@@ -132,17 +135,22 @@ public class PowerplantApplyforServiceImpl extends ServiceImpl<PowerplantApplyfo
      * @return com.woniu.car.station.model.entity.PowerplantApplyfor
      **/
     @Override
-    public PowerplantApplyfor getOnePowerplantApplyforById(PowerplantApplyfor powerplantApplyfor) {
+    public PowerplantApplyforVoDto getOnePowerplantApplyforById(PowerplantApplyfor powerplantApplyfor) {
         log.info("开始接收要查询申请表的id参数为:{}",powerplantApplyfor);
         QueryWrapper<PowerplantApplyfor> wrapper = new QueryWrapper<>();
         //对应电站申请表id字段
         wrapper.eq("powerplant_applyfor_id",powerplantApplyfor.getPowerplantApplyforId());
         //查询电站申请表信息
         PowerplantApplyfor powerplantApplyfor1 = powerplantApplyforMapper.selectOne(wrapper);
-        log.info("查询完成之后返回值为:{}",powerplantApplyfor1);
+        PowerplantApplyforVoDto powerplantApplyforVoDto = new PowerplantApplyforVoDto();
+        BeanUtils.copyProperties(powerplantApplyfor1,powerplantApplyforVoDto);
+        String lal = powerplantApplyfor1.getPowerplantCoordinate();
+        LongitudeAndLatitude longitudeAndLatitude = JSONUtil.toBean(lal, LongitudeAndLatitude.class);
+        powerplantApplyforVoDto.setPowerplantCoordinate(longitudeAndLatitude);
+        log.info("查询完成之后返回值为:{}",powerplantApplyforVoDto);
 
         log.info("最后返回查询完成之后的返回值");
-        return powerplantApplyfor1;
+        return powerplantApplyforVoDto;
     }
 
     /*
@@ -153,12 +161,24 @@ public class PowerplantApplyforServiceImpl extends ServiceImpl<PowerplantApplyfo
      * @return java.util.List<com.woniu.car.station.model.entity.PowerplantApplyfor>
      **/
     @Override
-    public List<PowerplantApplyfor> listPowerplantApplyforAll() {
+    public List<PowerplantApplyforVoDto> listPowerplantApplyforAll() {
         log.info("查询所有电站申请信息不需要携带参数");
         //查询所有电站申请表信息
         List<PowerplantApplyfor> powerplantApplyforList = powerplantApplyforMapper.selectList(null);
+        ArrayList<PowerplantApplyforVoDto> powerplantApplyforVoDtoArrayList = new ArrayList<>();
+        for (PowerplantApplyfor powerplantApplyfor : powerplantApplyforList){
+            PowerplantApplyforVoDto powerplantApplyforVoDto = new PowerplantApplyforVoDto();
+            BeanUtils.copyProperties(powerplantApplyfor,powerplantApplyforVoDto);
+            String lal = powerplantApplyfor.getPowerplantCoordinate();
+            LongitudeAndLatitude longitudeAndLatitude = JSONUtil.toBean(lal, LongitudeAndLatitude.class);
+            powerplantApplyforVoDto.setPowerplantCoordinate(longitudeAndLatitude);
+            powerplantApplyforVoDtoArrayList.add(powerplantApplyforVoDto);
+        }
         log.info("查询所有电站申请信息完成，返回值为:{}",powerplantApplyforList);
-        return powerplantApplyforList;
+        for (PowerplantApplyforVoDto powerplantApplyforVoDto : powerplantApplyforVoDtoArrayList){
+            System.out.println(powerplantApplyforVoDto);
+        }
+        return powerplantApplyforVoDtoArrayList;
     }
 
     /*
