@@ -4,14 +4,19 @@ import cn.hutool.core.lang.UUID;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+import com.woniu.car.commons.core.dto.ResultEntity;
 import com.woniu.car.items.model.dto.CarServiceDto;
 import com.woniu.car.items.model.entity.CarService;
+import com.woniu.car.service.web.feign.ShopFeignClient;
 import com.woniu.car.service.web.mapper.CarServiceMapper;
 import com.woniu.car.service.web.service.CarServiceService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.woniu.car.service.web.util.ServiceFileUpload;
+import com.woniu.car.shop.model.paramVo.AddShopServiceEarningsParamVo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
@@ -36,6 +41,8 @@ public class CarServiceServiceImpl extends ServiceImpl<CarServiceMapper, CarServ
     private CarServiceMapper carServiceMapper;
     @Resource
     private ServiceFileUpload serviceFileUpload;
+    @Resource
+    private ShopFeignClient shopFeignClient;
     /**
      * @Author HuangZhengXing
      * @Description TODO 新增具体服务信息
@@ -67,7 +74,18 @@ public class CarServiceServiceImpl extends ServiceImpl<CarServiceMapper, CarServ
 //                System.out.println(stationimg);
 //                carService.setCarServiceImage(stationimg);
 //                log.info("图片上传完毕返回图片路径:{}",stationimg);
-            }else {
+            System.out.println("1111111111");
+            if (i>0){
+                System.out.println("2222222222222");
+                log.info("开始调用feign接口");
+                AddShopServiceEarningsParamVo addShopServiceEarningsParamVo = new AddShopServiceEarningsParamVo();
+                addShopServiceEarningsParamVo.setShopId(carService.getShopId());
+                addShopServiceEarningsParamVo.setCarServiceName(carService.getCarServiceName());
+                shopFeignClient.addShopServiceEarnings(addShopServiceEarningsParamVo);
+                log.info("开始调用feign接口");
+            }
+
+        }else {
                 i=-10;
             }
 
@@ -251,6 +269,7 @@ public class CarServiceServiceImpl extends ServiceImpl<CarServiceMapper, CarServ
         UpdateWrapper<CarService> wrapper = new UpdateWrapper<>();
         wrapper.eq("car_service_id",carService.getCarServiceId());
         carService.setCarServiceSold(0+carService.getCarServiceSold());
+
         int updateSold = carServiceMapper.update(carService, wrapper);
         boolean b = false;
         if (updateSold>0) b=true;
