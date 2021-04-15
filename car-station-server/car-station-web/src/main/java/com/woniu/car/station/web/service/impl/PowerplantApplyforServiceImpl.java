@@ -52,26 +52,23 @@ public class PowerplantApplyforServiceImpl extends ServiceImpl<PowerplantApplyfo
      **/
     @Override
     @Transactional(rollbackFor = Exception.class)//开启事务回滚
-    public int addPowerplantApplyfor(PowerplantApplyforDto powerplantApplyforDto) {
-        log.info("开始处理接收的图片，参数为:{}",powerplantApplyforDto);
-        MultipartFile[] files = powerplantApplyforDto.getPowerplantApplyforImage();
-        //将文件上传到minio服务器上
-        ArrayList<String> powerplantApplyforImage = stationFileUpload.upload(files);
-        //返回图片地址
-        String powerplantApplyforimg = powerplantApplyforImage.get(0);
-        System.out.println(powerplantApplyforimg);
+    public int addPowerplantApplyfor(PowerplantApplyfor powerplantApplyfor) {
+//        log.info("开始处理接收的图片，参数为:{}",powerplantApplyforDto);
+//        MultipartFile[] files = powerplantApplyforDto.getPowerplantApplyforImage();
+//        //将文件上传到minio服务器上
+//        ArrayList<String> powerplantApplyforImage = stationFileUpload.upload(files);
+//        //返回图片地址
+//        String powerplantApplyforimg = powerplantApplyforImage.get(0);
+//        System.out.println(powerplantApplyforimg);
         int result = 0;
         QueryWrapper<PowerplantApplyfor> wrapper = new QueryWrapper<>();
         //根据名称查找看是否已重复
-        wrapper.eq("powerplan_applyfort_name",powerplantApplyforDto.getPowerplanApplyfortName());
+        wrapper.eq("powerplan_applyfort_name",powerplantApplyfor.getPowerplanApplyfortName());
         PowerplantApplyfor powerplantApplyfor1 = powerplantApplyforMapper.selectOne(wrapper);
         System.out.println(powerplantApplyfor1);
         if(ObjectUtils.isEmpty(powerplantApplyfor1)){
-            powerplantApplyforDto.setPowerplantApplyforStatus(PowerplantApplyforStatus.UNREVIEWED);
+            powerplantApplyfor.setPowerplantApplyforStatus(PowerplantApplyforStatus.UNREVIEWED);
             //新增数据之后返回int类型
-            PowerplantApplyfor powerplantApplyfor = new PowerplantApplyfor();
-            BeanUtils.copyProperties(powerplantApplyforDto,powerplantApplyfor);
-            powerplantApplyfor.setPowerplantApplyforImage(powerplantApplyforimg);
             System.out.println(powerplantApplyfor);
             result = powerplantApplyforMapper.insert(powerplantApplyfor);
         }else {

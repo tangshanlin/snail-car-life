@@ -45,59 +45,60 @@ public class CarServiceServiceImpl extends ServiceImpl<CarServiceMapper, CarServ
      **/
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public int addCarService(CarServiceDto carServiceDto) {
+    public int addCarService(CarService carService) {
         log.info("开始查重");
         int i = 0;
         QueryWrapper<CarService> wrapper = new QueryWrapper<>();
-        wrapper.eq("car_service_name",carServiceDto.getCarServiceName());
+        wrapper.eq("car_service_name",carService.getCarServiceName());
         CarService carService1 = carServiceMapper.selectOne(wrapper);
         if (ObjectUtils.isEmpty(carService1)){
-            log.info("开始处理上传要新增的具体服务图片");
-            CarService carService = new CarService();
-            BeanUtils.copyProperties(carServiceDto,carService);
-            System.out.println("CarService"+":"+carService);
-            if(carServiceDto.getCarServiceImage().length>0){
-                MultipartFile[] files = carServiceDto.getCarServiceImage();
-                //将文件上传到minio服务器上
-                ArrayList<String> stationImage = serviceFileUpload.upload(files);
-                //返回图片地址
-                String stationimg = stationImage.get(0);
-                System.out.println(stationimg);
-                carService.setCarServiceImage(stationimg);
-                log.info("图片上传完毕返回图片路径:{}",stationimg);
+            log.info("开始新增具体服务:{}",carService);
+            i = carServiceMapper.insert(carService);
+//            log.info("开始处理上传要新增的具体服务图片");
+//            CarService carService = new CarService();
+//            BeanUtils.copyProperties(carServiceDto,carService);
+//            System.out.println("CarService"+":"+carService);
+//            if(carServiceDto.getCarServiceImage().length>0){
+//                MultipartFile[] files = carServiceDto.getCarServiceImage();
+//                //将文件上传到minio服务器上
+//                ArrayList<String> stationImage = serviceFileUpload.upload(files);
+//                //返回图片地址
+//                String stationimg = stationImage.get(0);
+//                System.out.println(stationimg);
+//                carService.setCarServiceImage(stationimg);
+//                log.info("图片上传完毕返回图片路径:{}",stationimg);
             }else {
                 i=-10;
-                return i;
             }
 
-            if (carServiceDto.getCarServiceInfo().length>0){
-                log.info("开始处理上传要新增的具体服务详情多图图片");
-                MultipartFile[] files = carServiceDto.getCarServiceInfo();
-                //将文件上传到minio服务器上
-                ArrayList<String> stationImage = serviceFileUpload.upload(files);
-                JSONObject jsonObject = new JSONObject();
-                for (int a = 0;a<stationImage.size();a++){
-                    String time = String.valueOf(System.currentTimeMillis());
-                    jsonObject.put("service"+ UUID.randomUUID().toString()+time,stationImage.get(a));
-                }
-                System.out.println(jsonObject);
-                //返回图片地址
-                String stationimgs = JSONObject.toJSONString(jsonObject);
-                System.out.println(stationimgs);
-                carService.setCarServiceInfo(stationimgs);
-                log.info("图片上传完毕返回图片路径:{}",stationimgs);
-            }else {
-                i = -20;
-                return i;
-            }
-
-            if (carServiceDto.getCarServiceImage().length>0&&carServiceDto.getCarServiceInfo().length>0){
-                log.info("开始新增具体服务:{}",carService);
-                i = carServiceMapper.insert(carService);
-            }
-        }else {
-            i = -30;
-        }
+//            if (carServiceDto.getCarServiceInfo().length>0){
+//                log.info("开始处理上传要新增的具体服务详情多图图片");
+//                MultipartFile[] files = carServiceDto.getCarServiceInfo();
+//                //将文件上传到minio服务器上
+//                ArrayList<String> stationImage = serviceFileUpload.upload(files);
+//                JSONObject jsonObject = new JSONObject();
+//                for (int a = 0;a<stationImage.size();a++){
+//                    String time = String.valueOf(System.currentTimeMillis());
+//                    jsonObject.put("service"+ UUID.randomUUID().toString()+time,stationImage.get(a));
+//                }
+//                System.out.println(jsonObject);
+//                //返回图片地址
+//                String stationimgs = JSONObject.toJSONString(jsonObject);
+//                System.out.println(stationimgs);
+//                carService.setCarServiceInfo(stationimgs);
+////                log.info("图片上传完毕返回图片路径:{}",stationimgs);
+//            }else {
+//                i = -20;
+//                return i;
+//            }
+//
+//            if (carServiceDto.getCarServiceImage().length>0&&carServiceDto.getCarServiceInfo().length>0){
+//                log.info("开始新增具体服务:{}",carService);
+//                i = carServiceMapper.insert(carService);
+//            }
+//        }else {
+//            i = -30;
+//        }
         return i;
     }
     /**
@@ -126,7 +127,7 @@ public class CarServiceServiceImpl extends ServiceImpl<CarServiceMapper, CarServ
      **/
     @Override
     public List<CarService> listCarServiceByShopId(CarService carService) {
-        log.info("开始接收要查询的门店id",carService.getShopId());
+        log.info("开始接收要查询的门店id:{}",carService.getShopId());
         QueryWrapper<CarService> wrapper = new QueryWrapper<>();
         wrapper.eq("shop_id",carService.getShopId());
         List<CarService> carServices = carServiceMapper.selectList(wrapper);

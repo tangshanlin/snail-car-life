@@ -37,6 +37,8 @@ public class StationServiceImpl extends ServiceImpl<StationMapper, Station> impl
     @Resource
     private StationFileUpload stationFileUpload;
 
+
+
     /*
      * @Author HuangZhengXing
      * @Description TODO 新增充电桩
@@ -46,31 +48,26 @@ public class StationServiceImpl extends ServiceImpl<StationMapper, Station> impl
      **/
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public boolean addStation(StationDto stationDto) {
-        log.info("开始处理上传的充电桩图片");
-        MultipartFile[] files = stationDto.getStationImage();
-        //将文件上传到minio服务器上
-        ArrayList<String> stationImage = stationFileUpload.upload(files);
-        //返回图片地址
-        String stationimg = stationImage.get(0);
-        System.out.println(stationimg);
-        log.info("图片上传完毕返回图片路径:{}",stationimg);
-
+    public boolean addStation(Station station) {
+//        log.info("开始处理上传的充电桩图片");
+//        MultipartFile[] files = stationDto.getStationImage();
+//        //将文件上传到minio服务器上
+//        ArrayList<String> stationImage = stationFileUpload.upload(files);
+//        //返回图片地址
+//        String stationimg = stationImage.get(0);
+//        System.out.println(stationimg);
+//        log.info("图片上传完毕返回图片路径:{}",stationimg);
+        System.out.println(station);
         log.info("开始生成电桩的随机编码");
         String stationNumber = RandomUtil.randomString("abcdefg", 7);
         System.out.println("随机编码"+":"+stationNumber);
         log.info("开始生成二维码充电编号");
         String stationCode = RandomUtil.randomString("adihw", 5);
         System.out.println("充电编号"+":"+stationCode);
-        //复制dto到实体类中
-        Station station = new Station();
-        BeanUtils.copyProperties(stationDto,station);
-        System.out.println(station);
         //将生成的随机编码和编号存入实体类
         station.setStationNumeration(stationNumber);
         station.setStationCode(stationCode);
         station.setStationStatus(0);
-        station.setStationImage(stationimg);
         System.out.println("完全的station实体类"+":"+station);
         log.info("开始新增充电桩");
         int insert = stationMapper.insert(station);

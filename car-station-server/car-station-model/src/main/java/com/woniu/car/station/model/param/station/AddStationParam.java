@@ -27,7 +27,7 @@ public class AddStationParam {
     private String stationBrand;
 
     @ApiModelProperty(value = "电桩图片")
-    private MultipartFile[] stationImage;
+    private String stationImage;
 
     @NotNull
     @ApiModelProperty(value = "电桩每度电的价格",example = "1.7")

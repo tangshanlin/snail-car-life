@@ -16,7 +16,7 @@ import java.util.List;
  */
 public interface PowerplantApplyforService extends IService<PowerplantApplyfor> {
     //新增电站申请信息
-    public int addPowerplantApplyfor(PowerplantApplyforDto powerplantApplyforDto);
+    public int addPowerplantApplyfor(PowerplantApplyfor powerplantApplyfor);
     //根据电站申请表的id修改电站审核状态
     public boolean updatePowerplantApplyforStatusById(PowerplantApplyfor powerplantApplyfor);
     //根据电站申请表id查询某一个电站信息

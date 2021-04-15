@@ -35,7 +35,7 @@ public class AddCarServiceParam {
 
     @NotNull
     @ApiModelProperty(value = "服务图片")
-    private MultipartFile[] carServiceImage;
+    private String carServiceImage;
 
     @NotNull
     @ApiModelProperty(value = "服务介绍",example = "标准清洗汽车")
@@ -43,7 +43,7 @@ public class AddCarServiceParam {
 
     @NotNull
     @ApiModelProperty(value = "服务详情")
-    private MultipartFile[] carServiceInfo;
+    private String carServiceInfo;
 
     @NotNull
     @ApiModelProperty(value = "适用车型",example = "五座")
