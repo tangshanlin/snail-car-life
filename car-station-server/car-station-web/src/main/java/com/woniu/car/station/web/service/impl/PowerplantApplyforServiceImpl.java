@@ -142,15 +142,19 @@ public class PowerplantApplyforServiceImpl extends ServiceImpl<PowerplantApplyfo
         wrapper.eq("powerplant_applyfor_id",powerplantApplyfor.getPowerplantApplyforId());
         //查询电站申请表信息
         PowerplantApplyfor powerplantApplyfor1 = powerplantApplyforMapper.selectOne(wrapper);
-        PowerplantApplyforVoDto powerplantApplyforVoDto = new PowerplantApplyforVoDto();
-        BeanUtils.copyProperties(powerplantApplyfor1,powerplantApplyforVoDto);
-        String lal = powerplantApplyfor1.getPowerplantCoordinate();
-        LongitudeAndLatitude longitudeAndLatitude = JSONUtil.toBean(lal, LongitudeAndLatitude.class);
-        powerplantApplyforVoDto.setPowerplantCoordinate(longitudeAndLatitude);
-        log.info("查询完成之后返回值为:{}",powerplantApplyforVoDto);
+        if (!ObjectUtils.isEmpty(powerplantApplyfor1)){
+            System.out.println(powerplantApplyfor1);
+            PowerplantApplyforVoDto powerplantApplyforVoDto = new PowerplantApplyforVoDto();
+            BeanUtils.copyProperties(powerplantApplyfor1,powerplantApplyforVoDto);
+            String lal = powerplantApplyfor1.getPowerplantCoordinate();
+            LongitudeAndLatitude longitudeAndLatitude = JSONUtil.toBean(lal, LongitudeAndLatitude.class);
+            powerplantApplyforVoDto.setPowerplantCoordinate(longitudeAndLatitude);
+            log.info("查询完成之后返回值为:{}",powerplantApplyforVoDto);
 
-        log.info("最后返回查询完成之后的返回值");
-        return powerplantApplyforVoDto;
+            log.info("最后返回查询完成之后的返回值");
+            return powerplantApplyforVoDto;
+        }
+        return null;
     }
 
     /*
