@@ -2,6 +2,7 @@ package com.woniu.car.user.param;
 
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
+import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -15,6 +16,7 @@ import javax.validation.constraints.NotNull;
  * @Version 1.0
  */
 @Data
+@ApiModel(value = "查询车系的参数")
 public class SelectCarinforamtionParam {
     @ApiModelProperty(value = "车系id")
     @NotNull(message = "参数不能为空")
