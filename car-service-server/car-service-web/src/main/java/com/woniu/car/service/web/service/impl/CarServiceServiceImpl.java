@@ -13,10 +13,12 @@ import com.woniu.car.service.web.service.CarServiceService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.woniu.car.service.web.util.ServiceFileUpload;
 import com.woniu.car.shop.model.paramVo.AddShopServiceEarningsParamVo;
+import io.seata.spring.annotation.GlobalTransactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
@@ -43,6 +45,8 @@ public class CarServiceServiceImpl extends ServiceImpl<CarServiceMapper, CarServ
     private ServiceFileUpload serviceFileUpload;
     @Resource
     private ShopFeignClient shopFeignClient;
+    @Resource
+    private RedisTemplate<String,Object> redisTemplate;
     /**
      * @Author HuangZhengXing
      * @Description TODO 新增具体服务信息
@@ -51,7 +55,7 @@ public class CarServiceServiceImpl extends ServiceImpl<CarServiceMapper, CarServ
      * @return int
      **/
     @Override
-    @Transactional(rollbackFor = Exception.class)
+    @GlobalTransactional(timeoutMills = 5000)
     public int addCarService(CarService carService) {
         log.info("开始查重");
         int i = 0;
@@ -60,6 +64,7 @@ public class CarServiceServiceImpl extends ServiceImpl<CarServiceMapper, CarServ
         CarService carService1 = carServiceMapper.selectOne(wrapper);
         if (ObjectUtils.isEmpty(carService1)){
             log.info("开始新增具体服务:{}",carService);
+            carService.setCarServiceSold(0);
             i = carServiceMapper.insert(carService);
 //            log.info("开始处理上传要新增的具体服务图片");
 //            CarService carService = new CarService();
@@ -266,13 +271,35 @@ public class CarServiceServiceImpl extends ServiceImpl<CarServiceMapper, CarServ
     @Transactional(rollbackFor = Exception.class)
     public boolean updateCarServiceSold(CarService carService) {
         log.info("开始接收要修改的已售数量信息",carService.getCarServiceId());
-        UpdateWrapper<CarService> wrapper = new UpdateWrapper<>();
-        wrapper.eq("car_service_id",carService.getCarServiceId());
-        carService.setCarServiceSold(0+carService.getCarServiceSold());
+//        UpdateWrapper<CarService> wrapper = new UpdateWrapper<>();
+//        wrapper.eq("car_service_id",carService.getCarServiceId());
+//        carService.setCarServiceSold(0+carService.getCarServiceSold());
 
-        int updateSold = carServiceMapper.update(carService, wrapper);
+//        int updateSold = carServiceMapper.update(carService, wrapper);
+        String o1 = (String) redisTemplate.opsForHash().get("car:service:server:updatesold:"+carService.getCarServiceId(), String.valueOf(carService.getCarServiceId()));
+        Integer o = -1;
+        System.out.println(o1);
+        if (!ObjectUtils.isEmpty(o1)){
+            o = Integer.valueOf(o1);
+        }
+        if (o == -1){
+            carService.setCarServiceSold(0);
+            redisTemplate.opsForHash().put("car:service:server:updatesold:"+carService.getCarServiceId(),
+                    String.valueOf(carService.getCarServiceId()),String.valueOf(carService.getCarServiceSold()+1));
+        }else {
+            carService.setCarServiceSold(o);
+            redisTemplate.opsForHash().put("car:service:server:updatesold:"+carService.getCarServiceId(),
+                    String.valueOf(carService.getCarServiceId()),String.valueOf(carService.getCarServiceSold()+1));
+        }
+        String o2 = (String) redisTemplate.opsForHash().get("car:service:server:updatesold:"+carService.getCarServiceId(), String.valueOf(carService.getCarServiceId()));
+        Integer oo = Integer.valueOf(o2);
+        System.out.println("o1"+":"+o1);
+        System.out.println("o2"+":"+o2);
         boolean b = false;
-        if (updateSold>0) b=true;
+        if (oo > o){
+            b = true;
+        }
+//        if (updateSold>0) b=true;
         log.info("返回值:{}",b);
         return b;
     }
