@@ -1,6 +1,7 @@
 package com.woniu.car.station.web.controller;
 
 
+import com.baomidou.mybatisplus.extension.api.R;
 import com.woniu.car.commons.core.code.ConstCode;
 import com.woniu.car.commons.core.dto.ResultEntity;
 import com.woniu.car.station.model.dto.StationDto;
@@ -9,13 +10,18 @@ import com.woniu.car.station.model.entity.Station;
 import com.woniu.car.station.model.param.GetPowerplantParam;
 import com.woniu.car.station.model.param.station.*;
 import com.woniu.car.station.web.service.StationService;
+import com.woniu.car.station.web.util.StationFileUpload;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.BeanUtils;
+import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -32,6 +38,8 @@ import java.util.List;
 public class StationController {
     @Resource
     private StationService stationService;
+    @Resource
+    private StationFileUpload stationFileUpload;
 
 
     /**
@@ -44,8 +52,9 @@ public class StationController {
     @PostMapping("/api/add_station")
     @ApiOperation(value = "新增充电桩信息",notes = "传入要新增的电桩信息")
     @ApiImplicitParam(name = "addStationParam",value = "要新增的电桩信息",required = true,dataType = "AddStationParam")
-    public ResultEntity addStation(AddStationParam addStationParam){
-        StationDto stationDto = new StationDto();
+    public ResultEntity addStation(@RequestBody AddStationParam addStationParam){
+        if (ObjectUtils.isEmpty(addStationParam)) return ResultEntity.buildEntity().setMessage("输入为空，或输入错误").setFlag(false).setCode(ConstCode.LAST_STAGE);
+        Station stationDto = new Station();
         BeanUtils.copyProperties(addStationParam,stationDto);
         System.out.println("StationDto"+":"+stationDto);
         boolean b = stationService.addStation(stationDto);
@@ -64,10 +73,12 @@ public class StationController {
     @ApiOperation(value = "根据充电桩id查询充电桩信息",notes = "传入要查询的充电桩id")
     @ApiImplicitParam(name = "getOneStationParam",value = "要查询的充电桩id",required = true,dataType = "GetOneStationParam")
     public ResultEntity getOneStation(@RequestBody GetOneStationParam getOneStationParam){
+        if (ObjectUtils.isEmpty(getOneStationParam.getStationId()))return ResultEntity.buildEntity().setMessage("输入为空，或输入错误").setFlag(false).setCode(ConstCode.LAST_STAGE);
         Station station = new Station();
         BeanUtils.copyProperties(getOneStationParam,station);
         System.out.println("Station"+":"+station);
         Station oneStation = stationService.getOneStation(station);
+        if (ObjectUtils.isEmpty(oneStation))return ResultEntity.buildSuccessEntity(Station.class).setMessage("查询成功,结果为空").setCode(ConstCode.ACCESS_SUCCESS).setData(oneStation);
         return ResultEntity.buildSuccessEntity(Station.class).setMessage("查询成功").setCode(ConstCode.ACCESS_SUCCESS).setData(oneStation);
     }
 
@@ -85,6 +96,7 @@ public class StationController {
         BeanUtils.copyProperties(listStationByPowerplantParam,station);
         System.out.println("Station"+":"+station);
         List<Station> stations = stationService.listStationAll(station);
+        if (ObjectUtils.isEmpty(stations)) return ResultEntity.buildListSuccessEntity(Station.class).setMessage("查询成功,结果为空").setCode(ConstCode.ACCESS_SUCCESS).setData(stations);
         return ResultEntity.buildListSuccessEntity(Station.class).setMessage("查询成功").setCode(ConstCode.ACCESS_SUCCESS).setData(stations);
     }
     /**
@@ -96,8 +108,9 @@ public class StationController {
      **/
     @PutMapping("/api/update_station_info")
     @ApiOperation(value = "根据充电桩id修改充电桩基本信息",notes = "传入要修改的充电桩id和要修改的基本信息")
-    @ApiImplicitParam(name = "updateStationInfoParam",value = "要修改的充电桩id和要修改的基本信息",required = true,dataType = "UpdateStationInfoParam")
+    @ApiImplicitParam(name = "updateStationInfoParam",value = "要修改的充电桩id和要修改的基本信息",dataType = "UpdateStationInfoParam")
     public ResultEntity updateStationInfo(UpdateStationInfoParam updateStationInfoParam){
+        if (ObjectUtils.isEmpty(updateStationInfoParam.getStationId())) return ResultEntity.buildFailEntity().setMessage("要修改的电桩id参数为空").setFlag(false).setCode(ConstCode.LAST_STAGE);
         UpdateStationDto updateStationDto = new UpdateStationDto();
         BeanUtils.copyProperties(updateStationInfoParam,updateStationDto);
         boolean b = stationService.updateBasicStationInfo(updateStationDto);
@@ -115,6 +128,11 @@ public class StationController {
     @ApiOperation(value = "根据充电桩id修改充电桩充电状态",notes = "传入要修改充电桩id和充电桩充电状态")
     @ApiImplicitParam(name = "updateStationStatusParam",value = "要修改充电桩id和充电桩充电状态",required = true,dataType = "UpdateStationStatusParam")
     public ResultEntity updateStationStatus(@RequestBody UpdateStationStatusParam updateStationStatusParam){
+        if (ObjectUtils.isEmpty(updateStationStatusParam.getStationId())){
+            return ResultEntity.buildFailEntity().setMessage("要修改的电桩id参数为空").setFlag(false).setCode(ConstCode.LAST_STAGE);
+        }else if (ObjectUtils.isEmpty(updateStationStatusParam.getStationStatus())){
+            return ResultEntity.buildFailEntity().setMessage("要修改的电桩状态为空").setFlag(false).setCode(ConstCode.LAST_STAGE);
+        }
         Station station = new Station();
         BeanUtils.copyProperties(updateStationStatusParam,station);
         System.out.println("Station"+":"+station);
@@ -133,6 +151,11 @@ public class StationController {
     @ApiOperation(value = "根据充电桩id修改充电桩充电类型",notes = "传入要修改充电桩id和充电桩充电类型")
     @ApiImplicitParam(name = "updateStationTypeParam",value = "要修改充电桩id和充电桩充电类型",required = true,dataType = "UpdateStationTypeParam")
     public ResultEntity updateStationType(@RequestBody UpdateStationTypeParam updateStationTypeParam){
+        if (ObjectUtils.isEmpty(updateStationTypeParam.getStationId())){
+            return ResultEntity.buildFailEntity().setMessage("要修改的电桩id参数为空").setFlag(false).setCode(ConstCode.LAST_STAGE);
+        }else if (ObjectUtils.isEmpty(updateStationTypeParam.getStationType())){
+            return ResultEntity.buildFailEntity().setMessage("要修改的电桩类型为空").setFlag(false).setCode(ConstCode.LAST_STAGE);
+        }
         Station station = new Station();
         BeanUtils.copyProperties(updateStationTypeParam,station);
         System.out.println("Station"+":"+station);
@@ -159,5 +182,29 @@ public class StationController {
         if (b) return ResultEntity.buildSuccessEntity().setMessage("删除成功").setCode(ConstCode.ACCESS_SUCCESS);
         return ResultEntity.buildFailEntity().setMessage("删除失败").setCode(ConstCode.LAST_STAGE).setFlag(false);
     }
+
+    /**
+     * @Author HuangZhengXing
+     * @Description TODO Sakura
+     * @Date  2021/4/13
+     * @Param [stationImage]
+     * @return com.woniu.car.commons.core.dto.ResultEntity
+     **/
+    @PostMapping("/uploading_station_image")
+    @ApiOperation(value = "充电桩单张图片上传")
+    public ResultEntity uploadingStationImage(UploadingStationImageParam uploadingStationImageParam){
+        if (uploadingStationImageParam.getStationImage().length>0){
+            MultipartFile[] files = uploadingStationImageParam.getStationImage();
+            //将文件上传到minio服务器上
+            ArrayList<String> stationImageList = stationFileUpload.upload(files);
+            //返回图片地址
+            String stationimg = stationImageList.get(0);
+            System.out.println(stationimg);
+            return ResultEntity.buildSuccessEntity(String.class).setCode(ConstCode.ACCESS_SUCCESS).setData(stationimg).setMessage("图片上传成功");
+        }else {
+            return ResultEntity.buildFailEntity().setMessage("图片为空").setCode(ConstCode.LAST_STAGE).setFlag(false);
+        }
+    }
+
 }
 

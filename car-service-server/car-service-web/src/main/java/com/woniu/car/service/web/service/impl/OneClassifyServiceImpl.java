@@ -1,16 +1,25 @@
 package com.woniu.car.service.web.service.impl;
 
+import cn.hutool.json.JSONUtil;
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.woniu.car.items.model.entity.OneClassify;
 import com.woniu.car.service.web.mapper.OneClassifyMapper;
 import com.woniu.car.service.web.service.OneClassifyService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.ObjectUtils;
 
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 /**
  * <p>
@@ -25,6 +34,8 @@ public class OneClassifyServiceImpl extends ServiceImpl<OneClassifyMapper, OneCl
 
     @Resource
     private OneClassifyMapper oneClassifyMapper;
+    @Resource
+    private RedisTemplate<String,Object> redisTemplate;
 
     /*
      * @Author HuangZhengXing
@@ -35,15 +46,18 @@ public class OneClassifyServiceImpl extends ServiceImpl<OneClassifyMapper, OneCl
      **/
     @Override
     @Transactional(rollbackFor = Exception.class)//开启事务回滚
-    public boolean addOneClassifyService(OneClassify oneClassify) {
-        Boolean b = false;
+    public int addOneClassifyService(OneClassify oneClassify) {
+        QueryWrapper<OneClassify> wrapper = new QueryWrapper<>();
+        wrapper.eq("one_classify_name",oneClassify.getOneClassifyName());
+        OneClassify oneClassify1 = oneClassifyMapper.selectOne(wrapper);
+        int i = 0;
+        if (ObjectUtils.isEmpty(oneClassify1)){
             //新增数据之后返回一个int类型的值
-            int insert = oneClassifyMapper.insert(oneClassify);
-            //如果值大于1值储存成功
-            if (insert>0){
-                b = true;
-            }
-        return b;
+            i = oneClassifyMapper.insert(oneClassify);
+        }else {
+            i = -10;
+        }
+        return i;
     }
 
     /*
@@ -97,8 +111,23 @@ public class OneClassifyServiceImpl extends ServiceImpl<OneClassifyMapper, OneCl
      **/
     @Override
     public List<OneClassify> listOneClassifyServiceAll() {
-        //从数据库中查询所有一级分类信息
-        List<OneClassify> oneClassifyList = oneClassifyMapper.selectList(null);
-        return oneClassifyList;
+//        String oneclassifyall = (String) redisTemplate.opsForHash().get("com:woniu:car:service:oneclassify:t_one_classify", "oneclassifyall");
+//        String str = JSONUtil.toJsonStr(oneclassifyall);
+//        if (ObjectUtils.isEmpty(oneclassifyall)){
+            //从数据库中查询所有一级分类信息
+            List<OneClassify> oneClassifyList = oneClassifyMapper.selectList(null);
+//            String str1 = JSONUtil.toJsonStr(oneClassifyList);
+//            redisTemplate.opsForHash().put("com:woniu:car:service:oneclassify:t_one_classify","oneclassifyall",str1);
+//            return oneClassifyList;
+//        }else {
+//            List<OneClassify> oneClassifies = JSONUtil.toList(str, OneClassify.class);
+//            System.out.println("111111."+oneClassifies);
+//            for (OneClassify oneClassify : oneClassifies) {
+//                System.out.println(oneClassify);
+//
+//            }
+            return oneClassifyList;
+//        }
+
     }
 }

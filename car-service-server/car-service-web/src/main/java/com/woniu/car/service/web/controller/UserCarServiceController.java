@@ -13,6 +13,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.BeanUtils;
+import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -44,6 +45,9 @@ public class UserCarServiceController {
     @ApiOperation(value = "新增用户服务关联信息",notes = "flag为true时新增成功,false时生成失败")
     @ApiImplicitParam(name = "addUserServiceParam",value = "接收新增用户服务关联信息参数",required = true,dataType = "AddUserServiceParam")
     public ResultEntity addUserCarService(@RequestBody AddUserServiceParam addUserServiceParam){
+        if (ObjectUtils.isEmpty(addUserServiceParam)){
+            return ResultEntity.buildFailEntity().setMessage("参数为空").setFlag(false).setCode(ConstCode.LAST_STAGE);
+        }
         UserCarService userCarService = new UserCarService();
         BeanUtils.copyProperties(addUserServiceParam,userCarService);
         System.out.println("UserCarService"+":"+userCarService);
@@ -62,10 +66,12 @@ public class UserCarServiceController {
     @ApiOperation(value = "根据用户id查询关联表信息",notes = "flag为true时新增成功,false时生成失败")
     @ApiImplicitParam(name = "listUserServiceByUserParam",value = "接收要查询关联表信息的用户id",required = true,dataType = "ListUserServiceByUserParam")
     public ResultEntity<List<UserCarService>> listUserServiceByUser(@RequestBody ListUserServiceByUserParam listUserServiceByUserParam){
+        if (ObjectUtils.isEmpty(listUserServiceByUserParam.getUserId())) return ResultEntity.buildListEntity(UserCarService.class).setMessage("输入为空，或输入有误").setFlag(false).setData(null);
         UserCarService userCarService = new UserCarService();
         BeanUtils.copyProperties(listUserServiceByUserParam,userCarService);
         System.out.println("UserCarService"+":"+userCarService);
         List<UserCarService> userCarServices = userCarServiceService.listUserCarServiceByUser(userCarService);
+        if (ObjectUtils.isEmpty(userCarService)) return ResultEntity.buildListSuccessEntity(UserCarService.class).setMessage("查询成功,结果为空").setCode(ConstCode.ACCESS_SUCCESS).setData(userCarServices);
         return ResultEntity.buildListSuccessEntity(UserCarService.class).setMessage("查询成功").setCode(ConstCode.ACCESS_SUCCESS).setData(userCarServices);
     }
     /**
@@ -79,6 +85,7 @@ public class UserCarServiceController {
     @ApiOperation(value = "查询所有用户服务关联信息",notes = "不需要携带参数")
     public ResultEntity<List<UserCarService>> listUserCarServiceAll(){
         List<UserCarService> userCarServiceList = userCarServiceService.listUserCarServiceAll();
+        if (ObjectUtils.isEmpty(userCarServiceList)) return ResultEntity.buildListSuccessEntity(UserCarService.class).setMessage("查询成功,结果为空").setCode(ConstCode.ACCESS_SUCCESS).setData(userCarServiceList);
         return ResultEntity.buildListSuccessEntity(UserCarService.class).setMessage("查询成功").setCode(ConstCode.ACCESS_SUCCESS).setData(userCarServiceList);
     }
 
@@ -93,6 +100,11 @@ public class UserCarServiceController {
     @ApiOperation(value = "根据用户服务关联id修改服务状态",notes = "flag为true时新增成功,false时生成失败")
     @ApiImplicitParam(name = "updateUserCarServiceStatusParam",value = "接收要修改关联表信息id和要修改的状态",required = true,dataType = "UpdateUserCarServiceStatusParam")
     public ResultEntity updateUserServiceStatus(@RequestBody UpdateUserCarServiceStatusParam updateUserCarServiceStatusParam){
+        if (ObjectUtils.isEmpty(updateUserCarServiceStatusParam.getUserServiceId())){
+            return ResultEntity.buildListEntity(UserCarService.class).setMessage("输入为空，或输入有误").setFlag(false).setData(null);
+        }else if(ObjectUtils.isEmpty(updateUserCarServiceStatusParam.getUserServiceStatus())){
+            return ResultEntity.buildListEntity(UserCarService.class).setMessage("输入为空，或输入有误").setFlag(false).setData(null);
+        }
         UserCarService userCarService = new UserCarService();
         BeanUtils.copyProperties(updateUserCarServiceStatusParam,userCarService);
         System.out.println("UserCarService"+":"+userCarService);
@@ -112,6 +124,7 @@ public class UserCarServiceController {
     @ApiOperation(value = "根据用户服务关联id删除信息",notes = "flag为true时新增成功,false时生成失败")
     @ApiImplicitParam(name = "deleteCarServiceParam",value = "接收要删除的关联表id",required = true,dataType = "DeleteCarServiceParam")
     public ResultEntity deleteUserService(@RequestBody DeleteCarServiceParam deleteCarServiceParam){
+        if (ObjectUtils.isEmpty(deleteCarServiceParam.getCarServiceId())) return ResultEntity.buildListEntity(UserCarService.class).setMessage("输入为空，或输入有误").setFlag(false).setData(null);
         UserCarService userCarService = new UserCarService();
         BeanUtils.copyProperties(deleteCarServiceParam,userCarService);
         System.out.println("UserCarService"+":"+userCarService);

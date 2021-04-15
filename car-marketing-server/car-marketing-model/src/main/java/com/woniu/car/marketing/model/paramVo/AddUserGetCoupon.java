@@ -23,8 +23,4 @@ public class AddUserGetCoupon {
     @ApiModelProperty(value = "优惠卷表id值")
     private Integer couponId;
 
-    @NotNull(message = "用户id不能为空")
-    @Min(value = 1,message = "用户id值必须大于等于1")
-    @ApiModelProperty(value = "用户id")
-    private Integer couponInfoUserId;
 }

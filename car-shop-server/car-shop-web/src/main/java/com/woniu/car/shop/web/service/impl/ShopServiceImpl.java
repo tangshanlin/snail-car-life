@@ -1,9 +1,12 @@
 package com.woniu.car.shop.web.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.woniu.car.auth.model.params.InsertAccountByTypeParams;
 import com.woniu.car.commons.core.code.ConstCode;
+import com.woniu.car.commons.core.dto.ResultEntity;
 import com.woniu.car.commons.web.util.BeanCopyUtil;
 
+import com.woniu.car.shop.client.feign.FeignAuthClient;
 import com.woniu.car.shop.model.dtoVo.*;
 import com.woniu.car.shop.model.paramVo.AddShopParamVo;
 import com.woniu.car.shop.model.paramVo.FindShopByClassParamVo;
@@ -40,12 +43,14 @@ public class ShopServiceImpl extends ServiceImpl<ShopMapper, Shop> implements Sh
     @Resource
     private ShopMapper shopMapper;
 
-
     @Resource
     private ShopFileUpload shopFileUpload;
 
     @Resource
     private StringRedisTemplate stringRedisTemplate;
+
+    @Resource
+    private FeignAuthClient feignAuthClient;
 
     /*
     * @Author TangShanLin
@@ -224,5 +229,37 @@ public class ShopServiceImpl extends ServiceImpl<ShopMapper, Shop> implements Sh
         List<Shop> shops = shopMapper.selectList(queryWrapper);
         List<FindShopInfoByStateDtoVo> findShopInfoByStateDtoVos = BeanCopyUtil.copyList(shops, FindShopInfoByStateDtoVo::new);
         return findShopInfoByStateDtoVos;
+    }
+
+    /*
+    * @Author TangShanLin
+    * @Description TODO 门店审核逻辑
+    * @Date  16:55
+    * @Param [shopId]
+    * @return java.lang.Boolean
+    **/
+    @Override
+    public Integer updateShopAccountStart(ShopIdParamVo shopId) {
+        InsertAccountByTypeParams insertAccountByTypeParams = new InsertAccountByTypeParams();
+        insertAccountByTypeParams.setType(2);
+        ResultEntity<String> stringResultEntity = feignAuthClient.insertAccountByType(insertAccountByTypeParams);
+        Integer code = stringResultEntity.getCode();
+        System.out.println(code==ConstCode.ACCESS_SUCCESS);
+        if(code.equals(ConstCode.ACCESS_SUCCESS)){
+            String account = stringResultEntity.getData();//拿到账号
+            System.out.println("拿到账号"+account);
+            Shop shop = new Shop();
+            shop.setShopId(shopId.getShopId());
+            shop.setShopAccount(account);
+            shop.setShopAccountStart(1);
+            shopMapper.updateById(shop);
+            return ConstCode.ACCESS_SUCCESS;
+        }else if (code.equals(ConstCode.GET_ACCOUNT_ROLE_FAIL)){
+            return ConstCode.GET_ACCOUNT_ROLE_FAIL;
+        }else {
+            return ConstCode.ADD_END_ACCOUNT_FAIL;
+        }
+
+
     }
 }

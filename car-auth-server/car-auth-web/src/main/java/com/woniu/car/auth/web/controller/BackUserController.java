@@ -10,6 +10,7 @@ import com.woniu.car.auth.web.service.BackUserService;
 import com.woniu.car.auth.web.service.UserToRoleService;
 import com.woniu.car.auth.web.utils.JWTUtils;
 import com.woniu.car.auth.web.utils.SaltUtils;
+import com.woniu.car.commons.core.code.ConstCode;
 import com.woniu.car.commons.core.dto.ResultEntity;
 import io.swagger.annotations.*;
 import org.apache.shiro.crypto.hash.Md5Hash;
@@ -103,13 +104,19 @@ public class BackUserController {
                 //调用角色授予方法
                 boolean b1 = newRole(iabt.getType(), backUserDb.getBackUserId());
                 if (b1) {
-                    return ResultEntity.buildSuccessEntity(String.class).setMessage("账号新增并授予角色成功").setData(account);
+                    return ResultEntity.buildSuccessEntity(String.class)
+                            .setMessage("账号新增并授予角色成功")
+                            .setData(account);
                 } else {
-                    return ResultEntity.buildFailEntity(String.class).setMessage("账号授予角色失败失败");
+                    return ResultEntity.buildFailEntity(String.class)
+                            .setCode(ConstCode.GET_ACCOUNT_ROLE_FAIL)
+                            .setMessage("账号授予角色失败失败");
                 }
             }
         }
-        return ResultEntity.buildFailEntity(String.class).setMessage("新增后台账户失败");
+        return ResultEntity.buildFailEntity(String.class)
+                .setCode(ConstCode.ADD_END_ACCOUNT_FAIL)
+                .setMessage("新增后台账户失败");
     }
 
     /**

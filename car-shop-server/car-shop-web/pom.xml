@@ -92,9 +92,18 @@
             <groupId>com.alibaba.cloud</groupId>
             <artifactId>spring-cloud-starter-alibaba-seata</artifactId>
         </dependency>
+
+        <!--        和用户关联的依赖-->
         <dependency>
             <groupId>com.woniu.car</groupId>
             <artifactId>car-user-web</artifactId>
+            <version>1.0.0</version>
+        </dependency>
+
+        <!--        feign调用auth的model数据-->
+        <dependency>
+            <groupId>com.woniu.car</groupId>
+            <artifactId>car-auth-model</artifactId>
             <version>1.0.0</version>
         </dependency>
     </dependencies>
