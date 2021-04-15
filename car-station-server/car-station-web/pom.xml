@@ -83,6 +83,12 @@
             <groupId>cn.hutool</groupId>
             <artifactId>hutool-all</artifactId>
         </dependency>
+        <!--redis依耐-->
+        <dependency>
+            <groupId>org.redisson</groupId>
+            <artifactId>redisson-spring-boot-starter</artifactId>
+            <version>3.15.2</version>
+        </dependency>
     </dependencies>
 
     <artifactId>car-station-web</artifactId>

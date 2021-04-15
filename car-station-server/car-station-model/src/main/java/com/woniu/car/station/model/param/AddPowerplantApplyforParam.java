@@ -21,7 +21,7 @@ public class AddPowerplantApplyforParam {
     private String powerplanApplyfortName;
 
     @ApiModelProperty(value = "电站图片")
-    private MultipartFile[] powerplantApplyforImage;
+    private String powerplantApplyforImage;
 
     @NotNull
     @ApiModelProperty(value = "电站介绍",example = "百年充电老店，始于1923")

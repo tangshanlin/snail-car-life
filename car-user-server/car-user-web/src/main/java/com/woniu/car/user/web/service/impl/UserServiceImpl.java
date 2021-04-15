@@ -51,8 +51,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
             //校验电话号码及手机号码
             User user_account = userMapper.selectOne(new QueryWrapper<User>().eq("user_account", registerParam.getUserAccount()));
             User user_tel = userMapper.selectOne(new QueryWrapper<User>().eq("user_tel", registerParam.getUserTel()));
-            if (user_account==null)return -3;
-            if (user_tel==null)return -2;
+            if (user_account!=null)return -3;
+            if (user_tel!=null)return -2;
 
 
             System.out.println(registerParam);

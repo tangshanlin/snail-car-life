@@ -1,8 +1,11 @@
 package com.woniu.car.station.web.service.impl;
 
+import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+import com.woniu.car.station.model.dto.LongitudeAndLatitude;
 import com.woniu.car.station.model.dto.PowerplantApplyforDto;
+import com.woniu.car.station.model.dto.PowerplantApplyforVoDto;
 import com.woniu.car.station.model.entity.Powerplant;
 import com.woniu.car.station.model.entity.PowerplantApplyfor;
 import com.woniu.car.station.model.finalcode.PowerplantApplyforStatus;
@@ -43,7 +46,7 @@ public class PowerplantApplyforServiceImpl extends ServiceImpl<PowerplantApplyfo
     @Resource
     private StationFileUpload stationFileUpload;
 
-    /*
+    /**
      * @Author HuangZhengXing
      * @Description 新增电站申请表
      * @Date  2021/4/9
@@ -52,26 +55,23 @@ public class PowerplantApplyforServiceImpl extends ServiceImpl<PowerplantApplyfo
      **/
     @Override
     @Transactional(rollbackFor = Exception.class)//开启事务回滚
-    public int addPowerplantApplyfor(PowerplantApplyforDto powerplantApplyforDto) {
-        log.info("开始处理接收的图片，参数为:{}",powerplantApplyforDto);
-        MultipartFile[] files = powerplantApplyforDto.getPowerplantApplyforImage();
-        //将文件上传到minio服务器上
-        ArrayList<String> powerplantApplyforImage = stationFileUpload.upload(files);
-        //返回图片地址
-        String powerplantApplyforimg = powerplantApplyforImage.get(0);
-        System.out.println(powerplantApplyforimg);
+    public int addPowerplantApplyfor(PowerplantApplyfor powerplantApplyfor) {
+//        log.info("开始处理接收的图片，参数为:{}",powerplantApplyforDto);
+//        MultipartFile[] files = powerplantApplyforDto.getPowerplantApplyforImage();
+//        //将文件上传到minio服务器上
+//        ArrayList<String> powerplantApplyforImage = stationFileUpload.upload(files);
+//        //返回图片地址
+//        String powerplantApplyforimg = powerplantApplyforImage.get(0);
+//        System.out.println(powerplantApplyforimg);
         int result = 0;
         QueryWrapper<PowerplantApplyfor> wrapper = new QueryWrapper<>();
         //根据名称查找看是否已重复
-        wrapper.eq("powerplan_applyfort_name",powerplantApplyforDto.getPowerplanApplyfortName());
+        wrapper.eq("powerplan_applyfort_name",powerplantApplyfor.getPowerplanApplyfortName());
         PowerplantApplyfor powerplantApplyfor1 = powerplantApplyforMapper.selectOne(wrapper);
         System.out.println(powerplantApplyfor1);
         if(ObjectUtils.isEmpty(powerplantApplyfor1)){
-            powerplantApplyforDto.setPowerplantApplyforStatus(PowerplantApplyforStatus.UNREVIEWED);
+            powerplantApplyfor.setPowerplantApplyforStatus(PowerplantApplyforStatus.UNREVIEWED);
             //新增数据之后返回int类型
-            PowerplantApplyfor powerplantApplyfor = new PowerplantApplyfor();
-            BeanUtils.copyProperties(powerplantApplyforDto,powerplantApplyfor);
-            powerplantApplyfor.setPowerplantApplyforImage(powerplantApplyforimg);
             System.out.println(powerplantApplyfor);
             result = powerplantApplyforMapper.insert(powerplantApplyfor);
         }else {
@@ -82,7 +82,7 @@ public class PowerplantApplyforServiceImpl extends ServiceImpl<PowerplantApplyfo
         return result;
     }
 
-    /*
+    /**
      * @Author HuangZhengXing
      * @Description 修改电站申请表的审核状态
      * @Date  2021/4/9
@@ -127,7 +127,7 @@ public class PowerplantApplyforServiceImpl extends ServiceImpl<PowerplantApplyfo
         return b;
     }
 
-    /*
+    /**
      * @Author HuangZhengXing
      * @Description 根据电站申请id查询对应的申请表
      * @Date  2021/4/9
@@ -135,17 +135,26 @@ public class PowerplantApplyforServiceImpl extends ServiceImpl<PowerplantApplyfo
      * @return com.woniu.car.station.model.entity.PowerplantApplyfor
      **/
     @Override
-    public PowerplantApplyfor getOnePowerplantApplyforById(PowerplantApplyfor powerplantApplyfor) {
+    public PowerplantApplyforVoDto getOnePowerplantApplyforById(PowerplantApplyfor powerplantApplyfor) {
         log.info("开始接收要查询申请表的id参数为:{}",powerplantApplyfor);
         QueryWrapper<PowerplantApplyfor> wrapper = new QueryWrapper<>();
         //对应电站申请表id字段
         wrapper.eq("powerplant_applyfor_id",powerplantApplyfor.getPowerplantApplyforId());
         //查询电站申请表信息
         PowerplantApplyfor powerplantApplyfor1 = powerplantApplyforMapper.selectOne(wrapper);
-        log.info("查询完成之后返回值为:{}",powerplantApplyfor1);
+        if (!ObjectUtils.isEmpty(powerplantApplyfor1)){
+            System.out.println(powerplantApplyfor1);
+            PowerplantApplyforVoDto powerplantApplyforVoDto = new PowerplantApplyforVoDto();
+            BeanUtils.copyProperties(powerplantApplyfor1,powerplantApplyforVoDto);
+            String lal = powerplantApplyfor1.getPowerplantCoordinate();
+            LongitudeAndLatitude longitudeAndLatitude = JSONUtil.toBean(lal, LongitudeAndLatitude.class);
+            powerplantApplyforVoDto.setPowerplantCoordinate(longitudeAndLatitude);
+            log.info("查询完成之后返回值为:{}",powerplantApplyforVoDto);
 
-        log.info("最后返回查询完成之后的返回值");
-        return powerplantApplyfor1;
+            log.info("最后返回查询完成之后的返回值");
+            return powerplantApplyforVoDto;
+        }
+        return null;
     }
 
     /*
@@ -156,12 +165,24 @@ public class PowerplantApplyforServiceImpl extends ServiceImpl<PowerplantApplyfo
      * @return java.util.List<com.woniu.car.station.model.entity.PowerplantApplyfor>
      **/
     @Override
-    public List<PowerplantApplyfor> listPowerplantApplyforAll() {
+    public List<PowerplantApplyforVoDto> listPowerplantApplyforAll() {
         log.info("查询所有电站申请信息不需要携带参数");
         //查询所有电站申请表信息
         List<PowerplantApplyfor> powerplantApplyforList = powerplantApplyforMapper.selectList(null);
+        ArrayList<PowerplantApplyforVoDto> powerplantApplyforVoDtoArrayList = new ArrayList<>();
+        for (PowerplantApplyfor powerplantApplyfor : powerplantApplyforList){
+            PowerplantApplyforVoDto powerplantApplyforVoDto = new PowerplantApplyforVoDto();
+            BeanUtils.copyProperties(powerplantApplyfor,powerplantApplyforVoDto);
+            String lal = powerplantApplyfor.getPowerplantCoordinate();
+            LongitudeAndLatitude longitudeAndLatitude = JSONUtil.toBean(lal, LongitudeAndLatitude.class);
+            powerplantApplyforVoDto.setPowerplantCoordinate(longitudeAndLatitude);
+            powerplantApplyforVoDtoArrayList.add(powerplantApplyforVoDto);
+        }
         log.info("查询所有电站申请信息完成，返回值为:{}",powerplantApplyforList);
-        return powerplantApplyforList;
+        for (PowerplantApplyforVoDto powerplantApplyforVoDto : powerplantApplyforVoDtoArrayList){
+            System.out.println(powerplantApplyforVoDto);
+        }
+        return powerplantApplyforVoDtoArrayList;
     }
 
     /*
