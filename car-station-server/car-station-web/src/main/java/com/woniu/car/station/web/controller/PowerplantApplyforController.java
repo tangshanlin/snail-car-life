@@ -22,7 +22,7 @@ import java.util.List;
 
 /**
  * <p>
- *  前端控制器
+ * 前端控制器
  * </p>
  *
  * @author HZX
@@ -35,17 +35,18 @@ public class PowerplantApplyforController {
 
     @Resource
     private PowerplantApplyforService powerplantApplyforService;
-    /*
+
+    /**
+     * @return com.woniu.car.commons.core.dto.ResultEntity
      * @Author WangPeng
      * @Description TODO HZX
-     * @Date  2021/4/9
+     * @Date 2021/4/9
      * @Param [addPowerplantApplyforParam]
-     * @return com.woniu.car.commons.core.dto.ResultEntity
      **/
     @PostMapping("/api/add_powerplant_applyfor")
-    @ApiOperation(value = "新增电站申请表",notes = "Flag为true时新增成功，false为失败")
-    @ApiImplicitParam(name = "addPowerplantApplyforParam",value = "接收新增电站申请表信息",required = true,dataType = "AddPowerplantApplyforParam")
-    public ResultEntity addPowerplantApplyfor(AddPowerplantApplyforParam addPowerplantApplyforParam){
+    @ApiOperation(value = "新增电站申请表", notes = "Flag为true时新增成功，false为失败")
+    @ApiImplicitParam(name = "addPowerplantApplyforParam", value = "接收新增电站申请表信息", required = true, dataType = "AddPowerplantApplyforParam")
+    public ResultEntity addPowerplantApplyfor(AddPowerplantApplyforParam addPowerplantApplyforParam) {
         System.out.println(addPowerplantApplyforParam);
         //复制对象
         //new一个新对象用来接收param前端传的参数
@@ -53,88 +54,94 @@ public class PowerplantApplyforController {
         BeanUtils.copyProperties(addPowerplantApplyforParam, powerplantApplyforDto);
         System.out.println(powerplantApplyforDto);
         int result = powerplantApplyforService.addPowerplantApplyfor(powerplantApplyforDto);
-        if (result > 0){
+        if (result > 0) {
             return ResultEntity.buildSuccessEntity().setMessage("新增电站申请表信息成功").setCode(ConstCode.ACCESS_SUCCESS);
-        }else  if (result == -10){
+        } else if (result == -10) {
             return ResultEntity.buildFailEntity().setMessage("电站名称已存在").setCode(ConstCode.NAME_ALREADY_EXISTS).setFlag(false);
         } else {
             return ResultEntity.buildFailEntity().setMessage("新增电站申请表信息失败").setCode(ConstCode.LAST_STAGE).setFlag(false);
         }
     }
-    /*
+
+    /**
+     * @return com.woniu.car.commons.core.dto.ResultEntity<java.util.List < com.woniu.car.station.model.entity.PowerplantApplyfor>>
      * @Author WangPeng
      * @Description TODO HZX
-     * @Date  2021/4/9
+     * @Date 2021/4/9
      * @Param []
-     * @return com.woniu.car.commons.core.dto.ResultEntity<java.util.List<com.woniu.car.station.model.entity.PowerplantApplyfor>>
      **/
     @GetMapping("/api/list_powerplantapplyfor")
-    @ApiOperation(value = "查询所有电站申请表",notes = "不需要填入参数")
-    public ResultEntity<List<PowerplantApplyfor>> listPowerplantApplyfor(){
+    @ApiOperation(value = "查询所有电站申请表", notes = "不需要填入参数")
+    public ResultEntity<List<PowerplantApplyfor>> listPowerplantApplyfor() {
         List<PowerplantApplyfor> powerplantApplyforList = powerplantApplyforService.listPowerplantApplyforAll();
         return ResultEntity.buildListSuccessEntity(PowerplantApplyfor.class).setMessage("查询所有电站申请成功").setCode(ConstCode.ACCESS_SUCCESS).setData(powerplantApplyforList);
     }
-    /*
+
+    /**
+     * @return com.woniu.car.commons.core.dto.ResultEntity
      * @Author WangPeng
      * @Description TODO HZX
-     * @Date  2021/4/9
+     * @Date 2021/4/9
      * @Param [getOnePowerplantApplyforParam]
-     * @return com.woniu.car.commons.core.dto.ResultEntity
      **/
     @PostMapping("/get_powerplantapplyfor")
-    @ApiOperation(value = "查询具体电站申请表",notes = "Flag为true时查询成功，false为失败")
-    @ApiImplicitParam(name = "getOnePowerplantApplyforParam",value = "要查询具体电站申请表信息的id",required = true,dataType = "GetOnePowerplantApplyforParam")
-    public ResultEntity getPowerplantApplyfor(@RequestBody GetOnePowerplantApplyforParam getOnePowerplantApplyforParam){
+    @ApiOperation(value = "查询具体电站申请表", notes = "Flag为true时查询成功，false为失败")
+    @ApiImplicitParam(name = "getOnePowerplantApplyforParam", value = "要查询具体电站申请表信息的id", required = true, dataType = "GetOnePowerplantApplyforParam")
+    public ResultEntity getPowerplantApplyfor(@RequestBody GetOnePowerplantApplyforParam getOnePowerplantApplyforParam) {
         PowerplantApplyfor powerplantApplyfor = new PowerplantApplyfor();
         //复制对象
-        BeanUtils.copyProperties(getOnePowerplantApplyforParam,powerplantApplyfor);
+        BeanUtils.copyProperties(getOnePowerplantApplyforParam, powerplantApplyfor);
         System.out.println(powerplantApplyfor);
         //查询之后的返回值
         PowerplantApplyfor onePowerplantApplyforById = powerplantApplyforService.getOnePowerplantApplyforById(powerplantApplyfor);
         System.out.println(onePowerplantApplyforById);
         return ResultEntity.buildSuccessEntity(PowerplantApplyfor.class).setMessage("查询具体电站信息成功").setCode(ConstCode.ACCESS_SUCCESS).setData(onePowerplantApplyforById);
     }
-    /*
+
+    /**
+     * @return com.woniu.car.commons.core.dto.ResultEntity
      * @Author WangPeng
      * @Description TODO HZX
-     * @Date  2021/4/9
+     * @Date 2021/4/9
      * @Param [updatePowerplantApplyforStatusParam]
-     * @return com.woniu.car.commons.core.dto.ResultEntity
      **/
     @PutMapping("/api/update_powerplant_applyfor")
-    @ApiOperation(value = "修改电站申请表的审核状态",notes = "要传入电站申请表的id和要修改的审核状态 0未审核 1审核通过 2审核未通过")
-    @ApiImplicitParam(name = "updatePowerplantApplyforStatusParam",value = "要修改具体电站申请表审核状态的id",required = true,dataType = "UpdatePowerplantApplyforStatusParam")
-    public ResultEntity updatePowerplantApplyforStatus(@RequestBody UpdatePowerplantApplyforStatusParam updatePowerplantApplyforStatusParam){
+    @ApiOperation(value = "修改电站申请表的审核状态", notes = "要传入电站申请表的id和要修改的审核状态 0未审核 1审核通过 2审核未通过")
+    @ApiImplicitParam(name = "updatePowerplantApplyforStatusParam", value = "要修改具体电站申请表审核状态的id", required = true, dataType = "UpdatePowerplantApplyforStatusParam")
+    public ResultEntity updatePowerplantApplyforStatus(@RequestBody UpdatePowerplantApplyforStatusParam updatePowerplantApplyforStatusParam) {
         PowerplantApplyfor powerplantApplyfor = new PowerplantApplyfor();
-        BeanUtils.copyProperties(updatePowerplantApplyforStatusParam,powerplantApplyfor);
+        BeanUtils.copyProperties(updatePowerplantApplyforStatusParam, powerplantApplyfor);
         boolean b = false;
         System.out.println(powerplantApplyfor);
-        if (updatePowerplantApplyforStatusParam.getPowerplantApplyforStatus() == 1){
+        if (updatePowerplantApplyforStatusParam.getPowerplantApplyforStatus() == 1) {
             powerplantApplyfor.setPowerplantApplyforStatus(PowerplantApplyforStatus.APPLYFORSUCCESS);
-           if (powerplantApplyforService.updatePowerplantApplyforStatusById(powerplantApplyfor)) {
-               return ResultEntity.buildSuccessEntity().setMessage("修改审核状态成功").setCode(ConstCode.ACCESS_SUCCESS);
-           }
-        }else {
+            if (powerplantApplyforService.updatePowerplantApplyforStatusById(powerplantApplyfor)) {
+                return ResultEntity.buildSuccessEntity().setMessage("修改审核状态成功").setCode(ConstCode.ACCESS_SUCCESS);
+            }
+        } else {
             powerplantApplyfor.setPowerplantApplyforStatus(PowerplantApplyforStatus.APPLYFORFAIL);
         }
         return ResultEntity.buildSuccessEntity().setMessage("修改审核状态失败").setCode(ConstCode.LAST_STAGE).setFlag(false);
     }
-    /*
+
+    /**
+     * @return com.woniu.car.commons.core.dto.ResultEntity
      * @Author WangPeng
      * @Description TODO HZX
-     * @Date  2021/4/9
+     * @Date 2021/4/9
      * @Param [deletePowerplantApplyforParam]
-     * @return com.woniu.car.commons.core.dto.ResultEntity
      **/
     @DeleteMapping("/api/delete_powerplant_applyfor")
-    @ApiOperation(value = "删除电站申请表",notes = "Flag为true时删除成功，false为失败")
-    @ApiImplicitParam(name = "deletePowerplantApplyforParam",value = "要删除具体电站申请表的id",required = true,dataType = "DeletePowerplantApplyforParam")
-    public ResultEntity deletePowerplantApplyfor(@RequestBody DeletePowerplantApplyforParam deletePowerplantApplyforParam){
+    @ApiOperation(value = "删除电站申请表", notes = "Flag为true时删除成功，false为失败")
+    @ApiImplicitParam(name = "deletePowerplantApplyforParam", value = "要删除具体电站申请表的id", required = true, dataType = "DeletePowerplantApplyforParam")
+    public ResultEntity deletePowerplantApplyfor(@RequestBody DeletePowerplantApplyforParam deletePowerplantApplyforParam) {
         PowerplantApplyfor powerplantApplyfor = new PowerplantApplyfor();
-        BeanUtils.copyProperties(deletePowerplantApplyforParam,powerplantApplyfor);
+        BeanUtils.copyProperties(deletePowerplantApplyforParam, powerplantApplyfor);
         System.out.println(powerplantApplyfor);
         boolean b = powerplantApplyforService.deletePowerplantApplyforById(powerplantApplyfor);
-        if (b) return ResultEntity.buildSuccessEntity().setMessage("删除成功").setCode(ConstCode.ACCESS_SUCCESS);
+        if (b) {
+            return ResultEntity.buildSuccessEntity().setMessage("删除成功").setCode(ConstCode.ACCESS_SUCCESS);
+        }
         return ResultEntity.buildFailEntity().setMessage("删除失败").setCode(ConstCode.LAST_STAGE).setFlag(false);
     }
 

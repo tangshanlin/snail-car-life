@@ -43,7 +43,7 @@ public class PowerplantApplyforServiceImpl extends ServiceImpl<PowerplantApplyfo
     @Resource
     private StationFileUpload stationFileUpload;
 
-    /*
+    /**
      * @Author HuangZhengXing
      * @Description 新增电站申请表
      * @Date  2021/4/9
@@ -82,7 +82,7 @@ public class PowerplantApplyforServiceImpl extends ServiceImpl<PowerplantApplyfo
         return result;
     }
 
-    /*
+    /**
      * @Author HuangZhengXing
      * @Description 修改电站申请表的审核状态
      * @Date  2021/4/9
@@ -122,12 +122,13 @@ public class PowerplantApplyforServiceImpl extends ServiceImpl<PowerplantApplyfo
             System.out.println(powerplant);
             log.info("新增电站信息参数值:{}",powerplant);
             int i = powerplantService.addPowerplant(powerplant);
+            System.out.println(powerplant.getPowerplantId());
         }
         log.info("最后返回布尔值:{}",b);
         return b;
     }
 
-    /*
+    /**
      * @Author HuangZhengXing
      * @Description 根据电站申请id查询对应的申请表
      * @Date  2021/4/9
@@ -143,12 +144,11 @@ public class PowerplantApplyforServiceImpl extends ServiceImpl<PowerplantApplyfo
         //查询电站申请表信息
         PowerplantApplyfor powerplantApplyfor1 = powerplantApplyforMapper.selectOne(wrapper);
         log.info("查询完成之后返回值为:{}",powerplantApplyfor1);
-
         log.info("最后返回查询完成之后的返回值");
         return powerplantApplyfor1;
     }
 
-    /*
+    /**
      * @Author HuangZhengXing
      * @Description 查询所有电站申请表信息
      * @Date  2021/4/9
@@ -164,7 +164,7 @@ public class PowerplantApplyforServiceImpl extends ServiceImpl<PowerplantApplyfo
         return powerplantApplyforList;
     }
 
-    /*
+    /**
      * @Author HuangZhengXing
      * @Description 根据电站申请表id删除电站申请表
      * @Date  2021/4/9
@@ -177,7 +177,9 @@ public class PowerplantApplyforServiceImpl extends ServiceImpl<PowerplantApplyfo
         log.info("开始进行接收要删除申请表的id",powerplantApplyfor.getPowerplantApplyforId());
         boolean b = false;
         int i = powerplantApplyforMapper.deleteById(powerplantApplyfor.getPowerplantApplyforId());
-        if (i>0) b=true;
+        if (i>0) {
+            b=true;
+        }
         log.info("删除完成之后返回布尔类型:{}",b);
         return b;
     }

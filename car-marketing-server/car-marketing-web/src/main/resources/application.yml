@@ -36,7 +36,7 @@ seata:
   application-id: ${spring.application.name}
 # minio 参数配置
 minio:
-  endpoint: http://192.168.10.86:9000
+  endpoint: http://119.23.75.795:9000
   accessKey: minioadmin
   secretKey: minioadmin
   bucketName: marketing
