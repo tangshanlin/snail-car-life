@@ -3,7 +3,6 @@ package com.woniu.car.marketing.web.service;
 import com.woniu.car.marketing.model.dtoVo.GetCouponInfoByIdDtoVo;
 import com.woniu.car.marketing.model.dtoVo.GetCouponInfoByUserIdDtoVo;
 import com.woniu.car.marketing.model.paramVo.AddUserGetCoupon;
-import com.woniu.car.marketing.model.paramVo.CouponInfoByUserIdParamVo;
 import com.woniu.car.marketing.model.paramVo.GetCouponInfoByIdParamVo;
 import com.woniu.car.marketing.model.paramVo.GetCouponInfoByUserIdAndSourceParamVo;
 import com.woniu.car.marketing.web.domain.CouponInfo;
@@ -27,5 +26,7 @@ public interface CouponInfoService extends IService<CouponInfo> {
 
     Boolean addUserGetCoupon(AddUserGetCoupon addUserGetCoupon);
 
-    List<GetCouponInfoByUserIdDtoVo> listCouponInfoByUserId(CouponInfoByUserIdParamVo couponInfoByUserIdParamVo);
+    List<GetCouponInfoByUserIdDtoVo> listCouponInfoByUserId();
+
+    Integer addUserGetCouponByCredits(AddUserGetCoupon addUserGetCoupon);
 }

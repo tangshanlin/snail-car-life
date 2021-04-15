@@ -19,6 +19,7 @@ import com.woniu.car.station.model.entity.Station;
 import com.woniu.car.station.model.param.GetPowerplantParam;
 import com.woniu.car.station.model.param.station.GetOneStationParam;
 import com.woniu.car.user.web.domain.Address;
+import com.woniu.car.user.web.util.GetTokenUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.util.ObjectUtils;
@@ -65,6 +66,8 @@ public class PowerplantOrderController {
     @RequestMapping(value = "insert_powerplant_order",method= RequestMethod.POST)
     @ApiOperation("新增电站订单")
     public ResultEntity insertPowerplantOrder(@RequestBody @Valid AddPowerplantOrderVo addPowerplantOrderVo){
+       addPowerplantOrderVo.setUserId(GetTokenUtil.getUserId());
+
         /*根据电桩id查询电站信息*/
         GetOneStationParam getOneStationParam = new GetOneStationParam();
         getOneStationParam.setStationId(addPowerplantOrderVo.getStationId());

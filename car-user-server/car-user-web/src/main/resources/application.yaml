@@ -11,13 +11,22 @@ spring:
     driver-class-name: com.mysql.jdbc.Driver
     username: root
     password: root
+  redis:
+    database: 0
+    host: localhost
+    port: 6379
 
 
   cloud:
     nacos:
       discovery:
         server-addr: localhost:8848
-
+## seat 配置
+#seata:
+#  enabled: true
+#  tx-service-group: my_test_tx_group
+#  enable-auto-data-source-proxy: true
+#  application-id: ${spring.application.name}
 
 
 swagger:
@@ -36,10 +45,11 @@ jackson:
   serialization:
     FAIL_ON_EMPTY_BEANS: false
 
-# seat 配置
+## seat 配置
 seata:
   enabled: true
   tx-service-group: my_test_tx_group
   enable-auto-data-source-proxy: true
+
   application-id: ${spring.application.name}
 

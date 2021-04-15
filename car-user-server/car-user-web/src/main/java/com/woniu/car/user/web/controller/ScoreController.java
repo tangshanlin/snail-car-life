@@ -48,7 +48,6 @@ public class ScoreController {
             @ApiResponse(code = 1400, message = "输入参数错误")
 
     })
-
 //    @ApiImplicitParams({
 //            //dataType:参数类型
 //            //paramType:参数由哪里获取     path->从路径中获取，query->?传参，body->ajax请求

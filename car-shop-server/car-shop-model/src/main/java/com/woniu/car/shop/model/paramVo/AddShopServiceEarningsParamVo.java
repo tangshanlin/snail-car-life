@@ -19,7 +19,7 @@ import java.math.BigDecimal;
 @ApiModel(value = "生成门店服务类别收益数据需要的参数")
 public class AddShopServiceEarningsParamVo {
 
-    @ApiModelProperty(value = "门店id")
+    @ApiModelProperty(value = "门店id",example = "1")
     @Min(value = 1,message = "门店id必须大于等于1")
     @NotNull(message = "门店id不能为空")
     private Integer shopId;//关联门店id

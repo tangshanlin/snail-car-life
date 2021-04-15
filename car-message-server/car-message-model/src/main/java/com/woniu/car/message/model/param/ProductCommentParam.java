@@ -52,9 +52,11 @@ public class ProductCommentParam implements Serializable {
     @ApiModelProperty(value = "商品评论内容")
     @NotEmpty(message="商品评论内容不能为空")
     private String commentWords;
+
     /**
      * 商品订单编号
      */
+
     @ApiModelProperty(value = "商品订单编号")
     @NotEmpty(message="商品订单编号不能为空")
     private String commentOrderCode;

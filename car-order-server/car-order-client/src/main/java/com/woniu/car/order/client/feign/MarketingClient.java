@@ -40,4 +40,5 @@ public interface MarketingClient {
      **/
     @PutMapping("/marketing/coupon/update_coupon_by_pay_success")
     public ResultEntity updateCouponByPaySuccess(@RequestBody UpdatePaySuccessCouponParamVo updatePaySuccessCouponParamVo);
+
 }

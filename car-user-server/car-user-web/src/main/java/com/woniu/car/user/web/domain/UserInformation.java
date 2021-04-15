@@ -42,8 +42,7 @@ public class UserInformation implements Serializable {
     @ApiModelProperty(value = "用户手机号")
     private String userTel;
 
-    @ApiModelProperty(value = "出生日期")
-    private Long driveringlicenseBirthday;
+
 
     @ApiModelProperty(value = "用户积分")
     private Integer userScore;

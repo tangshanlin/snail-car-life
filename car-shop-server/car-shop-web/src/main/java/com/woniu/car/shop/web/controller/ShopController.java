@@ -9,6 +9,7 @@ import com.woniu.car.shop.model.paramVo.*;
 import com.woniu.car.shop.web.service.ShopService;
 import io.swagger.annotations.*;
 import org.springframework.util.ObjectUtils;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -63,6 +64,33 @@ public class ShopController {
 
     }
 
+    /*
+    * @Author TangShanLin
+    * @Description TODO 门店通过审核接口
+    * @Date  16:52
+    * @Param [shopId]
+    * @return com.woniu.car.commons.core.dto.ResultEntity
+    **/
+    @ApiOperation(value = "门店通过审核接口")
+    @PutMapping("update_shop_account_start")
+    public ResultEntity updateShopAccountStart(@RequestBody @Valid ShopIdParamVo shopId){
+        System.out.println(shopId);
+        Integer state = shopService.updateShopAccountStart(shopId);
+        System.out.println(state+"------------");
+        if(state == ConstCode.ACCESS_SUCCESS){
+            return ResultEntity.buildSuccessEntity()
+                    .setMessage("审核通过");
+        } else if (state == ConstCode.GET_ACCOUNT_ROLE_FAIL){
+            return ResultEntity.buildFailEntity()
+                    .setCode(ConstCode.GET_ACCOUNT_ROLE_FAIL)
+                    .setMessage("账号授予角色失败");
+        }else {
+            return ResultEntity.buildFailEntity()
+                    .setCode(ConstCode.ADD_END_ACCOUNT_FAIL)
+                    .setMessage("新增后台账户失败");
+        }
+    }
+
 
     /**
      * 根据门店id查询详细信息接口
@@ -71,7 +99,7 @@ public class ShopController {
      */
     @ApiOperation(value = "根据门店id查询详细信息接口")
     @GetMapping("get_shop_info")
-    public ResultEntity<FindShopInfoVo> findShopInfo(@Valid ShopIdParamVo shopId){
+    public ResultEntity<FindShopInfoVo> findShopInfo(@Validated ShopIdParamVo shopId){
         FindShopInfoVo findShopInfoVo = shopService.findShopInfo(shopId);
         return ResultEntity.buildSuccessEntity(FindShopInfoVo.class)
                 .setData(findShopInfoVo)

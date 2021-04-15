@@ -47,7 +47,7 @@ public class ShopEarningsInfoController {
         if(boo){
             return ResultEntity.buildSuccessEntity().setMessage("新增门店服务收益成功");
         }else {
-            return ResultEntity.buildSuccessEntity().setMessage("新增门店服务收益失败");
+            return ResultEntity.buildFailEntity().setMessage("新增门店服务收益失败");
         }
     }
 }
