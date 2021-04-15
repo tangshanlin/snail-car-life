@@ -17,6 +17,8 @@ import com.woniu.car.product.web.elasticsearch.ProductRepository;
 import com.woniu.car.product.web.service.ProductCateService;
 import com.woniu.car.product.web.service.ProductService;
 import io.swagger.annotations.*;
+import org.elasticsearch.index.query.QueryBuilders;
+import org.springframework.data.elasticsearch.core.query.NativeSearchQueryBuilder;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -37,8 +39,6 @@ public class ProductController {
 
     @Resource
     private ProductService productService;
-    @Resource
-    private ProductCateService productCateService;
 
     @Resource
     private ProductRepository repository;
@@ -52,18 +52,18 @@ public class ProductController {
      */
     @PostMapping("addProduct")
     @ApiOperation(value = "添加商品", notes = "<span style='color:red;'>用来添加商品的接口</span>")
-    @ApiImplicitParams({
-            //dataType:参数类型
-            //paramType:参数由哪里获取     path->从路径中获取，query->?传参，body->ajax请求
-            @ApiImplicitParam(name = "productName", value = "商品名字"),
-            @ApiImplicitParam(name = "cateId", value = "商品的父id"),
-            @ApiImplicitParam(name = "file", value = "上传商品图片"),
-            @ApiImplicitParam(name = "productDetail", value = "商品详情"),
-            @ApiImplicitParam(name = "productStock", value = "商品库存"),
-            @ApiImplicitParam(name = "productPrice", value = "商品价格"),
-            @ApiImplicitParam(name = "productBrand", value = "商品品牌"),
-    })
-    public ResultEntity addProduct(ProductParame parame) {
+//    @ApiImplicitParams({
+//            //dataType:参数类型
+//            //paramType:参数由哪里获取     path->从路径中获取，query->?传参，body->ajax请求
+//            @ApiImplicitParam(name = "productName", value = "商品名字"),
+//            @ApiImplicitParam(name = "cateId", value = "商品的父id"),
+//            @ApiImplicitParam(name = "file", value = "上传商品图片"),
+//            @ApiImplicitParam(name = "productDetail", value = "商品详情"),
+//            @ApiImplicitParam(name = "productStock", value = "商品库存"),
+//            @ApiImplicitParam(name = "productPrice", value = "商品价格"),
+//            @ApiImplicitParam(name = "productBrand", value = "商品品牌"),
+//    })
+    public ResultEntity addProduct(@RequestBody ProductParame parame) {
         System.out.println("---------------" + parame);
         Boolean flag = productService.addProduct(parame);
         if (flag) {
@@ -92,6 +92,7 @@ public class ProductController {
         return ResultEntity.buildSuccessEntity(Product.class).
                 setMessage("查询成功").setData(product);
     }
+
 
     /**
      * 订单修改商品减库存
@@ -261,9 +262,35 @@ public class ProductController {
         System.out.println(save);
     }
 
+    /**
+     * 通过id从es删除
+     * @param id
+     */
     public void deleteEs(Integer id){
         repository.deleteById(id);
     }
+
+    /**
+     * 搜索框
+     * @param text
+     * @return
+     */
+    @GetMapping("search")
+    @ApiOperation(value = "商城搜索框", notes = "商品 ES全文检索 ")
+    @ApiImplicitParam(name = "text",value = "商城搜索框",dataType = "String",required = true)
+    public Iterable<CarProductIndex> search(String text) {
+        //产生一个条件构建对象
+        NativeSearchQueryBuilder builder = new NativeSearchQueryBuilder();
+        //从fieldNames 中进行 文本关键词匹配
+        builder.withQuery(QueryBuilders.multiMatchQuery(text,
+                "productName",
+                "productDetail",
+                "productBrand"
+        ));
+        return repository.search(builder.build());
+    }
+
+
 
 }
 

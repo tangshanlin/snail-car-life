@@ -13,6 +13,8 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
+import javax.validation.constraints.NotNull;
+
 /**
  * <p>
  * 
@@ -34,6 +36,9 @@ public class OneClassify implements Serializable {
 
       @ApiModelProperty(value = "一级分类名称")
       private String oneClassifyName;
+
+    @ApiModelProperty(value = "一级分类图片")
+    private String oneClassifyImage;
 
       @ApiModelProperty(value = "创建时间")
         @TableField(fill = FieldFill.INSERT)

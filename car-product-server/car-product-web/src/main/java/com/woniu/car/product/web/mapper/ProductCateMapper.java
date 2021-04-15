@@ -2,6 +2,9 @@ package com.woniu.car.product.web.mapper;
 
 import com.woniu.car.product.web.domain.ProductCate;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import org.apache.ibatis.annotations.Select;
+
+import java.util.List;
 
 /**
  * <p>

@@ -23,15 +23,20 @@ public class ProductCateDto {
      * 父id
      */
     private Integer parentId;
+
     /**
      * 商品图片
      */
-    private JSONObject commentImages;
+    private String cateImage;
 
     /**
      * 级别
      */
     private Integer level;
 
+    /**
+     * 是否活跃
+     */
+    private Integer isActive;
 
 }

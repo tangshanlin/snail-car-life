@@ -45,19 +45,20 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
     public boolean addProduct(ProductParame parame) {
         if (!ObjectUtils.isEmpty(parame)) {
 
-            MultipartFile[] file = parame.getFile();
-            ArrayList<String> uploads = myFileUpload.upload(file);
-            JSONObject jsonObject = new JSONObject();
-            if (uploads.size() == 0) {
-                System.out.println("没有上传商品图片");
-            } else {
-                uploads.forEach(upload -> {
-                    jsonObject.put("P" + UUID.randomUUID().toString(), upload);
-                });
-            }
-            String commentImages = JSONObject.toJSONString(jsonObject);
+//            MultipartFile[] file = parame.getFile();
+//            ArrayList<String> uploads = myFileUpload.upload(file);
+//            JSONObject jsonObject = new JSONObject();
+//            if (uploads.size() == 0) {
+//                System.out.println("没有上传商品图片");
+//            } else {
+//                uploads.forEach(upload -> {
+//                    jsonObject.put("P" + UUID.randomUUID().toString(), upload);
+//                });
+//            }
+//            String commentImages = JSONObject.toJSONString(jsonObject);
             Product product = BeanCopyUtil.copyOne(parame, Product::new);
-            product.setProductImage(commentImages);
+            System.out.println(product);
+//            product.setProductImage(commentImages);
             int insert = productMapper.insert(product);
             if (insert > 0) {
                 return true;
