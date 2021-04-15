@@ -39,8 +39,6 @@ public class ProductController {
 
     @Resource
     private ProductService productService;
-    @Resource
-    private ProductCateService productCateService;
 
     @Resource
     private ProductRepository repository;
@@ -54,18 +52,18 @@ public class ProductController {
      */
     @PostMapping("addProduct")
     @ApiOperation(value = "添加商品", notes = "<span style='color:red;'>用来添加商品的接口</span>")
-    @ApiImplicitParams({
-            //dataType:参数类型
-            //paramType:参数由哪里获取     path->从路径中获取，query->?传参，body->ajax请求
-            @ApiImplicitParam(name = "productName", value = "商品名字"),
-            @ApiImplicitParam(name = "cateId", value = "商品的父id"),
-            @ApiImplicitParam(name = "file", value = "上传商品图片"),
-            @ApiImplicitParam(name = "productDetail", value = "商品详情"),
-            @ApiImplicitParam(name = "productStock", value = "商品库存"),
-            @ApiImplicitParam(name = "productPrice", value = "商品价格"),
-            @ApiImplicitParam(name = "productBrand", value = "商品品牌"),
-    })
-    public ResultEntity addProduct(ProductParame parame) {
+//    @ApiImplicitParams({
+//            //dataType:参数类型
+//            //paramType:参数由哪里获取     path->从路径中获取，query->?传参，body->ajax请求
+//            @ApiImplicitParam(name = "productName", value = "商品名字"),
+//            @ApiImplicitParam(name = "cateId", value = "商品的父id"),
+//            @ApiImplicitParam(name = "file", value = "上传商品图片"),
+//            @ApiImplicitParam(name = "productDetail", value = "商品详情"),
+//            @ApiImplicitParam(name = "productStock", value = "商品库存"),
+//            @ApiImplicitParam(name = "productPrice", value = "商品价格"),
+//            @ApiImplicitParam(name = "productBrand", value = "商品品牌"),
+//    })
+    public ResultEntity addProduct(@RequestBody ProductParame parame) {
         System.out.println("---------------" + parame);
         Boolean flag = productService.addProduct(parame);
         if (flag) {
@@ -94,6 +92,7 @@ public class ProductController {
         return ResultEntity.buildSuccessEntity(Product.class).
                 setMessage("查询成功").setData(product);
     }
+
 
     /**
      * 订单修改商品减库存

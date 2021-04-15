@@ -1,6 +1,5 @@
-package com.woniu.car.product.model.dto;
+package com.woniu.car.product.web.domain;
 
-import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.annotation.*;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
