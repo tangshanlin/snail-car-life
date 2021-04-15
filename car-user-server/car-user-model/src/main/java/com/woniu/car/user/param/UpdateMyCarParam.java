@@ -18,12 +18,14 @@ import javax.validation.constraints.NotNull;
 public class UpdateMyCarParam {
 
     @ApiModelProperty(value = "用户id")
-    @NotNull
-    private Integer userId;
+    @NotNull(message = "我的爱车ID不能为空" )
+    private Integer mycarId;
 
     @ApiModelProperty(value = "里程")
-    @NotNull
+    @NotNull(message = "")
     private Integer mycarKm;
+
+
 
 
 

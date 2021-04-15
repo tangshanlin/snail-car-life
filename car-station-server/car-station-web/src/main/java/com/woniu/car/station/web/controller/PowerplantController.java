@@ -13,6 +13,7 @@ import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.BeanUtils;
 import org.springframework.context.annotation.Bean;
+import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -44,7 +45,10 @@ public class PowerplantController {
     @PostMapping("/get_one_powerplant")
     @ApiOperation(value = "根据电站id查询电站信息",notes = "传入要查询的电站id")
     @ApiImplicitParam(name = "getPowerplantParam",value = "要查询的电站id",required = true,dataType = "GetPowerplantParam")
-    public ResultEntity<Powerplant> getOnePowerplant(@RequestBody GetPowerplantParam getPowerplantParam){
+    public ResultEntity getOnePowerplant(@RequestBody GetPowerplantParam getPowerplantParam){
+        if (ObjectUtils.isEmpty(getPowerplantParam.getPowerplantId())){
+            return ResultEntity.buildEntity(Powerplant.class).setMessage("输入为空，或输入错误").setFlag(false).setData(null).setCode(ConstCode.LAST_STAGE);
+        }
         //复制param参数到实体类
         Powerplant powerplant = new Powerplant();
         BeanUtils.copyProperties(getPowerplantParam,powerplant);
@@ -64,6 +68,7 @@ public class PowerplantController {
     public ResultEntity<List<Powerplant>> listPowerplant(){
         //调用查询所有电站信息的方法
         List<Powerplant> powerplantList = powerplantService.listPowerplantAll();
+        if (ObjectUtils.isEmpty(powerplantList))return ResultEntity.buildListSuccessEntity(Powerplant.class).setMessage("查询所有电站信息成功,结果为空").setCode(ConstCode.ACCESS_SUCCESS).setData(powerplantList);
         return ResultEntity.buildListSuccessEntity(Powerplant.class).setMessage("查询所有电站信息成功").setCode(ConstCode.ACCESS_SUCCESS).setData(powerplantList);
     }
     /**
@@ -77,6 +82,7 @@ public class PowerplantController {
     @ApiOperation(value = "根据电站id修改电站信息",notes = "传入要修改的电站id")
     @ApiImplicitParam(name = "updatePowerplantParam",value = "要修改的电站信息",required = true,dataType = "UpdatePowerplantParam")
     public ResultEntity updatePowerplant(@RequestBody UpdatePowerplantParam updatePowerplantParam){
+        if (ObjectUtils.isEmpty(updatePowerplantParam)) return ResultEntity.buildEntity().setMessage("输入为空，或输入错误").setFlag(false).setCode(ConstCode.LAST_STAGE);
         Powerplant powerplant = new Powerplant();
         BeanUtils.copyProperties(updatePowerplantParam,powerplant);
         System.out.println(powerplant);
@@ -95,6 +101,7 @@ public class PowerplantController {
     @ApiOperation(value = "根据电站id删除电站信息",notes = "传入要删除的电站id")
     @ApiImplicitParam(name = "deletePowerplantParam",value = "要删除的电站id",required = true,dataType = "DeletePowerplantParam")
     public ResultEntity deletePowerplant(@RequestBody DeletePowerplantParam deletePowerplantParam){
+        if (ObjectUtils.isEmpty(deletePowerplantParam.getPowerplantId())) return ResultEntity.buildEntity().setMessage("输入为空，或输入错误").setFlag(false).setCode(ConstCode.LAST_STAGE);
         Powerplant powerplant = new Powerplant();
         BeanUtils.copyProperties(deletePowerplantParam,powerplant);
         System.out.println("复制之后的实体类"+":"+powerplant);

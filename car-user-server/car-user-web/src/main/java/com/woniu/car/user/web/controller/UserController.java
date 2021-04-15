@@ -259,7 +259,7 @@ public class UserController {
         //取出code 与redis的比较
         String userTel = loginTelParam.getUserTel();
         String code = loginTelParam.getCode();
-        String codeDb = (String) redisTemplate.opsForValue().get("com:woniu:car:user-server:car-user-web:sendcode:" + userTel);
+        String codeDb = (String) redisTemplate.opsForValue().get("car:user-server:car-user-web:sendcode:" + userTel);
         System.out.println(codeDb);
         if (code.equals(codeDb)) {
 

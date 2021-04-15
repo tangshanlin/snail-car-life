@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 import java.util.List;
 
 /**
@@ -49,9 +50,9 @@ public class MycarController {
         Integer userId = GetTokenUtil.getUserId();
         //根据userId 查询selectMycar
         List<Mycar> mycarList = mycarService.list(new QueryWrapper<Mycar>().eq("user_id", userId));
-        Mycar mycarDb = (Mycar) mycarList;
+
         return ResultEntity.buildListEntity(Mycar.class).setCode(ConstCode.SELECTMYCAR_SUCCESS).setFlag(true)
-                .setMessage("查询我的爱车成功");
+                .setMessage("查询我的爱车成功").setData(mycarList);
     }
 
     /*新增我的爱车信息接口*/
@@ -81,14 +82,15 @@ public class MycarController {
 //    })
     public ResultEntity addMycar(@RequestBody @Valid AddMycarParam addMycarParam){
         //校验输入参数
-        Integer userId = addMycarParam.getUserId();
+
         //从jwt中获取useid
         Integer userIdToken= GetTokenUtil.getUserId();
 
 
-        if (!ObjectUtils.isEmpty(addMycarParam)&userId==userIdToken){
+        if (!ObjectUtils.isEmpty(addMycarParam)&!ObjectUtils.isEmpty(userIdToken)){
             //校验成功添加
             Mycar mycar = BeanCopyUtil.copyOne(addMycarParam, Mycar::new);
+            mycar.setUserId(userIdToken);
             boolean save = mycarService.save(mycar);
             if(save) return ResultEntity.buildEntity().setCode(ConstCode.ADDMYCAR_SUCCESS).setFlag(true)
                     .setMessage("添加我的爱车信息成功");
@@ -113,14 +115,17 @@ public class MycarController {
 //    })
     public ResultEntity updateMycar(@RequestBody @Valid UpdateMyCarParam updateMyCarParam){
         //校验参数
-        Integer userId = updateMyCarParam.getUserId();
+        @NotNull(message = "我的爱车ID不能为空") Integer mycarId = updateMyCarParam.getMycarId();
+
         Integer mycarKm = updateMyCarParam.getMycarKm();
-        if (userId!=null&mycarKm!=null){
+        if (mycarId!=null&mycarKm!=null){
             //从jwt中取出userID
             Integer userIdToken = GetTokenUtil.getUserId();
-            if (userId==userIdToken){
+            Mycar mycarDb = mycarService.getOne(new QueryWrapper<Mycar>().eq("mycar_id", mycarId));
+
+            if (mycarDb.getUserId()==userIdToken){
                 //开始修改
-                Mycar mycarDb = mycarService.getOne(new QueryWrapper<Mycar>().eq("user_id", userId));
+
                 mycarDb.setMycarKm(mycarKm);
                 boolean b = mycarService.updateById(mycarDb);
                 if (b) return ResultEntity.buildEntity().setCode(ConstCode.UPDATEMYCAR_SUCCESS).setFlag(true)

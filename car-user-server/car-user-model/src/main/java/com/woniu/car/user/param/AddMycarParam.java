@@ -19,12 +19,12 @@ import javax.validation.constraints.NotNull;
 @Data
 @ApiModel(value = "新增我的爱车的参数")
 public class AddMycarParam {
-    @ApiModelProperty(value = "用户id")
-    @NotNull
-    private Integer userId;
+//    @ApiModelProperty(value = "用户id")
+//    @NotNull(message = "")
+//    private Integer userId;
 
     @ApiModelProperty(value = "车型id")
-    @NotNull
+    @NotNull(message = "车型id不能为空")
     private Integer cartypeId;
 
     @ApiModelProperty(value = "车品牌")
@@ -37,15 +37,15 @@ public class AddMycarParam {
 
 
     @ApiModelProperty(value = "爱车图片")
-    @NotNull
+
     private String mycarImage;
 
     @ApiModelProperty(value = "里程")
-    @NotNull
+
     private Integer mycarKm;
 
     @ApiModelProperty(value = "车牌号")
-    @NotNull
+
     private String mycarCode;
 
     @ApiModelProperty(value = "生产年份")
