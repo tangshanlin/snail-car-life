@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.woniu.car.commons.core.code.ConstCode;
 import com.woniu.car.commons.core.code.ResultEnum;
 import com.woniu.car.commons.core.dto.ResultEntity;
+import com.woniu.car.commons.core.exception.CarException;
 import com.woniu.car.user.dto.MsgParam;
 import com.woniu.car.user.param.*;
 import com.woniu.car.user.web.domain.User;
@@ -184,8 +185,34 @@ public class UserController {
 
         int i = RandomUtil.randomInt(1000, 9999);
         System.out.println(i);
+        int l =0;
         //存到redis
-        redisTemplate.opsForValue().set("com:woniu:car:user-server:car-user-web:sendcode:" + userTel, i, 15, TimeUnit.MINUTES);
+        //存在redis 再存一个校验code时长的值 限制发送次数的值
+        Object o1 = redisTemplate.opsForValue().get("com:woniu:car:user-server:car-user-web:sendcode:"
+                + userTel + ":number");
+       if (ObjectUtils.isEmpty(o1)){
+           //次数为空 验证码失效一定为空
+           l++;
+           redisTemplate.opsForValue().set("com:woniu:car:user-server:car-user-web:sendcode:" + userTel+":number",l,24,TimeUnit.HOURS);
+           redisTemplate.opsForValue().set("com:woniu:car:user-server:car-user-web:sendcode:" + userTel+":time",l,60,TimeUnit.SECONDS);
+
+       }
+
+        Integer number = Integer.valueOf(o1.toString());
+       if (number<11){
+           Object o = redisTemplate.opsForValue().get("com:woniu:car:user-server:car-user-web:sendcode:" + userTel + ":time");
+           if (ObjectUtils.isEmpty(o)){
+               l++;
+               redisTemplate.opsForValue().set("com:woniu:car:user-server:car-user-web:sendcode:" + userTel+":time",l,60,TimeUnit.SECONDS);
+               redisTemplate.opsForValue().set("com:woniu:car:user-server:car-user-web:sendcode:" + userTel+":number",l,24,TimeUnit.HOURS);
+           }else {
+               throw new CarException("你请求验证码太过频繁，请稍后再试",500);
+           }
+
+       }if(number>11) {
+            throw new CarException("你当日请求验证码的次数超过10次,请隔日再试",500);
+        }
+
         param.setCode(Integer.toString(i));
         param.setPhoneNum(userTel);
         //post请求
@@ -209,7 +236,7 @@ public class UserController {
                         responseEntity.getContentLength());
                 System.out.println("响应内容为:" +
                         EntityUtils.toString(responseEntity));
-
+                redisTemplate.opsForValue().set("com:woniu:car:user-server:car-user-web:sendcode:" + userTel+":code", i, 15, TimeUnit.MINUTES);
             }
         } catch (ClientProtocolException e) {
             e.printStackTrace();

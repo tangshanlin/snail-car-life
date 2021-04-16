@@ -13,7 +13,12 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.elasticsearch.annotations.Document;
 import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
+import org.springframework.data.elasticsearch.core.SearchHits;
+import org.springframework.data.elasticsearch.core.query.Criteria;
+import org.springframework.data.elasticsearch.core.query.CriteriaQuery;
+import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
@@ -45,21 +50,36 @@ public class CarBrandController {
     @ApiOperation(value = "查询所有车品牌的接口",notes = "<span style='color:red;'>查询所有车品牌的接口</span>")
     @ApiResponse(code = 1344,message = "查询车品牌成功")
     public ResultEntity<List<CarBrandListDto>> selectAllBrand(){
-        List<CarBrandListDto> objects = new ArrayList<CarBrandListDto>();
-        for (int i=65;i<91;i++){
-            String s = String.valueOf((char) i);
-            List<CarBrand> carband_firstletter = carBrandService.list(new QueryWrapper<CarBrand>().eq("carbrand_firstletter", s));
-            CarBrandListDto carBrandListDto = new CarBrandListDto();
-            carBrandListDto.setKey(s);
-            List<CarBrandDto> carBrandDtos = BeanCopyUtil.copyList(carband_firstletter, CarBrandDto::new);
-            carBrandListDto.setValue(carBrandDtos);
-            objects.add(carBrandListDto);
-            operations.save(carBrandListDto);
+        List<CarBrandListDto> ListCarBrandlist = new ArrayList<CarBrandListDto>();
+        final boolean carbrand = operations.indexExists("carbrand");
+        CriteriaQuery cq = new CriteriaQuery(new Criteria());
+        if (!carbrand){
+            for (int i=65;i<91;i++){
+                String s = String.valueOf((char) i);
+                List<CarBrand> carband_firstletter = carBrandService.list(new QueryWrapper<CarBrand>().eq("carbrand_firstletter", s));
+                CarBrandListDto carBrandListDto = new CarBrandListDto();
+                carBrandListDto.setKey(s);
+                List<CarBrandDto> carBrandDtos = BeanCopyUtil.copyList(carband_firstletter, CarBrandDto::new);
+                carBrandListDto.setValue(carBrandDtos);
+                ListCarBrandlist.add(carBrandListDto);
+                operations.save(ListCarBrandlist);
+            }if(!ObjectUtils.isEmpty(ListCarBrandlist)&&ListCarBrandlist.size()>0){
+                System.out.println("数据库查出");
+                return ResultEntity.buildListEntity(CarBrandListDto.class).setCode(ConstCode.SELECTCARBRAND_SUCESS).setFlag(true)
+                        .setMessage("查询所有车品牌成功").setData(ListCarBrandlist);
+            }
         }
-        //存到es
-
-     return ResultEntity.buildListEntity(CarBrandListDto.class).setCode(ConstCode.SELECTCARBRAND_SUCESS).setFlag(true)
-             .setMessage("查询所有车品牌成功").setData(objects);
+        SearchHits<CarBrandListDto> search = operations.search(cq, CarBrandListDto.class);
+        search.getSearchHits().forEach(student->{
+            //从es中查
+            ListCarBrandlist.add(student.getContent());
+        });
+            if (!ObjectUtils.isEmpty(ListCarBrandlist)&&ListCarBrandlist.size()>0){
+                //从es中查出
+                return ResultEntity.buildListEntity(CarBrandListDto.class).setCode(ConstCode.SELECTCARBRAND_SUCESS).setFlag(true)
+                        .setMessage("查询所有车品牌成功").setData(ListCarBrandlist);
+            }
+        return ResultEntity.buildListFailEntity(CarBrandListDto.class).setMessage("查询所有车品牌失败");
 
     }
 
