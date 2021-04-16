@@ -22,8 +22,10 @@ spring:
       max-file-size: 30MB #指定上载文件允许的最大大小。 默认值为1MB
   #配置redis
   redis:
-    host: 47.108.133.10 # Redis服务器地址
-    port: 6399 # Redis服务器连接端口
+#    host: 47.108.133.10 # Redis服务器地址
+#    port: 6399 # Redis服务器连接端口
+    host: localhost
+    port: 6379
 
 
 

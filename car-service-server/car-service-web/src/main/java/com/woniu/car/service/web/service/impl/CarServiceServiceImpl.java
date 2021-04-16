@@ -1,11 +1,13 @@
 package com.woniu.car.service.web.service.impl;
 
 import cn.hutool.core.lang.UUID;
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.woniu.car.commons.core.dto.ResultEntity;
 import com.woniu.car.items.model.dto.CarServiceDto;
+import com.woniu.car.items.model.dto.CarServiceImagsDto;
 import com.woniu.car.items.model.entity.CarService;
 import com.woniu.car.service.web.feign.ShopFeignClient;
 import com.woniu.car.service.web.mapper.CarServiceMapper;
@@ -15,6 +17,7 @@ import com.woniu.car.service.web.util.ServiceFileUpload;
 import com.woniu.car.shop.model.paramVo.AddShopServiceEarningsParamVo;
 import io.seata.spring.annotation.GlobalTransactional;
 import lombok.extern.slf4j.Slf4j;
+import org.checkerframework.checker.units.qual.C;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.openfeign.FeignClient;
@@ -137,6 +140,23 @@ public class CarServiceServiceImpl extends ServiceImpl<CarServiceMapper, CarServ
         QueryWrapper<CarService> wrapper = new QueryWrapper<>();
         wrapper.eq("car_service_id",carService.getCarServiceId());
         CarService carService1 = carServiceMapper.selectOne(wrapper);
+//        CarServiceImagsDto carServiceImagsDto = new CarServiceImagsDto();
+//        if (!ObjectUtils.isEmpty(carService1)){
+//            //转换对象
+//            BeanUtils.copyProperties(carService1,carServiceImagsDto);
+//            //把图片存入list集合中
+//            JSONArray jsonArray = JSONArray.parseArray(carService1.getCarServiceInfo());
+//            List<String> images = new ArrayList<>();
+//            for(int i=0;i<jsonArray.size();i++){
+//                String s = jsonArray.get(i).toString();
+//                images.add(s.toString().substring(s.indexOf(":")+2,s.indexOf("}")-1));
+//            }
+//            for (String ssss : images){
+//                System.out.println(ssss);
+//            }
+//            carServiceImagsDto.setCarServiceInfo(images);
+//        }
+
         log.info("查询完毕返回结果值:{}",carService1);
         return carService1;
     }
@@ -154,6 +174,27 @@ public class CarServiceServiceImpl extends ServiceImpl<CarServiceMapper, CarServ
         QueryWrapper<CarService> wrapper = new QueryWrapper<>();
         wrapper.eq("shop_id",carService.getShopId());
         List<CarService> carServices = carServiceMapper.selectList(wrapper);
+//        List<CarServiceImagsDto> carServiceImagsDtoList = new ArrayList<>();
+//        if (!ObjectUtils.isEmpty(carServices)){
+//            //遍历集合
+//            for (CarService carService1: carServices){
+//                CarServiceImagsDto carServiceImagsDto = new CarServiceImagsDto();
+//                //转换对象
+//                BeanUtils.copyProperties(carService1,carServiceImagsDto);
+//                //把图片存入list集合中
+//                JSONArray jsonArray = JSONArray.parseArray(carService1.getCarServiceInfo());
+//                List<String> images = new ArrayList<>();
+//                for(int i=0;i<jsonArray.size();i++){
+//                    String s = jsonArray.get(i).toString();
+//                    images.add(s.toString().substring(s.indexOf(":")+2,s.indexOf("}")-1));
+//                }
+//                for (String ssss : images){
+//                    System.out.println(ssss);
+//                }
+//                carServiceImagsDto.setCarServiceInfo(images);
+//                carServiceImagsDtoList.add(carServiceImagsDto);
+//            }
+//        }
         return carServices;
     }
     /*
