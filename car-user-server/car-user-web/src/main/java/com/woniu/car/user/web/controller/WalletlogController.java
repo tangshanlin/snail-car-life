@@ -4,6 +4,7 @@ package com.woniu.car.user.web.controller;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.woniu.car.commons.core.code.ConstCode;
 import com.woniu.car.commons.core.dto.ResultEntity;
+import com.woniu.car.commons.core.exception.CarException;
 import com.woniu.car.commons.web.util.BeanCopyUtil;
 import com.woniu.car.user.param.AddWalletLogParam;
 import com.woniu.car.user.web.domain.Wallet;
@@ -12,6 +13,7 @@ import com.woniu.car.user.web.service.WalletService;
 import com.woniu.car.user.web.service.WalletlogService;
 import com.woniu.car.user.web.util.GetTokenUtil;
 import io.swagger.annotations.*;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.*;
 
@@ -58,7 +60,7 @@ public class WalletlogController {
 //        @ApiImplicitParam(name = "walletType", value = "日志的类型（1充值2消费3退款4提现）", dataType = "integer",  example = "1"),
 //
 //})
-
+@Transactional (rollbackFor = Exception.class)
     public ResultEntity addWalletLog(@RequestBody @Valid AddWalletLogParam addWalletLogParam){
     //校验
     //从jwt中获取userid
@@ -90,8 +92,8 @@ public class WalletlogController {
             boolean equals = walletDb.getWalletPassword().equals(addWalletLogParam.getWalletPassword());
             System.out.println(equals);
             if (!equals){
-                return ResultEntity.buildEntity().setCode(ConstCode.CKECKWALLETPASSWORD_FAIL).setFlag(false)
-                        .setMessage("钱包密码不匹配");
+                throw new CarException("钱包密码校验失败",ConstCode.CKECKWALLETPASSWORD_FAIL);
+
             }
 
 
@@ -103,8 +105,7 @@ public class WalletlogController {
                 System.out.println(i);
             if (i==1){
                 System.out.println("钱包余额不足");
-               return ResultEntity.buildEntity().setCode(ConstCode.CKECKWALLETMONEY_FAIL).setFlag(false)
-                       .setMessage("钱包余额不足");
+                throw new CarException("钱包余额不足",ConstCode.CKECKWALLETMONEY_FAIL);
 
             }else {
                 BigDecimal subtract = walletDb.getWalletMoney().subtract(walletChange);

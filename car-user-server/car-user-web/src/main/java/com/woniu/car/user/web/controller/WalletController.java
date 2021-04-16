@@ -72,6 +72,7 @@ public class WalletController {
             }
 
         }
+
         return ResultEntity.buildEntity().setCode(ConstCode.PARAM_ERROR).setFlag(false).setMessage("输入参数错误");
     }
     //删除钱包方法
