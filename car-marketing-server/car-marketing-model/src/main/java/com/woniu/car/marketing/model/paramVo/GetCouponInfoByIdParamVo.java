@@ -20,6 +20,6 @@ public class GetCouponInfoByIdParamVo {
 
     @NotNull(message = "用户领取优惠券表主键id不能为空")
     @Min(value = 0,message = "用户某个优惠券id必须大于等于0")
-    @ApiModelProperty(value = "关联用户某个优惠券id")
+    @ApiModelProperty(value = "关联用户某个优惠券id",example = "1")
     private Integer couponInfoId;
 }

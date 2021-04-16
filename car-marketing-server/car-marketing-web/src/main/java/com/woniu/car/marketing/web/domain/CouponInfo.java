@@ -38,7 +38,7 @@ public class CouponInfo implements Serializable {
       @ApiModelProperty(value = "关联用户id")
       private Integer couponInfoUserId;
 
-      @ApiModelProperty(value = "关联的用户昵称")
+      @ApiModelProperty(value = "关联的用户账户")
       private String couponInfoUserAccount;
 
       @ApiModelProperty(value = "领取时间")

@@ -17,7 +17,7 @@ public class GetCouponAllDtoVo {
 
     private BigDecimal couponMoney;//优惠券面额(元)
 
-    private Integer couponCondition;//使用门槛（满多少可用）
+    private BigDecimal couponCondition;//使用门槛（满多少可用）
 
     private Integer couponGoods;//发行来源(0平台-其他对应门店id)
 

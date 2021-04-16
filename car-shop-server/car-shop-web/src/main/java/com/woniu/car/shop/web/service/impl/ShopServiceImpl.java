@@ -22,6 +22,7 @@ import com.woniu.car.shop.web.utils.ShopFileUpload;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.util.ObjectUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
@@ -240,25 +241,29 @@ public class ShopServiceImpl extends ServiceImpl<ShopMapper, Shop> implements Sh
     **/
     @Override
     public Integer updateShopAccountStart(ShopIdParamVo shopId) {
-        InsertAccountByTypeParams insertAccountByTypeParams = new InsertAccountByTypeParams();
-        insertAccountByTypeParams.setType(2);
-        ResultEntity<String> stringResultEntity = feignAuthClient.insertAccountByType(insertAccountByTypeParams);
-        Integer code = stringResultEntity.getCode();
-        System.out.println(code==ConstCode.ACCESS_SUCCESS);
-        if(code.equals(ConstCode.ACCESS_SUCCESS)){
-            String account = stringResultEntity.getData();//拿到账号
-            System.out.println("拿到账号"+account);
-            Shop shop = new Shop();
-            shop.setShopId(shopId.getShopId());
-            shop.setShopAccount(account);
-            shop.setShopAccountStart(1);
-            shopMapper.updateById(shop);
-            return ConstCode.ACCESS_SUCCESS;
-        }else if (code.equals(ConstCode.GET_ACCOUNT_ROLE_FAIL)){
-            return ConstCode.GET_ACCOUNT_ROLE_FAIL;
+        Shop shop1 = shopMapper.selectById(shopId.getShopId());
+        if(!ObjectUtils.isEmpty(shop1)){
+            InsertAccountByTypeParams insertAccountByTypeParams = new InsertAccountByTypeParams();
+            insertAccountByTypeParams.setType(2);
+            ResultEntity<String> stringResultEntity = feignAuthClient.insertAccountByType(insertAccountByTypeParams);
+            Integer code = stringResultEntity.getCode();
+            if(code.equals(ConstCode.ACCESS_SUCCESS)){
+                String account = stringResultEntity.getData();//拿到账号
+                Shop shop = new Shop();
+                shop.setShopId(shopId.getShopId());
+                shop.setShopAccount(account);
+                shop.setShopAccountStart(1);
+                shopMapper.updateById(shop);
+                return ConstCode.ACCESS_SUCCESS;
+            }else if (code.equals(ConstCode.GET_ACCOUNT_ROLE_FAIL)){
+                return ConstCode.GET_ACCOUNT_ROLE_FAIL;
+            }else {
+                return ConstCode.ADD_END_ACCOUNT_FAIL;
+            }
         }else {
-            return ConstCode.ADD_END_ACCOUNT_FAIL;
+            return ConstCode.The_Store_Already_Exists;
         }
+
 
 
     }

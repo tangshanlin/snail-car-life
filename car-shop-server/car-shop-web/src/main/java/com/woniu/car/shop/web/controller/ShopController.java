@@ -74,9 +74,7 @@ public class ShopController {
     @ApiOperation(value = "门店通过审核接口")
     @PutMapping("update_shop_account_start")
     public ResultEntity updateShopAccountStart(@RequestBody @Valid ShopIdParamVo shopId){
-        System.out.println(shopId);
         Integer state = shopService.updateShopAccountStart(shopId);
-        System.out.println(state+"------------");
         if(state == ConstCode.ACCESS_SUCCESS){
             return ResultEntity.buildSuccessEntity()
                     .setMessage("审核通过");
@@ -84,10 +82,14 @@ public class ShopController {
             return ResultEntity.buildFailEntity()
                     .setCode(ConstCode.GET_ACCOUNT_ROLE_FAIL)
                     .setMessage("账号授予角色失败");
-        }else {
+        }else if(state == ConstCode.ADD_END_ACCOUNT_FAIL){
             return ResultEntity.buildFailEntity()
                     .setCode(ConstCode.ADD_END_ACCOUNT_FAIL)
                     .setMessage("新增后台账户失败");
+        }else {
+            return ResultEntity.buildFailEntity()
+                    .setCode(ConstCode.The_Store_Already_Exists)
+                    .setMessage("门店不存在");
         }
     }
 

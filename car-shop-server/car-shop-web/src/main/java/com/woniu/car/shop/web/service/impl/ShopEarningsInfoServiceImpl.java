@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.woniu.car.auth.model.dto.BackBalanceDto;
 import com.woniu.car.auth.model.params.BackBalanceParams;
 import com.woniu.car.commons.core.dto.ResultEntity;
+import com.woniu.car.commons.core.exception.CarException;
 import com.woniu.car.commons.web.discributelock.MyLock;
 import com.woniu.car.shop.client.feign.FeignAuthClient;
 import com.woniu.car.shop.model.paramVo.AddShopEarningsInfoParamVo;
@@ -80,7 +81,11 @@ public class ShopEarningsInfoServiceImpl extends ServiceImpl<ShopEarningsInfoMap
         entity.setCarServicePrice(carServicePrice);
         entity.setShopServiceInfoPlatformMoney(shopServiceInfoPlatformMoney);
         //entity.setUserAccount(GetTokenUtil.getUserAccount());//添加用户账号
-        entity.setUserAccount(null);//添加用户账号
+        try {
+            entity.setUserAccount(GetTokenUtil.getUserAccount());//添加用户账号
+        }catch (Exception e){
+            throw new CarException("Token为空",500);
+        }
 
 
 
@@ -92,10 +97,11 @@ public class ShopEarningsInfoServiceImpl extends ServiceImpl<ShopEarningsInfoMap
         return false;
     }
 
-    @MyLock(key = "com:woniu.car:shop:shopEarningsInfo:t_shop_earnings_info:id",methodParam = "shopId")
-    @GlobalTransactional
     public void updateShopBalance(AddShopEarningsInfoParamVo addShopEarningsInfoParamVo,BigDecimal carServicePrice,BigDecimal shopServiceInfoPlatformMoney){
         Shop shopDB = shopMapper.selectById(addShopEarningsInfoParamVo.getShopId());
+
+
+
         //如果没有使用优惠券,传过来的优惠券相关参数就是空
         if(addShopEarningsInfoParamVo.getCouponGoods()==null||addShopEarningsInfoParamVo.getCouponMoney()==null){
             //修改门店余额

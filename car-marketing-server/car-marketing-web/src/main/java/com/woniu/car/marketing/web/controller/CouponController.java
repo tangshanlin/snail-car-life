@@ -13,6 +13,7 @@ import com.woniu.car.marketing.web.service.CouponService;
 import io.swagger.annotations.*;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.PostConstruct;
@@ -66,6 +67,10 @@ public class CouponController {
     @GetMapping("/api/list_coupon_all")
     public ResultEntity<List<GetCouponAllDtoVo>> listCouponAll(){
         List<GetCouponAllDtoVo> getCouponInfoAllDtoVoList = couponService.listCouponInfoAll();
+        if(ObjectUtils.isEmpty(getCouponInfoAllDtoVoList)){
+            return ResultEntity.buildListFailEntity(GetCouponAllDtoVo.class)
+                    .setMessage("没有可用的优惠券");
+        }
         return ResultEntity.buildListSuccessEntity(GetCouponAllDtoVo.class)
                 .setMessage("查询所有优惠券类成功")
                 .setData(getCouponInfoAllDtoVoList);
@@ -125,7 +130,7 @@ public class CouponController {
         GetCouponNameDtoVo couponNameDtoVo = couponService.getCouponNameByCouponId(getCouponIdParamVo);
         if (ObjectUtils.isEmpty(couponNameDtoVo)) {
             return ResultEntity.buildFailEntity(GetCouponNameDtoVo.class)
-                    .setMessage("没有门店名称");
+                    .setMessage("没有查询到门店名称");
         }else{
             return ResultEntity.buildSuccessEntity(GetCouponNameDtoVo.class)
                     .setData(couponNameDtoVo)

@@ -3,6 +3,7 @@ package com.woniu.car.marketing.web.service.impl;
 import com.woniu.car.commons.core.dto.ResultEntity;
 import com.woniu.car.commons.web.discributelock.MyLock;
 import com.woniu.car.marketing.client.feign.FeignUserClient;
+import com.woniu.car.marketing.model.dtoVo.GetCouponAllDtoVo;
 import com.woniu.car.marketing.model.dtoVo.GetCouponInfoByIdDtoVo;
 import com.woniu.car.marketing.model.dtoVo.GetCouponInfoByUserIdDtoVo;
 import com.woniu.car.marketing.model.paramVo.AddUserGetCoupon;
@@ -20,12 +21,18 @@ import com.woniu.car.user.web.domain.UserInformation;
 import com.woniu.car.user.web.util.GetTokenUtil;
 import io.seata.spring.annotation.GlobalTransactional;
 import lombok.Synchronized;
+import org.springframework.data.redis.core.HashOperations;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.SetOperations;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.ObjectUtils;
 
 import javax.annotation.Resource;
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 /**
  * <p>
@@ -46,6 +53,12 @@ public class CouponInfoServiceImpl extends ServiceImpl<CouponInfoMapper, CouponI
     private FeignUserClient feignUserClient;
 
 
+    @Resource
+    private RedisTemplate redisTemplate;
+
+
+    String couponInfoKey = "car:marketing:coupon:couponInfo";
+    String couponKey = "car:marketing:coupon:addCoupon";
     /*
     * @Author TangShanLin
     * @Description TODO 查询某订单下用户可使用的优惠券
@@ -55,10 +68,13 @@ public class CouponInfoServiceImpl extends ServiceImpl<CouponInfoMapper, CouponI
     **/
     @Override
     public List<GetCouponInfoByIdDtoVo> getCouponInfoByUserIdAll(GetCouponInfoByUserIdAndSourceParamVo getCouponInfoByUserIdAndSourceParamVo) {
-        Long nowTime = System.currentTimeMillis();
+
         Integer userId = GetTokenUtil.getUserId();
+        Long nowTime = System.currentTimeMillis();
         List<GetCouponInfoByIdDtoVo> getCouponInfoByIdDtoVoList = couponInfoMapper.getCouponInfoByUserIdAll(getCouponInfoByUserIdAndSourceParamVo,userId,nowTime);
+        System.out.println(ObjectUtils.isEmpty(getCouponInfoByIdDtoVoList));
         return getCouponInfoByIdDtoVoList;
+
     }
 
     /*
@@ -70,8 +86,29 @@ public class CouponInfoServiceImpl extends ServiceImpl<CouponInfoMapper, CouponI
     **/
     @Override
     public GetCouponInfoByIdDtoVo getCouponInfoById(GetCouponInfoByIdParamVo getCouponInfoByIdParamVo) {
-        GetCouponInfoByIdDtoVo getCouponInfoByIdDtoVo = couponInfoMapper.getCouponInfoById(getCouponInfoByIdParamVo.getCouponInfoId());
-        return getCouponInfoByIdDtoVo;
+        HashOperations hashOperations = redisTemplate.opsForHash();
+        String key = couponInfoKey+getCouponInfoByIdParamVo.getCouponInfoId();//redis优惠券关联用户表主键值
+        List values = hashOperations.values(key);//拿到redis里面优惠券某个hashKey的所有值
+
+        if (ObjectUtils.isEmpty(values)) {
+            GetCouponInfoByIdDtoVo getCouponInfoByIdDtoVo = couponInfoMapper.getCouponInfoById(getCouponInfoByIdParamVo.getCouponInfoId());
+            return getCouponInfoByIdDtoVo;
+        }else{
+            Integer couponId = Integer.valueOf(values.get(1).toString());
+            String couponKeys = couponKey+couponId;
+            List couponValues = hashOperations.values(couponKeys);//拿到redis里面优惠券某个hashKey的所有值
+
+            GetCouponInfoByIdDtoVo getCouponInfoByIdDtoVo = new GetCouponInfoByIdDtoVo();
+            getCouponInfoByIdDtoVo.setCouponInfoId(Integer.valueOf(values.get(0).toString()));
+            getCouponInfoByIdDtoVo.setCouponId(couponId);
+
+            getCouponInfoByIdDtoVo.setCouponCondition(new BigDecimal(couponValues.get(4).toString()));
+            getCouponInfoByIdDtoVo.setCouponMoney(new BigDecimal(couponValues.get(3).toString()));
+            getCouponInfoByIdDtoVo.setCouponName(couponValues.get(1).toString());
+            return getCouponInfoByIdDtoVo;
+        }
+
+
     }
 
     /*
@@ -86,9 +123,11 @@ public class CouponInfoServiceImpl extends ServiceImpl<CouponInfoMapper, CouponI
     @Synchronized
 //    @MyLock(key="com:woniu:car:car-marketing-server:coupon:t_coupon_info:couponId",methodParam = "couponId")
     public Boolean addUserGetCoupon(AddUserGetCoupon addUserGetCoupon) {
+        HashOperations hashOperations = redisTemplate.opsForHash();
         Coupon coupon = couponMapper.selectById(addUserGetCoupon.getCouponId());
         if(coupon.getCouponNoGetNumber()>0){
             Long nowTime = System.currentTimeMillis();//获取当前时间作为领取时间
+
 
             CouponInfo couponInfo = new CouponInfo();
             couponInfo.setCouponInfoGetTime(nowTime);//传领取时间
@@ -98,8 +137,19 @@ public class CouponInfoServiceImpl extends ServiceImpl<CouponInfoMapper, CouponI
             couponInfoMapper.insert(couponInfo);
             //修改优惠券类别的领取数量
             coupon.setCouponGetNumber(coupon.getCouponGetNumber()+1);
-            coupon.setCouponNoGetNumber(coupon.getCouponNoUseNumber()-1);
+            coupon.setCouponNoGetNumber(coupon.getCouponNoGetNumber()-1);
             couponMapper.updateById(coupon);
+
+            //将用户领取优惠券表数据存入redis中
+            String key = couponInfoKey+couponInfo.getCouponInfoId();
+            hashOperations.put(key,"couponInfoId",couponInfo.getCouponInfoId()+"");
+            hashOperations.put(key,"couponId",couponInfo.getCouponId()+"");
+            hashOperations.put(key,"couponInfoUserId",couponInfo.getCouponInfoUserId()+"");
+            hashOperations.put(key,"couponInfoUserAccount",couponInfo.getCouponInfoUserAccount()+"");
+            hashOperations.put(key,"couponInfoGetTime",couponInfo.getCouponInfoGetTime()+"");
+            hashOperations.put(key,"couponInfoState",couponInfo.getCouponInfoState()+"");
+            hashOperations.put(key,"couponInfoUseTime",couponInfo.getCouponInfoUseTime()+"");
+
             return true;
         }else{
             return false;
@@ -117,6 +167,7 @@ public class CouponInfoServiceImpl extends ServiceImpl<CouponInfoMapper, CouponI
     @Override
     public List<GetCouponInfoByUserIdDtoVo> listCouponInfoByUserId() {
         Long now = System.currentTimeMillis();
+
         List<GetCouponInfoByUserIdDtoVo> getCouponInfoByUserIdDtoVoList = couponInfoMapper.listCouponInfoByUserId(GetTokenUtil.getUserId(),now);
         return getCouponInfoByUserIdDtoVoList;
     }
@@ -133,6 +184,7 @@ public class CouponInfoServiceImpl extends ServiceImpl<CouponInfoMapper, CouponI
     @GlobalTransactional
     @MyLock(key="com:woniu:car:car-marketing-server:coupon:t_coupon_info:couponId",methodParam = "couponId",timeoutGain = 20,timeoutLive = 50)
     public Integer addUserGetCouponByCredits(AddUserGetCoupon addUserGetCoupon) {
+        HashOperations hashOperations = redisTemplate.opsForHash();
 
         Coupon coupon = couponMapper.selectById(addUserGetCoupon.getCouponId());
         if(coupon.getCouponNoGetNumber()>0){
@@ -170,12 +222,24 @@ public class CouponInfoServiceImpl extends ServiceImpl<CouponInfoMapper, CouponI
                 coupon.setCouponNoGetNumber(coupon.getCouponNoUseNumber()-1);
                 couponMapper.updateById(coupon);
 
+                //将用户领取优惠券表数据存入redis中
+                String key = couponInfoKey+couponInfo.getCouponInfoId();
+                hashOperations.put(key,"couponInfoId",couponInfo.getCouponInfoId());
+                hashOperations.put(key,"couponId",couponInfo.getCouponId());
+                hashOperations.put(key,"couponInfoUserId",couponInfo.getCouponInfoUserId());
+                hashOperations.put(key,"couponInfoUserAccount",couponInfo.getCouponInfoUserAccount());
+                hashOperations.put(key,"couponInfoGetTime",couponInfo.getCouponInfoGetTime());
+                hashOperations.put(key,"couponInfoState",couponInfo.getCouponInfoState());
+                hashOperations.put(key,"couponInfoUseTime",couponInfo.getCouponInfoUseTime());
+
                 return 1;
             }else {
+                //积分不足兑换该优惠券
                 return 2;
             }
 
         }else{
+            //某优惠券已经领取玩了
             return 0;
         }
 
