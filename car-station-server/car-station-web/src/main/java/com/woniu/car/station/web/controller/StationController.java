@@ -90,7 +90,7 @@ public class StationController {
      * @return com.woniu.car.commons.core.dto.ResultEntity<java.util.List<com.woniu.car.station.model.entity.Station>>
      **/
     @PostMapping("/list_station")
-    @ApiOperation(value = "根据电站id查询所有该电站电桩信息",notes = "不需要传入参数")
+    @ApiOperation(value = "根据电站id查询所有该电站电桩信息",notes = "传入电站id")
     public ResultEntity<List<Station>> listStation(@RequestBody ListStationByPowerplantParam listStationByPowerplantParam){
         Station station = new Station();
         BeanUtils.copyProperties(listStationByPowerplantParam,station);

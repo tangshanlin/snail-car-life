@@ -95,7 +95,8 @@ public class PowerplantServiceImpl extends ServiceImpl<PowerplantMapper, Powerpl
         powerplantDto.setPowerplantCoordinate(longitudeAndLatitude);
         //查询电桩价格
         QueryWrapper<Station> wrapper1 = new QueryWrapper<>();
-        wrapper.eq("powerplant_id",powerplant.getPowerplantId());
+        //此处有问题
+        wrapper1.eq("powerplant_id",powerplant.getPowerplantId());
         List<Station> stationList = stationMapper.selectList(wrapper1);
         BigDecimal stationPrice = stationList.get(0).getStationPrice();
         powerplantDto.setStationPrice(stationPrice);
@@ -120,7 +121,13 @@ public class PowerplantServiceImpl extends ServiceImpl<PowerplantMapper, Powerpl
             BeanUtils.copyProperties(powerplant,powerplantApplyforVoDto);
             String lal = powerplant.getPowerplantCoordinate();
             LongitudeAndLatitude longitudeAndLatitude = JSONUtil.toBean(lal, LongitudeAndLatitude.class);
+            //查询电桩价格
+            QueryWrapper<Station> wrapper = new QueryWrapper<>();
+            wrapper.eq("powerplant_id",powerplant.getPowerplantId());
+            List<Station> stationList = stationMapper.selectList(wrapper);
+            BigDecimal stationPrice = stationList.get(0).getStationPrice();
             powerplantApplyforVoDto.setPowerplantCoordinate(longitudeAndLatitude);
+            powerplantApplyforVoDto.setStationPrice(stationPrice);
             powerplantDtos.add(powerplantApplyforVoDto);
         }
         log.info("将查询的结果值返回:{}",powerplantList);

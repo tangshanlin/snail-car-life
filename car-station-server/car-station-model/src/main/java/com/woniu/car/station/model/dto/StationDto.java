@@ -20,6 +20,9 @@ public class StationDto {
     @ApiModelProperty(value = "关联电站id")
     private Integer powerplantId;
 
+    @ApiModelProperty(value = "电桩名称")
+    private String stationName;
+
     @ApiModelProperty(value = "电桩品牌")
     private String stationBrand;
 

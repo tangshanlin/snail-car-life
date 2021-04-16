@@ -49,4 +49,7 @@ public class PowerplantDto {
 
     @ApiModelProperty(value = "充电桩价格")
     private BigDecimal stationPrice;
+
+    @ApiModelProperty(value = "电站评分")
+    private String poweerplantScore;
 }
