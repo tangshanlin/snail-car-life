@@ -38,11 +38,8 @@ public class AddShopEarningsInfoParamVo {
     @Future(message = "必须是一个将来的日期")
     private Long payTime;//付款时间
 
-    @ApiModelProperty(value = "优惠券面额(元)")
-    @Min(value = 1,message = "优惠券面额必须大于等于1")
-    private BigDecimal couponMoney;//优惠券面额(元)
-
-    @ApiModelProperty(value = "发行来源(0平台-其他对应门店id)",example = "1")
-    @Min(value = 0,message = "发行来源必须大于等于1")
-    private Integer couponGoods;//发行来源(0平台-其他对应门店id)
+    @ApiModelProperty(value = "优惠券类别id")
+    @Min(value = 1,message = "优惠券类别id必须大于等于1")
+    @NotNull(message = "优惠券类别id不能为空")
+    private Integer couponId;
 }

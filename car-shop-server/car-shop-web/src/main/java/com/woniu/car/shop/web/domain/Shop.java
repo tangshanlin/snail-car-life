@@ -48,8 +48,11 @@ public class Shop implements Serializable {
       @ApiModelProperty(value = "信誉积分")
       private Integer shopIntegral;
 
-      @ApiModelProperty(value = "经纬度(json)")
-      private String shopLngLat;
+      @ApiModelProperty(value = "经度")
+      private String shopLongitude;
+
+      @ApiModelProperty(value = "纬度")
+      private String shopLatitude;
 
       @ApiModelProperty(value = "门店地址")
       private String shopAddress;

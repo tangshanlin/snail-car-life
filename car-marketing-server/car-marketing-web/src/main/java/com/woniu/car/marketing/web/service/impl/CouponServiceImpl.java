@@ -5,6 +5,7 @@ import com.woniu.car.commons.web.util.BeanCopyUtil;
 import com.woniu.car.marketing.model.dtoVo.GetCouponAllDtoVo;
 import com.woniu.car.marketing.model.dtoVo.GetCouponBySourceDtoVo;
 import com.woniu.car.marketing.model.dtoVo.GetCouponNameDtoVo;
+import com.woniu.car.marketing.model.dtoVo.GetCouponSourceAndMoneyByIdDtoVo;
 import com.woniu.car.marketing.model.paramVo.AddCouponParamVo;
 import com.woniu.car.marketing.model.paramVo.GetCouponBySourceParamVo;
 import com.woniu.car.marketing.model.paramVo.GetCouponIdParamVo;
@@ -312,6 +313,26 @@ public class CouponServiceImpl extends ServiceImpl<CouponMapper, Coupon> impleme
                 return getCouponNameDtoVo;
             }
             return null;
+        }
+
+    }
+
+    /*
+    * @Author TangShanLin
+    * @Description TODO 服务完成时，生成服务收益数据需要调用的feign接口逻辑，通过id查询面额和来源
+    * @Date  1:22
+    * @Param []
+    * @return com.woniu.car.marketing.model.dtoVo.GetCouponSourceAndMoneyByIdDtoVo
+    **/
+    @Override
+    public GetCouponSourceAndMoneyByIdDtoVo getCouponSourceAndMoneyByIdDtoVoResultEntity(GetCouponIdParamVo getCouponIdParamVo) {
+        Coupon coupon = couponMapper.selectById(getCouponIdParamVo.getCouponId());
+        //如果判断查出来是否为空
+        if (ObjectUtils.isEmpty(coupon)) {
+            return null;
+        }else {
+            GetCouponSourceAndMoneyByIdDtoVo getCouponSourceAndMoneyByIdDtoVo = BeanCopyUtil.copyOne(coupon, GetCouponSourceAndMoneyByIdDtoVo::new);
+            return getCouponSourceAndMoneyByIdDtoVo;
         }
 
     }

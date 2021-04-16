@@ -6,7 +6,10 @@ import com.woniu.car.auth.model.params.BackBalanceParams;
 import com.woniu.car.commons.core.dto.ResultEntity;
 import com.woniu.car.commons.core.exception.CarException;
 import com.woniu.car.commons.web.discributelock.MyLock;
+import com.woniu.car.marketing.model.dtoVo.GetCouponSourceAndMoneyByIdDtoVo;
+import com.woniu.car.marketing.model.paramVo.GetCouponIdParamVo;
 import com.woniu.car.shop.client.feign.FeignAuthClient;
+import com.woniu.car.shop.client.feign.FeignMarketingClient;
 import com.woniu.car.shop.model.paramVo.AddShopEarningsInfoParamVo;
 import com.woniu.car.shop.web.domain.Shop;
 import com.woniu.car.shop.web.domain.ShopEarningsInfo;
@@ -45,6 +48,8 @@ public class ShopEarningsInfoServiceImpl extends ServiceImpl<ShopEarningsInfoMap
 
     @Resource
     private FeignAuthClient feignAuthClient;
+    @Resource
+    private FeignMarketingClient feignMarketingClient;
 
 
     /*
@@ -100,10 +105,14 @@ public class ShopEarningsInfoServiceImpl extends ServiceImpl<ShopEarningsInfoMap
     public void updateShopBalance(AddShopEarningsInfoParamVo addShopEarningsInfoParamVo,BigDecimal carServicePrice,BigDecimal shopServiceInfoPlatformMoney){
         Shop shopDB = shopMapper.selectById(addShopEarningsInfoParamVo.getShopId());
 
-
-
+        GetCouponIdParamVo couponIdParamVo = new GetCouponIdParamVo();
+        couponIdParamVo.setCouponId(addShopEarningsInfoParamVo.getCouponId());
+        ResultEntity<GetCouponSourceAndMoneyByIdDtoVo> couponSourceAndMoneyByIdDtoVoResultEntity = feignMarketingClient.getCouponSourceAndMoneyByIdDtoVoResultEntity(couponIdParamVo);
+        GetCouponSourceAndMoneyByIdDtoVo data = couponSourceAndMoneyByIdDtoVoResultEntity.getData();
+        BigDecimal couponMoney = data.getCouponMoney();
+        Integer couponGoods = data.getCouponGoods();
         //如果没有使用优惠券,传过来的优惠券相关参数就是空
-        if(addShopEarningsInfoParamVo.getCouponGoods()==null||addShopEarningsInfoParamVo.getCouponMoney()==null){
+        if(couponGoods==null||couponMoney==null){
             //修改门店余额
             Shop shop = new Shop();
             shop.setShopId(addShopEarningsInfoParamVo.getShopId());
@@ -116,11 +125,11 @@ public class ShopEarningsInfoServiceImpl extends ServiceImpl<ShopEarningsInfoMap
             feignAuthClient.updateBackAddBalance(backBalanceParams);
         }else {
             //使用的是平台优惠券，平台余额减少值为优惠券面额，门店余额新增值为提成比例后的钱
-            if(addShopEarningsInfoParamVo.getCouponGoods()==0){
+            if(couponGoods==0){
                 //平台余额减少
                 BackBalanceParams backBalanceParams = new BackBalanceParams();
                 //将优惠券面额设置为负数进行修改平余额
-                BigDecimal multiply = addShopEarningsInfoParamVo.getCouponMoney().multiply(new BigDecimal(-1));
+                BigDecimal multiply = couponMoney.multiply(new BigDecimal(-1));
                 backBalanceParams.setBackBalance(multiply.add(shopServiceInfoPlatformMoney));
                 feignAuthClient.updateBackAddBalance(backBalanceParams);
 
@@ -143,7 +152,7 @@ public class ShopEarningsInfoServiceImpl extends ServiceImpl<ShopEarningsInfoMap
                 //修改门店余额
                 Shop shop = new Shop();
                 //先减去优惠券面额
-                BigDecimal subtract = shopDB.getShopBalance().subtract(addShopEarningsInfoParamVo.getCouponMoney());
+                BigDecimal subtract = shopDB.getShopBalance().subtract(couponMoney);
 
                 shop.setShopId(addShopEarningsInfoParamVo.getShopId());
                 shop.setShopBalance(subtract.add(carServicePrice));

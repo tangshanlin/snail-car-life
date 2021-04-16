@@ -5,6 +5,7 @@ import com.woniu.car.commons.core.dto.ResultEntity;
 import com.woniu.car.marketing.model.dtoVo.GetCouponAllDtoVo;
 import com.woniu.car.marketing.model.dtoVo.GetCouponBySourceDtoVo;
 import com.woniu.car.marketing.model.dtoVo.GetCouponNameDtoVo;
+import com.woniu.car.marketing.model.dtoVo.GetCouponSourceAndMoneyByIdDtoVo;
 import com.woniu.car.marketing.model.paramVo.AddCouponParamVo;
 import com.woniu.car.marketing.model.paramVo.GetCouponBySourceParamVo;
 import com.woniu.car.marketing.model.paramVo.GetCouponIdParamVo;
@@ -159,6 +160,26 @@ public class CouponController {
         }
     }
 
+    /*
+    * @Author TangShanLin
+    * @Description TODO 内部调用，完成服务生成服务收益表时需要
+    * @Date  1:18
+    * @Param [getCouponIdParamVo]
+    * @return com.woniu.car.commons.core.dto.ResultEntity<com.woniu.car.marketing.model.dtoVo.GetCouponSourceAndMoneyByIdDtoVo>
+    **/
+    @GetMapping("get_coupon_source_and_goods_by_id")
+    @ApiOperation(value = "内部调用，完成服务生成服务收益表时需要")
+    private ResultEntity<GetCouponSourceAndMoneyByIdDtoVo> getCouponSourceAndMoneyByIdDtoVoResultEntity(@Valid GetCouponIdParamVo getCouponIdParamVo){
+        GetCouponSourceAndMoneyByIdDtoVo getCouponSourceAndMoneyByIdDtoVo = couponService.getCouponSourceAndMoneyByIdDtoVoResultEntity(getCouponIdParamVo);
+        if (ObjectUtils.isEmpty(getCouponSourceAndMoneyByIdDtoVo)) {
+            return ResultEntity.buildFailEntity(GetCouponSourceAndMoneyByIdDtoVo.class)
+                    .setMessage("没查询到该门店信息");
+        }else {
+            return ResultEntity.buildSuccessEntity(GetCouponSourceAndMoneyByIdDtoVo.class)
+                    .setMessage("查询门店信息成功")
+                    .setData(getCouponSourceAndMoneyByIdDtoVo);
+        }
+    }
 
 
 

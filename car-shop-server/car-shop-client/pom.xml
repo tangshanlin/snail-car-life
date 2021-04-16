@@ -29,6 +29,12 @@
             <artifactId>car-auth-model</artifactId>
             <version>1.0.0</version>
         </dependency>
+        <!--        feign调用marketing的model数据-->
+        <dependency>
+            <groupId>com.woniu.car</groupId>
+            <artifactId>car-marketing-model</artifactId>
+            <version>1.0.0</version>
+        </dependency>
     </dependencies>
 
 </project>
