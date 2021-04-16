@@ -12,6 +12,8 @@ import com.woniu.car.user.web.service.CarBrandService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
@@ -35,6 +37,9 @@ import java.util.List;
 public class CarBrandController {
     @Resource
     private CarBrandService carBrandService;
+    @Autowired
+
+    private ElasticsearchOperations operations;
     /*查询所有车品牌*/
     @GetMapping("/select_all_brand")
     @ApiOperation(value = "查询所有车品牌的接口",notes = "<span style='color:red;'>查询所有车品牌的接口</span>")
@@ -43,14 +48,16 @@ public class CarBrandController {
         List<CarBrandListDto> objects = new ArrayList<CarBrandListDto>();
         for (int i=65;i<91;i++){
             String s = String.valueOf((char) i);
-            List<CarBrand> carband_firstletter = carBrandService.list(new QueryWrapper<CarBrand>().eq("carband_firstletter", s));
+            List<CarBrand> carband_firstletter = carBrandService.list(new QueryWrapper<CarBrand>().eq("carbrand_firstletter", s));
             CarBrandListDto carBrandListDto = new CarBrandListDto();
             carBrandListDto.setKey(s);
             List<CarBrandDto> carBrandDtos = BeanCopyUtil.copyList(carband_firstletter, CarBrandDto::new);
             carBrandListDto.setValue(carBrandDtos);
             objects.add(carBrandListDto);
-
+            operations.save(carBrandListDto);
         }
+        //存到es
+
      return ResultEntity.buildListEntity(CarBrandListDto.class).setCode(ConstCode.SELECTCARBRAND_SUCESS).setFlag(true)
              .setMessage("查询所有车品牌成功").setData(objects);
 

@@ -65,4 +65,9 @@ seata:
   tx-service-group: my_test_tx_group
   enable-auto-data-source-proxy: true
 
-#  application-id: ${spring.application.name}
+  application-id: ${spring.application.name}
+ # 配置es
+  elasticsearch:
+    rest:
+      uris:
+        - http://localhost:9200

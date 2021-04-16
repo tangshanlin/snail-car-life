@@ -3,6 +3,7 @@ package com.woniu.car.order.web.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.woniu.car.order.model.param.AddPowerplantOrderVo;
+import com.woniu.car.order.model.param.FindOrder;
 import com.woniu.car.order.model.param.OrderVo;
 import com.woniu.car.order.model.param.UserVo;
 import com.woniu.car.order.web.entity.PowerplantOrder;
@@ -52,15 +53,15 @@ public class PowerplantOrderServiceImpl extends ServiceImpl<PowerplantOrderMappe
      * @return com.woniu.car.order.web.entity.PowerplantOrder
      **/
     @Override
-    public PowerplantOrder findpowerplantOrderByOrderCode(PowerplantOrder powerplantOrder) {
-        log.info("开始查询订单号："+powerplantOrder.getOrderCode());
+    public PowerplantOrder findpowerplantOrderByOrderCode(FindOrder findOrder) {
+        log.info("开始查询订单号："+findOrder.getOrderNo());
         QueryWrapper<PowerplantOrder> wrapper = new QueryWrapper<>();
-        wrapper.eq("order_code",powerplantOrder.getOrderCode());
+        wrapper.eq("order_code",findOrder.getOrderNo());
         PowerplantOrder powerplantOrder1 = powerplantOrderMapper.selectOne(wrapper);
         if(!ObjectUtils.isEmpty(powerplantOrder1)){
-            log.info("查询订单号："+powerplantOrder.getOrderCode()+"成功");
+            log.info("查询订单号："+findOrder.getOrderNo()+"成功");
         }else{
-            log.info("查询订单号："+powerplantOrder.getOrderCode()+"失败，此订单不存在");
+            log.info("查询订单号："+findOrder.getOrderNo()+"失败，此订单不存在");
         }
         return powerplantOrder1;
     }

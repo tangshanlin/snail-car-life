@@ -6,6 +6,8 @@ import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.woniu.car.commons.core.code.ConstCode;
 import com.woniu.car.commons.core.dto.ResultEntity;
+import com.woniu.car.commons.core.exception.CarException;
+import com.woniu.car.order.model.param.FindOrder;
 import com.woniu.car.order.model.param.OrderVo;
 import com.woniu.car.order.model.param.UseCodeVo;
 import com.woniu.car.order.model.param.UserVo;
@@ -15,6 +17,7 @@ import com.woniu.car.order.web.entity.PowerplantOrder;
 import com.woniu.car.order.web.entity.ProductOrder;
 import com.woniu.car.order.web.entity.ProductOrderDetail;
 import com.woniu.car.order.web.mapper.CarserviceOrderMapper;
+import com.woniu.car.order.web.mapper.PowerplantOrderMapper;
 import com.woniu.car.order.web.mapper.ProductOrderDetailMapper;
 import com.woniu.car.order.web.mapper.ProductOrderMapper;
 import com.woniu.car.order.web.service.CarserviceOrderService;
@@ -71,6 +74,9 @@ public class CarserviceOrderServiceImpl extends ServiceImpl<CarserviceOrderMappe
 
     @Resource
     private ProductOrderDetailMapper productOrderDetailMapper;
+
+    @Resource
+    private PowerplantOrderMapper powerplantOrderMapper;
 
 
     //根据订单id查询全部订单信息
@@ -149,6 +155,7 @@ public class CarserviceOrderServiceImpl extends ServiceImpl<CarserviceOrderMappe
             log.info("生成服务订单成功");
         }else{
             log.info("生成服务订单失败");
+            throw new CarException("生成服务订单失败",500);
         }
         return row>0?true:false;
     }
@@ -186,6 +193,16 @@ public class CarserviceOrderServiceImpl extends ServiceImpl<CarserviceOrderMappe
             row = productOrderMapper.update(null, updateWrapper);
             return row>0?true:false;
         }
+        /*当为空的时候取查询电站订单*/
+        PowerplantOrder powerplantOrder
+                = powerplantOrderService.findpowerplantOrderByOrderCode(new FindOrder().setOrderNo(orderVo.getOrderNo()));
+        if(!ObjectUtil.isEmpty(powerplantOrder)){
+            UpdateWrapper<PowerplantOrder> updateWrapper = new UpdateWrapper<>();
+            updateWrapper.eq("powerplant_order_id",powerplantOrder.getPowerplantOrderId());
+            updateWrapper.set("powerplant_order_status", orderVo.getOrderStatus());
+            row = powerplantOrderMapper.update(null, updateWrapper);
+            return row>0?true:false;
+        }
         return false;
     }
 
@@ -202,9 +219,9 @@ public class CarserviceOrderServiceImpl extends ServiceImpl<CarserviceOrderMappe
         int row = 0;
         //根据订单编号查询服务订单信息
         CarserviceOrder carserviceOrder = carserviceOrderService.findCarserviceOrderByOrderNo(orderVo);
-        String carserviceOrderStatus = carserviceOrder.getCarserviceOrderStatus();
         if (!ObjectUtil.isEmpty(carserviceOrder)) {
-           if(OrderCode.ORDER_COMPLETED.equals(carserviceOrderStatus)
+            String carserviceOrderStatus = carserviceOrder.getCarserviceOrderStatus();
+            if(OrderCode.ORDER_COMPLETED.equals(carserviceOrderStatus)
                    ||OrderCode.ORDER_ED_MONEY_BACK.equals(carserviceOrderStatus)
                    ||OrderCode.ORDER_RECEIPT_GOODS.equals(carserviceOrderStatus)
                    ||OrderCode.ORDER_TRANSACTION_CANCELLED.equals(carserviceOrderStatus)){
@@ -214,12 +231,12 @@ public class CarserviceOrderServiceImpl extends ServiceImpl<CarserviceOrderMappe
                row = carserviceOrderMapper.delete( wrapper);
                 return row>0?true:false;
            }else{
-               return false;
+               throw new CarException("删除失败，订单当前状态无法删除",500);
            }
         }
         ProductOrder productOrder = productOrderService.findProductOrderByProductOrderNo(orderVo);
-        String productOrderStatus = productOrder.getProductOrderStatus();
         if (!ObjectUtil.isEmpty(productOrder)) {
+            String productOrderStatus = productOrder.getProductOrderStatus();
             if(OrderCode.ORDER_COMPLETED.equals(productOrderStatus)
                     ||OrderCode.ORDER_ED_MONEY_BACK.equals(productOrderStatus)
                         ||OrderCode.ORDER_TRANSACTION_CANCELLED.equals(productOrderStatus)){
@@ -233,12 +250,12 @@ public class CarserviceOrderServiceImpl extends ServiceImpl<CarserviceOrderMappe
                 int row1 = productOrderDetailMapper.delete(wrapper1);
                 return row>0?true:false;
             }else{
-                return false;
+                throw new CarException("删除失败，订单当前状态无法删除",500);
             }
         }
-        PowerplantOrder powerplantOrder = powerplantOrderService.findpowerplantOrderByOrderCode(new PowerplantOrder().setOrderCode(orderVo.getOrderNo()));
-        String powerplantOrderStatus = powerplantOrder.getPowerplantOrderStatus();
+        PowerplantOrder powerplantOrder = powerplantOrderService.findpowerplantOrderByOrderCode(new FindOrder().setOrderNo(orderVo.getOrderNo()));
         if (!ObjectUtil.isEmpty(powerplantOrder)) {
+            String powerplantOrderStatus = powerplantOrder.getPowerplantOrderStatus();
             if (OrderCode.ORDER_COMPLETED.equals(powerplantOrderStatus)) {
                 //满足条件后进行删除订单
                 UpdateWrapper<ProductOrder> wrapper = new UpdateWrapper<>();
@@ -246,10 +263,11 @@ public class CarserviceOrderServiceImpl extends ServiceImpl<CarserviceOrderMappe
                 row = productOrderMapper.delete(wrapper);
                 return row > 0 ? true : false;
             } else {
-                return false;
+                throw new CarException("删除失败，订单当前状态无法删除",500);
             }
+        }else{
+            throw new CarException("删除失败，订单不存在",500);
         }
-        return false;
     }
 
     /**
@@ -281,7 +299,7 @@ public class CarserviceOrderServiceImpl extends ServiceImpl<CarserviceOrderMappe
         InputStream qr = null;
         try {
             log.debug("根据使用码生成二维码");
-            qr = QRUtil.createQR(useCode, "jpg", "http://192.168.10.22:9000/order/logo.png");
+            qr = QRUtil.createQR(useCode, "jpg", "http://119.23.75.195:9000/order/logo.png");
             log.debug("生成二维码成功");
             return qr;
         } catch (Exception e) {

@@ -2,26 +2,28 @@ package com.woniu.car.product.web.controller;
 
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.woniu.car.commons.core.code.ConstCode;
 import com.woniu.car.commons.core.dto.ResultEntity;
 
 import com.woniu.car.product.model.library.CarProductIndex;
-import com.woniu.car.product.model.parame.ProductStatusParams;
-import com.woniu.car.product.model.parame.ShowProductParame;
+import com.woniu.car.product.model.parame.*;
 import com.woniu.car.product.web.domain.Product;
 import com.woniu.car.product.model.dto.HotProductDto;
 import com.woniu.car.product.model.dto.ProductDtoTwo;
 import com.woniu.car.product.model.dto.ProductOrderDto;
-import com.woniu.car.product.model.parame.ProductParame;
-import com.woniu.car.product.model.parame.ProductTwoParame;
 import com.woniu.car.product.web.elasticsearch.ProductRepository;
 import com.woniu.car.product.web.service.ProductCateService;
 import com.woniu.car.product.web.service.ProductService;
+import com.woniu.car.product.web.util.ProductMyFileUpload;
 import io.swagger.annotations.*;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.springframework.data.elasticsearch.core.query.NativeSearchQueryBuilder;
+import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -42,6 +44,9 @@ public class ProductController {
 
     @Resource
     private ProductRepository repository;
+
+    @Resource
+    private ProductMyFileUpload productMyFileUpload;
 
 
     /**
@@ -290,7 +295,26 @@ public class ProductController {
         return repository.search(builder.build());
     }
 
+    @PostMapping("/uploading_one_classify_image")
+    @ApiOperation(value = "一级分类单张图片上传")
+    public ResultEntity uploadingStationImage(AddProductImageParam addProductImageParam){
+        if (ObjectUtils.isEmpty(addProductImageParam.getProductImg())){
+            return ResultEntity.buildFailEntity().setMessage("图片为空").setCode(ConstCode.LAST_STAGE).setFlag(false);
+        }else {
+            if (addProductImageParam.getProductImg().length>0){
+                MultipartFile[] files = addProductImageParam.getProductImg();
+                //将文件上传到minio服务器上
+                ArrayList<String> stationImageList = productMyFileUpload.upload(files);
+                //返回图片地址
+                String oneClassifyImg = stationImageList.get(0);
+                System.out.println(oneClassifyImg);
+                return ResultEntity.buildSuccessEntity(String.class).setCode(ConstCode.ACCESS_SUCCESS).setData(oneClassifyImg).setMessage("图片上传成功");
+            }else {
+                return ResultEntity.buildFailEntity().setMessage("图片为空").setCode(ConstCode.LAST_STAGE).setFlag(false);
+            }
+        }
 
+    }
 
 }
 
