@@ -7,6 +7,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.woniu.car.commons.core.code.ConstCode;
 import com.woniu.car.commons.core.dto.ResultEntity;
 import com.woniu.car.items.model.dto.CarServiceDto;
+import com.woniu.car.items.model.dto.CarServiceImagsDto;
 import com.woniu.car.items.model.entity.CarService;
 import com.woniu.car.items.model.param.carservice.*;
 import com.woniu.car.items.model.param.userservice.UploadCarServiceImageParam;
@@ -108,8 +109,8 @@ public class CarServiceController {
                 CarService carService = new CarService();
                 BeanUtils.copyProperties(listCarServiceByShopPararm,carService);
                 System.out.println("CarServiceSelect"+":"+carService);
-                List<CarService> carServices = carServiceImpl.listCarServiceByShopId(carService);
-                return ResultEntity.buildListSuccessEntity(CarService.class).setMessage("根据门店查询门店下的服务成功").setCode(ConstCode.ACCESS_SUCCESS).setData(carServices);
+            List<CarService> carServiceImagsDtoList = carServiceImpl.listCarServiceByShopId(carService);
+            return ResultEntity.buildListSuccessEntity(CarService.class).setMessage("根据门店查询门店下的服务成功").setCode(ConstCode.ACCESS_SUCCESS).setData(carServiceImagsDtoList);
 
         }else {
             return ResultEntity.buildListFailEntity(CarService.class).setMessage("门店id为空或者不正确").setCode(ConstCode.LAST_STAGE).setFlag(false).setData(null);
@@ -278,7 +279,7 @@ public class CarServiceController {
                 JSONObject jsonObject = new JSONObject();
                 for (int a = 0;a<stationImage.size();a++){
                     String time = String.valueOf(System.currentTimeMillis());
-                    jsonObject.put("service"+ UUID.randomUUID().toString()+time,stationImage.get(a));
+//                    jsonObject.put("service"+ UUID.randomUUID().toString()+time,stationImage.get(a));
                 }
                 System.out.println(jsonObject);
                 //返回图片地址

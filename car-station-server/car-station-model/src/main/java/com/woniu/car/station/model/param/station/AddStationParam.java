@@ -23,6 +23,10 @@ public class AddStationParam {
     private Integer powerplantId;
 
     @NotNull
+    @ApiModelProperty(value = "电桩名称")
+    private String stationName;
+
+    @NotNull
     @ApiModelProperty(value = "电桩品牌",example = "特斯拉")
     private String stationBrand;
 

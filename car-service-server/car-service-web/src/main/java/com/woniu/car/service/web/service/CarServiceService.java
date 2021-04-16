@@ -1,6 +1,7 @@
 package com.woniu.car.service.web.service;
 
 import com.woniu.car.items.model.dto.CarServiceDto;
+import com.woniu.car.items.model.dto.CarServiceImagsDto;
 import com.woniu.car.items.model.entity.CarService;
 import com.baomidou.mybatisplus.extension.service.IService;
 import org.checkerframework.checker.units.qual.C;

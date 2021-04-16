@@ -1,5 +1,6 @@
 package com.woniu.car.station.web.service;
 
+import com.woniu.car.station.model.dto.PowerplantDto;
 import com.woniu.car.station.model.entity.Powerplant;
 import com.baomidou.mybatisplus.extension.service.IService;
 
@@ -17,9 +18,9 @@ public interface PowerplantService extends IService<Powerplant> {
     //新增电站信息
     public int addPowerplant(Powerplant powerplant);
     //根据电站id查询对应电站信息
-    public Powerplant getOnePowerplant(Powerplant powerplant);
+    public PowerplantDto getOnePowerplant(Powerplant powerplant);
     //查询所有电站信息系
-    public List<Powerplant> listPowerplantAll();
+    public List<PowerplantDto> listPowerplantAll();
     //根据电站id修改电站信息
     public boolean updatePowerplantById(Powerplant powerplant);
     //根据电站id删除电站信息

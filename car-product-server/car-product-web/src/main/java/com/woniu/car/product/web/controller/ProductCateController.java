@@ -4,11 +4,11 @@ package com.woniu.car.product.web.controller;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.woniu.car.commons.core.dto.ResultEntity;
 import com.woniu.car.product.model.dto.ProductCateDto;
-import com.woniu.car.product.model.dto.ProductCateOneDto;
 import com.woniu.car.product.web.domain.ProductCate;
 import com.woniu.car.product.web.service.ProductCateService;
 import io.swagger.annotations.*;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import org.springframework.web.bind.annotation.RestController;
@@ -32,7 +32,6 @@ public class ProductCateController {
     private ProductCateService productCateService;
 
 
-
     /**
      * 查询商品一级分类
      *
@@ -54,15 +53,16 @@ public class ProductCateController {
 
     /**
      * 通过一级id查询二级分类
+     *
      * @param parentId
      * @return
      */
     @GetMapping("get_two")
     @ApiOperation(value = "通过一级id查询二级分类", notes = "<span style='color:red;'>用来查询商品二级分类的接口</span>")
     @ApiImplicitParam(name = "parentId", value = "一级分类id", dataType = "Integer", required = true)
-    public ResultEntity<List<ProductCate>> getSecondaryClassificationById(Integer parentId){
+    public ResultEntity<List<ProductCate>> getSecondaryClassificationById(Integer parentId) {
         QueryWrapper<ProductCate> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("parent_id",parentId);
+        queryWrapper.eq("parent_id", parentId);
         List<ProductCate> list = productCateService.list(queryWrapper);
         return ResultEntity.buildListSuccessEntity(ProductCate.class).setData(list);
     }

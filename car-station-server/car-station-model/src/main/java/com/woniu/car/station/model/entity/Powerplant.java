@@ -60,6 +60,9 @@ public class Powerplant implements Serializable {
       @ApiModelProperty(value = "电站经纬度")
       private String powerplantCoordinate;
 
+      @ApiModelProperty(value = "电站评分")
+      private String poweerplantScore;
+
       @ApiModelProperty(value = "电站申请审核状态0未审核 1审核通过 2审核未通过")
       private Integer powerplantApplyforStatus;
 
