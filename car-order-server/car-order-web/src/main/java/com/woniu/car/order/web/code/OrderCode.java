@@ -71,8 +71,23 @@ public class OrderCode {
     public static final String ORDER_PAY_WALLET_PAYMENT="1";
 
     /*
-     * 钱包支付
+     * 支付宝支付
      * */
     public static final String ORDER_PAY_ALIPAY="2";
+
+    /*
+     * 订单类型为服务
+     * */
+    public static final String CARSERVICE_ORDER= "120";
+
+    /*
+     * 订单类型为电站
+     * */
+    public static final String POWERPLANT_ORDER= "121";
+
+    /*
+     * 订单类型为商品
+     * */
+    public static final String PRODUCT_ORDER= "122";
 
 }

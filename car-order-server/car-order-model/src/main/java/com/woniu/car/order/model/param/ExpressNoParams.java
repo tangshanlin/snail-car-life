@@ -3,6 +3,7 @@ package com.woniu.car.order.model.param;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
 /**
@@ -20,7 +21,7 @@ public class ExpressNoParams {
     private Integer productOrderId;
 
     @ApiModelProperty(value = "发货快递单号")
-    @NotNull(message = "发货快递单号不能为空")
+    @NotEmpty(message = "发货快递单号不能为空")
     private String expressNo;
 
 }
