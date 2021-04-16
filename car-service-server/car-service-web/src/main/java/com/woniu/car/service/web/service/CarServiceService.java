@@ -1,6 +1,7 @@
 package com.woniu.car.service.web.service;
 
 import com.woniu.car.items.model.dto.CarServiceDto;
+import com.woniu.car.items.model.dto.CarServiceImagsDto;
 import com.woniu.car.items.model.entity.CarService;
 import com.baomidou.mybatisplus.extension.service.IService;
 import org.checkerframework.checker.units.qual.C;
@@ -17,7 +18,7 @@ import java.util.List;
  */
 public interface CarServiceService extends IService<CarService> {
     //新增具体服务信息
-    public int addCarService(CarServiceDto carServiceDto);
+    public int addCarService(CarService carService);
     //根据服务id查询具体服务信息
     public CarService getCarServiceById(CarService carService);
     //根据门店id查询所有服务信息

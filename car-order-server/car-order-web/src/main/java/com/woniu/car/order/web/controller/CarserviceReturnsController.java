@@ -3,6 +3,7 @@ package com.woniu.car.order.web.controller;
 
 import com.woniu.car.commons.core.code.ConstCode;
 import com.woniu.car.commons.core.dto.ResultEntity;
+import com.woniu.car.commons.core.exception.CarException;
 import com.woniu.car.order.model.param.AddCarServiceReturnVo;
 import com.woniu.car.order.model.param.OrderVo;
 import com.woniu.car.order.web.code.OrderCode;
@@ -11,6 +12,7 @@ import com.woniu.car.order.web.entity.CarserviceReturns;
 import com.woniu.car.order.web.service.CarserviceOrderService;
 import com.woniu.car.order.web.service.CarserviceReturnsService;
 import com.woniu.car.user.web.util.GetTokenUtil;
+import io.seata.spring.annotation.GlobalTransactional;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.util.ObjectUtils;
@@ -45,6 +47,7 @@ public class CarserviceReturnsController {
      * @Param [carserviceReturns]
      * @return com.woniu.car.commons.core.dto.ResultEntity
      **/
+    @GlobalTransactional(timeoutMills = 50000, name = "prex-create-order")
     @ApiOperation(value = "服务退款申请接口")
     @RequestMapping(value ="insert_carservice_return_money_order",method = RequestMethod.POST)
     public ResultEntity insertCarserviceReturnMoneyOrder(@RequestBody @Valid AddCarServiceReturnVo addCarServiceReturnVo){
@@ -79,30 +82,16 @@ public class CarserviceReturnsController {
                                 .setFlag(true)
                                 .setMessage("退款申请成功");
                     }else{
-                        return ResultEntity.buildFailEntity()
-                                .setCode(ConstCode.LAST_STAGE)
-                                .setFlag(false)
-                                .setMessage("退款申请失败");
+                       throw new CarException("退款申请失败",500);
                     }
                 }
-
-                return ResultEntity.buildFailEntity()
-                        .setCode(ConstCode.LAST_STAGE)
-                        .setFlag(false)
-                        .setMessage("退款申请失败");
+                throw new CarException("退款申请失败",500);
             }else{
-                return ResultEntity.buildFailEntity()
-                        .setCode(ConstCode.LAST_STAGE)
-                        .setFlag(false)
-                        .setMessage("退款申请失败,当前状态无法修改");
+                throw new CarException("退款申请失败,当前状态无法修改",500);
             }
 
         }
-        return ResultEntity.buildFailEntity()
-                .setCode(ConstCode.LAST_STAGE)
-                .setFlag(false)
-                .setMessage("退款申请失败,未知订单错误");
-
+        throw new CarException("退款申请失败,未知订单错误",500);
     }
 
 }

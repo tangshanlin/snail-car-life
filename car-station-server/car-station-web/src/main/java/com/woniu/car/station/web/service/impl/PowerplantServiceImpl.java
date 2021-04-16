@@ -1,11 +1,18 @@
 package com.woniu.car.station.web.service.impl;
 
+import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.woniu.car.commons.core.dto.ResultEntity;
+import com.woniu.car.station.model.dto.LongitudeAndLatitude;
+import com.woniu.car.station.model.dto.PowerplantApplyforVoDto;
+import com.woniu.car.station.model.dto.PowerplantDto;
 import com.woniu.car.station.model.entity.Powerplant;
+import com.woniu.car.station.model.entity.PowerplantApplyfor;
+import com.woniu.car.station.model.entity.Station;
 import com.woniu.car.station.model.param.DeletePowerplantParam;
 import com.woniu.car.station.web.mapper.PowerplantMapper;
+import com.woniu.car.station.web.mapper.StationMapper;
 import com.woniu.car.station.web.service.PowerplantService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.extern.slf4j.Slf4j;
@@ -17,6 +24,8 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import javax.annotation.Resource;
+import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -33,6 +42,8 @@ public class PowerplantServiceImpl extends ServiceImpl<PowerplantMapper, Powerpl
 
     @Resource
     private PowerplantMapper powerplantMapper;
+    @Resource
+    private StationMapper stationMapper;
     /*
      * @Author HuangZhengXing
      * @Description 新增电站信息
@@ -68,13 +79,30 @@ public class PowerplantServiceImpl extends ServiceImpl<PowerplantMapper, Powerpl
      * @return com.woniu.car.station.model.entity.Powerplant
      **/
     @Override
-    public Powerplant getOnePowerplant(Powerplant powerplant) {
+    public PowerplantDto getOnePowerplant(Powerplant powerplant) {
         log.info("开始接收要查询的电站id,参数为:{}",powerplant);
         QueryWrapper<Powerplant> wrapper = new QueryWrapper<>();
         wrapper.eq("powerplant_id",powerplant.getPowerplantId());
         Powerplant powerplant1 = powerplantMapper.selectOne(wrapper);
-        log.info("将查询的结果值返回:{}",powerplant1);
-        return powerplant1;
+        //new一个新的对象
+        PowerplantDto powerplantDto = new PowerplantDto();
+        //复制旧实体类的属性
+        BeanUtils.copyProperties(powerplant1,powerplantDto);
+        //把经纬度字符串单独提出来
+        String lal = powerplant1.getPowerplantCoordinate();
+        //将经纬度字符串转换为经纬度对象
+        LongitudeAndLatitude longitudeAndLatitude = JSONUtil.toBean(lal, LongitudeAndLatitude.class);
+        powerplantDto.setPowerplantCoordinate(longitudeAndLatitude);
+        //查询电桩价格
+        QueryWrapper<Station> wrapper1 = new QueryWrapper<>();
+        //此处有问题
+        wrapper1.eq("powerplant_id",powerplant.getPowerplantId());
+        List<Station> stationList = stationMapper.selectList(wrapper1);
+        BigDecimal stationPrice = stationList.get(0).getStationPrice();
+        powerplantDto.setStationPrice(stationPrice);
+        log.info("将查询的结果值返回:{}",powerplantDto);
+        System.out.println(powerplantDto);
+        return powerplantDto;
     }
     /*
      * @Author HuangZhengXing
@@ -84,11 +112,26 @@ public class PowerplantServiceImpl extends ServiceImpl<PowerplantMapper, Powerpl
      * @return java.util.List<com.woniu.car.station.model.entity.Powerplant>
      **/
     @Override
-    public List<Powerplant> listPowerplantAll() {
+    public List<PowerplantDto> listPowerplantAll() {
         log.info("开始查询所有电站信息，不需要携带参数查询");
         List<Powerplant> powerplantList = powerplantMapper.selectList(null);
+        ArrayList<PowerplantDto> powerplantDtos = new ArrayList<>();
+        for (Powerplant powerplant : powerplantList){
+            PowerplantDto powerplantApplyforVoDto = new PowerplantDto();
+            BeanUtils.copyProperties(powerplant,powerplantApplyforVoDto);
+            String lal = powerplant.getPowerplantCoordinate();
+            LongitudeAndLatitude longitudeAndLatitude = JSONUtil.toBean(lal, LongitudeAndLatitude.class);
+            //查询电桩价格
+            QueryWrapper<Station> wrapper = new QueryWrapper<>();
+            wrapper.eq("powerplant_id",powerplant.getPowerplantId());
+            List<Station> stationList = stationMapper.selectList(wrapper);
+            BigDecimal stationPrice = stationList.get(0).getStationPrice();
+            powerplantApplyforVoDto.setPowerplantCoordinate(longitudeAndLatitude);
+            powerplantApplyforVoDto.setStationPrice(stationPrice);
+            powerplantDtos.add(powerplantApplyforVoDto);
+        }
         log.info("将查询的结果值返回:{}",powerplantList);
-        return powerplantList;
+        return powerplantDtos;
     }
     /*
      * @Author HuangZhengXing

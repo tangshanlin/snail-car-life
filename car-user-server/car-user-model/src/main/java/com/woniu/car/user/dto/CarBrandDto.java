@@ -8,6 +8,8 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.elasticsearch.annotations.Document;
 
 import java.io.Serializable;
 
@@ -21,12 +23,13 @@ import java.io.Serializable;
  */
 @Data
 
-
+@Document(indexName = "carbandDto")
 public class CarBrandDto implements Serializable {
 
 
 
     @ApiModelProperty(value = "id")
+    @Id
     private Integer carbrandId;
 
     @ApiModelProperty(value = "品牌名字")

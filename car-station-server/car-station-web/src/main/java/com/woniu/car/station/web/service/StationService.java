@@ -17,7 +17,7 @@ import java.util.List;
  */
 public interface StationService extends IService<Station> {
     //新增充电桩
-    public boolean addStation(StationDto station);
+    public boolean addStation(Station station);
     //根据充电桩id查询对应充电桩信息
     public Station getOneStation(Station station);
     //根据电站id查询该电站下的所有充电桩信息

@@ -23,6 +23,10 @@ public class UpdateStationInfoParam {
     private Integer stationId;
 
     @NotNull
+    @ApiModelProperty(value = "电桩名称")
+    private String stationName;
+
+    @NotNull
     @ApiModelProperty(value = "电桩品牌",example = "拉斯特")
     private String stationBrand;
 

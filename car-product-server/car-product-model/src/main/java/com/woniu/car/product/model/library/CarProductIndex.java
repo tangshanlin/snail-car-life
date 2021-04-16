@@ -20,7 +20,6 @@ import java.math.BigDecimal;
  */
 @Data
 @Document(indexName = "product_index")
-
 public class CarProductIndex implements Serializable {
 
     /**

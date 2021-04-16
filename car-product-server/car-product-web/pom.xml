@@ -87,6 +87,11 @@
             <artifactId>car-product-model</artifactId>
             <version>1.0.0</version>
         </dependency>
+        <dependency>
+            <groupId>com.woniu.car</groupId>
+            <artifactId>car-product-web</artifactId>
+            <version>1.0.0</version>
+        </dependency>
     </dependencies>
 
 </project>

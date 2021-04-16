@@ -40,6 +40,9 @@ public class Station implements Serializable {
       @ApiModelProperty(value = "电桩编号")
       private String stationNumeration;
 
+      @ApiModelProperty(value = "电桩名称")
+      private String stationName;
+
       @ApiModelProperty(value = "电桩品牌")
       private String stationBrand;
 

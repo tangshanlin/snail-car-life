@@ -1,40 +1,48 @@
 package com.woniu.car.product.model.dto;
 
 import com.alibaba.fastjson.JSONObject;
+import com.baomidou.mybatisplus.annotation.*;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import java.util.List;
 
 @Data
 public class ProductCateOneDto {
-    /**
-     * 分类id
-     */
+    @ApiModelProperty(value = "分类id")
+    @TableId(value = "cate_id", type = IdType.AUTO)
     private Integer cateId;
-    /**
-     * 分类名称
-     */
-    private String cateName;
-    /**
-     * 每一个分类
-     */
-    private List<ProductCateOneDto> childcateList;
 
-    /**
-     * 分类图片
-     */
+    @ApiModelProperty(value = "分类名称")
+    private String cateName;
+
+    @ApiModelProperty(value = "分类状态")
+    private Integer cateStatus;
+
+    @ApiModelProperty(value = "创建时间")
+    @TableField(fill = FieldFill.INSERT)
+    private Long gmtCreate;
+
+    @ApiModelProperty(value = "更新时间")
+    @TableField(fill = FieldFill.INSERT_UPDATE)
+    private Long gmtModified;
+
+    @ApiModelProperty(value = "逻辑删除")
+    @TableLogic
+    private Integer deleted;
+
+    @ApiModelProperty(value = "分类图片")
     private String cateImage;
-    /**
-     * JSon图片
-     */
-    private JSONObject cateImages;
-    /**
-     * 父id
-     */
+
+    @ApiModelProperty(value = "父id")
     private Integer parentId;
-    /**
-     * 分类等级
-     */
+
+
     private Integer level;
 
+    @ApiModelProperty(value = "是否活跃")
+    private String isActive;
+
+    @TableField(exist = false)
+    private List<ProductCateOneDto> childcateList;
 }

@@ -15,7 +15,7 @@ import java.util.List;
  */
 public interface OneClassifyService extends IService<OneClassify> {
     //新增一级分类
-    public boolean addOneClassifyService(OneClassify oneClassify);
+    public int addOneClassifyService(OneClassify oneClassify);
     //根据分类id修改一级分类名称
     public boolean updateOneClassifyServiceById(OneClassify OneClassify);
     //根据分类id删除一级分类

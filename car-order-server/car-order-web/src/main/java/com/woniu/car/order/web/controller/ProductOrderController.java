@@ -3,6 +3,7 @@ package com.woniu.car.order.web.controller;
 
 import com.woniu.car.commons.core.code.ConstCode;
 import com.woniu.car.commons.core.dto.ResultEntity;
+import com.woniu.car.commons.core.exception.CarException;
 import com.woniu.car.order.model.param.ExpressNoParams;
 import com.woniu.car.order.model.param.OrderVo;
 import com.woniu.car.order.web.code.OrderCode;
@@ -79,28 +80,16 @@ public class ProductOrderController {
                                 .setFlag(true)
                                 .setMessage("修改物流信息成功");
                     }else{
-                        return ResultEntity.buildFailEntity()
-                                .setCode(ConstCode.LAST_STAGE)
-                                .setFlag(false)
-                                .setMessage("修改物流信息失败");
+                        throw new CarException("修改物流信息失败",500);
                     }
                 }else{
-                    return ResultEntity.buildFailEntity()
-                            .setCode(ConstCode.LAST_STAGE)
-                            .setFlag(false)
-                            .setMessage("修改物流信息失败");
+                    throw new CarException("添加物流信息失败",500);
                 }
             }else{
-                return ResultEntity.buildFailEntity()
-                        .setCode(ConstCode.LAST_STAGE)
-                        .setFlag(false)
-                        .setMessage("订单当前状态无法修改");
+             throw new CarException("订单当前状态无法修改",500);
             }
         }else{
-            return ResultEntity.buildFailEntity()
-                    .setCode(ConstCode.LAST_STAGE)
-                    .setFlag(false)
-                    .setMessage("未知订单错误");
+            throw new CarException("未知订单错误",500);
         }
     }
 

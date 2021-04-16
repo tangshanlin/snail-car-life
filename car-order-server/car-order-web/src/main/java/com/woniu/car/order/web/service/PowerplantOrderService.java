@@ -2,6 +2,7 @@ package com.woniu.car.order.web.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.woniu.car.order.model.param.AddPowerplantOrderVo;
+import com.woniu.car.order.model.param.FindOrder;
 import com.woniu.car.order.model.param.OrderVo;
 import com.woniu.car.order.model.param.UserVo;
 import com.woniu.car.order.web.entity.CarserviceOrder;
@@ -30,12 +31,12 @@ public interface PowerplantOrderService extends IService<PowerplantOrder> {
 
     /**
      * @Author WangPeng
-     * @Description //根据订单券码查询电站订单信息
+     * @Description //根据订单单号查询电站订单信息
      * @Date  2021/4/8
      * @Param [powerplantOrder]
      * @return com.woniu.car.order.web.entity.PowerplantOrder
      **/
-    public PowerplantOrder findpowerplantOrderByOrderCode(PowerplantOrder powerplantOrder);
+    public PowerplantOrder findpowerplantOrderByOrderCode(FindOrder findOrder);
 
     /**
      * @Author WangPeng

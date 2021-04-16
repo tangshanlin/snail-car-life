@@ -24,7 +24,7 @@ spring:
 
     # redis
     redis:
-      host: localhost
+      host: 47.108.133.10
       port: 6379
 #rocketmq:
 #  name-server: 192.168.148.128:9876
@@ -54,7 +54,7 @@ seata:
 # minio 参数配置
 minio:
   endpoint: http://119.23.75.195:9000
-  bucketName: station
+  bucketName: order
 feign:
   client:
     config:
