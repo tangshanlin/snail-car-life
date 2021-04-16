@@ -12,7 +12,7 @@ import java.util.ArrayList;
 import java.util.UUID;
 
 @Component
-public class OrderMyFileUpload {
+public class OrderFileUpload {
     @Resource
     private  MinioClient minioClient;
     @Value("${minio.endpoint}")
@@ -28,6 +28,7 @@ public class OrderMyFileUpload {
             for (int i=0;i<file.length;i++){
                 String fileName = file[i].getOriginalFilename();
                 // 获取文件的后缀名,比如图片的jpeg,png
+                System.err.println(fileName+"-----------");
                 String suffixName = fileName.substring(fileName.lastIndexOf("."));
                 // 文件上传后的路径
                 fileName = "P"+ UUID.randomUUID() + suffixName;

@@ -240,17 +240,22 @@ public class CarServiceController {
     @PostMapping("/uploading_car_service_image")
     @ApiOperation(value = "上传单张具体服务图片")
     public ResultEntity uploadingCarServiceImage(UploadCarServiceImageParam uploadCarServiceImageParam){
-        if (uploadCarServiceImageParam.getCarServiceImage().length>0){
-            MultipartFile[] files = uploadCarServiceImageParam.getCarServiceImage();
-            //将文件上传到minio服务器上
-            ArrayList<String> stationImageList = serviceFileUpload.upload(files);
-            //返回图片地址
-            String stationimg = stationImageList.get(0);
-            System.out.println(stationimg);
-            return ResultEntity.buildSuccessEntity(String.class).setCode(ConstCode.ACCESS_SUCCESS).setData(stationimg).setMessage("图片上传成功");
-        }else {
+        if (ObjectUtils.isEmpty(uploadCarServiceImageParam.getCarServiceImage())){
             return ResultEntity.buildFailEntity().setMessage("图片为空").setCode(ConstCode.LAST_STAGE).setFlag(false);
+        }else {
+            if (uploadCarServiceImageParam.getCarServiceImage().length>0){
+                MultipartFile[] files = uploadCarServiceImageParam.getCarServiceImage();
+                //将文件上传到minio服务器上
+                ArrayList<String> stationImageList = serviceFileUpload.upload(files);
+                //返回图片地址
+                String stationimg = stationImageList.get(0);
+                System.out.println(stationimg);
+                return ResultEntity.buildSuccessEntity(String.class).setCode(ConstCode.ACCESS_SUCCESS).setData(stationimg).setMessage("图片上传成功");
+            }else {
+                return ResultEntity.buildFailEntity().setMessage("图片为空").setCode(ConstCode.LAST_STAGE).setFlag(false);
+            }
         }
+
     }
 
     /**
@@ -263,23 +268,28 @@ public class CarServiceController {
     @PostMapping("/uploading_car_service_info_images")
     @ApiOperation(value = "上传服务详情多张图片")
     public ResultEntity uploadCarServiceInfoImages(UploadCarServiceInfoImagesParam uploadCarServiceInfoImagesParam){
-        if (uploadCarServiceInfoImagesParam.getCarServiceInfo().length>0){
-            MultipartFile[] files = uploadCarServiceInfoImagesParam.getCarServiceInfo();
-            //将文件上传到minio服务器上
-            ArrayList<String> stationImage = serviceFileUpload.upload(files);
-            JSONObject jsonObject = new JSONObject();
-            for (int a = 0;a<stationImage.size();a++){
-                String time = String.valueOf(System.currentTimeMillis());
-                jsonObject.put("service"+ UUID.randomUUID().toString()+time,stationImage.get(a));
-            }
-            System.out.println(jsonObject);
-            //返回图片地址
-            String stationimgs = JSONObject.toJSONString(jsonObject);
-            System.out.println(stationimgs);
-            return ResultEntity.buildSuccessEntity(String.class).setCode(ConstCode.ACCESS_SUCCESS).setData(stationimgs).setMessage("图片上传成功");
-        }else {
+        if (ObjectUtils.isEmpty(uploadCarServiceInfoImagesParam)){
             return ResultEntity.buildFailEntity().setMessage("图片为空").setCode(ConstCode.LAST_STAGE).setFlag(false);
+        }else {
+            if (uploadCarServiceInfoImagesParam.getCarServiceInfo().length>0){
+                MultipartFile[] files = uploadCarServiceInfoImagesParam.getCarServiceInfo();
+                //将文件上传到minio服务器上
+                ArrayList<String> stationImage = serviceFileUpload.upload(files);
+                JSONObject jsonObject = new JSONObject();
+                for (int a = 0;a<stationImage.size();a++){
+                    String time = String.valueOf(System.currentTimeMillis());
+                    jsonObject.put("service"+ UUID.randomUUID().toString()+time,stationImage.get(a));
+                }
+                System.out.println(jsonObject);
+                //返回图片地址
+                String stationimgs = JSONObject.toJSONString(jsonObject);
+                System.out.println(stationimgs);
+                return ResultEntity.buildSuccessEntity(String.class).setCode(ConstCode.ACCESS_SUCCESS).setData(stationimgs).setMessage("图片上传成功");
+            }else {
+                return ResultEntity.buildFailEntity().setMessage("图片为空").setCode(ConstCode.LAST_STAGE).setFlag(false);
+            }
         }
+
 
     }
 }

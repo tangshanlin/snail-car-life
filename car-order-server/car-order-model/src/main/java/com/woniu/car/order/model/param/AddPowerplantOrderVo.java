@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 
@@ -51,7 +52,7 @@ public class AddPowerplantOrderVo {
     private Integer couponInfoId;
 
     @ApiModelProperty(value = "车牌号")
-    @NotNull(message = "车牌号不能为空")
+    @NotEmpty(message = "车牌号不能为空")
     private String carCode;
 
 }

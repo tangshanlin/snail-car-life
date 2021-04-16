@@ -70,6 +70,5 @@ public interface ProductOrderService extends IService<ProductOrder> {
      * @Param []
      * @return com.woniu.car.order.web.entity.ProductOrder
      **/
-    
     public List<ProductOrder> findAllProductOrder();
 }

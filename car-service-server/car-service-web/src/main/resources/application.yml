@@ -43,9 +43,7 @@ swagger:
 
 minio:
   endpoint: http://119.23.75.195:9000
-  accessKey: minioadmin
-  secretKey: minioadmin
-  bucketName: service
+  bucketName: services
 
 # seat 配置
 seata:
