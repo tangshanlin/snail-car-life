@@ -3,6 +3,7 @@ package com.woniu.car.station.web.controller;
 
 import com.woniu.car.commons.core.code.ConstCode;
 import com.woniu.car.commons.core.dto.ResultEntity;
+import com.woniu.car.station.model.dto.PowerplantDto;
 import com.woniu.car.station.model.entity.Powerplant;
 import com.woniu.car.station.model.param.DeletePowerplantParam;
 import com.woniu.car.station.model.param.GetPowerplantParam;
@@ -53,8 +54,11 @@ public class PowerplantController {
         Powerplant powerplant = new Powerplant();
         BeanUtils.copyProperties(getPowerplantParam,powerplant);
         System.out.println(powerplant);
-        Powerplant onePowerplant = powerplantService.getOnePowerplant(powerplant);
-        return ResultEntity.buildSuccessEntity(Powerplant.class).setMessage("查询电站信息成功").setCode(ConstCode.ACCESS_SUCCESS).setData(onePowerplant);
+        PowerplantDto onePowerplant = powerplantService.getOnePowerplant(powerplant);
+        if (ObjectUtils.isEmpty(onePowerplant)){
+            return ResultEntity.buildSuccessEntity(PowerplantDto.class).setMessage("查询电站信息成功,结果为空或者电站不存在").setCode(ConstCode.ACCESS_SUCCESS).setData(onePowerplant);
+        }
+        return ResultEntity.buildSuccessEntity(PowerplantDto.class).setMessage("查询电站信息成功").setCode(ConstCode.ACCESS_SUCCESS).setData(onePowerplant);
     }
     /**
      * @Author HuangZhengXing
@@ -65,11 +69,11 @@ public class PowerplantController {
      **/
     @GetMapping("/api/list_powerplant")
     @ApiOperation(value = "查询所有电站信息",notes = "不需要传入参数")
-    public ResultEntity<List<Powerplant>> listPowerplant(){
+    public ResultEntity<List<PowerplantDto>> listPowerplant(){
         //调用查询所有电站信息的方法
-        List<Powerplant> powerplantList = powerplantService.listPowerplantAll();
-        if (ObjectUtils.isEmpty(powerplantList))return ResultEntity.buildListSuccessEntity(Powerplant.class).setMessage("查询所有电站信息成功,结果为空").setCode(ConstCode.ACCESS_SUCCESS).setData(powerplantList);
-        return ResultEntity.buildListSuccessEntity(Powerplant.class).setMessage("查询所有电站信息成功").setCode(ConstCode.ACCESS_SUCCESS).setData(powerplantList);
+        List<PowerplantDto> powerplantList = powerplantService.listPowerplantAll();
+        if (ObjectUtils.isEmpty(powerplantList))return ResultEntity.buildListSuccessEntity(PowerplantDto.class).setMessage("查询所有电站信息成功,结果为空").setCode(ConstCode.ACCESS_SUCCESS).setData(powerplantList);
+        return ResultEntity.buildListSuccessEntity(PowerplantDto.class).setMessage("查询所有电站信息成功").setCode(ConstCode.ACCESS_SUCCESS).setData(powerplantList);
     }
     /**
      * @Author HuangZhengXing

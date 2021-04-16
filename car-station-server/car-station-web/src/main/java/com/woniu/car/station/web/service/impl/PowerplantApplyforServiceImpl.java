@@ -101,7 +101,7 @@ public class PowerplantApplyforServiceImpl extends ServiceImpl<PowerplantApplyfo
         //修改电站申请表的审核状态
         int update = powerplantApplyforMapper.update(powerplantApplyfor, wrapper);
         log.info("电站申请表的审核状态修改完成,返回值为:{}",update);
-        if (update>0){
+        if (update>0 && powerplantApplyfor.getPowerplantApplyforStatus()==1){
             log.info("审核通过就新增电站信息");
             b=true;
             QueryWrapper<PowerplantApplyfor> wrapper1 = new QueryWrapper<>();
@@ -140,6 +140,7 @@ public class PowerplantApplyforServiceImpl extends ServiceImpl<PowerplantApplyfo
         QueryWrapper<PowerplantApplyfor> wrapper = new QueryWrapper<>();
         //对应电站申请表id字段
         wrapper.eq("powerplant_applyfor_id",powerplantApplyfor.getPowerplantApplyforId());
+        wrapper.eq("powerplant_applyfor_status",0);
         //查询电站申请表信息
         PowerplantApplyfor powerplantApplyfor1 = powerplantApplyforMapper.selectOne(wrapper);
         if (!ObjectUtils.isEmpty(powerplantApplyfor1)){
