@@ -71,3 +71,7 @@ seata:
     rest:
       uris:
         - http://localhost:9200
+# minio 参数配置
+minio:
+  endpoint: http://119.23.75.195:9000
+  bucketName: user

@@ -1,6 +1,9 @@
 package com.woniu.car.shop.model.dtoVo;
 
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+
+import javax.validation.constraints.NotBlank;
 
 @Data
 public class FindShopByClassDtoVo {
@@ -9,6 +12,7 @@ public class FindShopByClassDtoVo {
     private String shopImage;//门店图片
     private Integer shopOrderNumber;//总订单数
     private Integer shopGrade;//总评分
-    private String shopLngLat;//经纬度(json)
+    private String shopLongitude;//经度
+    private String shopLatitude;//纬度
     private String shopAddress;//门店地址
 }

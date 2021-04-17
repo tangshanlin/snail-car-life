@@ -29,7 +29,7 @@ minio:
   bucketName: message
 
 rocketmq:
-  name-server: 192.168.10.38:9876
+  name-server: 192.168.10.61:9876
   producer:
     group: orderComplains
 

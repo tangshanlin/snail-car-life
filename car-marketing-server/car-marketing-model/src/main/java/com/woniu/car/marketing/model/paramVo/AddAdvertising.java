@@ -28,11 +28,11 @@ public class AddAdvertising {
 
     @Min(value = 0,message = "活动发布来源必须大于等于0")
     @NotNull(message = "活动发布来源不能为空")
-    @ApiModelProperty(value = "发布来源(0平台其他对应门店对应id)")
+    @ApiModelProperty(value = "发布来源(0平台其他对应门店对应id)",example = "1")
     private Integer advertisingSourceId;//
 
     @NotNull(message = "优惠券id不能为空")
-    @ApiModelProperty(value = "优惠券id")
+    @ApiModelProperty(value = "优惠券id",example = "1")
     @Min(value = 1,message = "优惠券id必须大于等于1")
     private Integer couponId;//
 
