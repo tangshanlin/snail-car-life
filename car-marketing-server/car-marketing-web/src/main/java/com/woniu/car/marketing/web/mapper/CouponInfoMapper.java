@@ -59,12 +59,12 @@ public interface CouponInfoMapper extends BaseMapper<CouponInfo> {
     * @Param [couponInfoUserId, now]
     * @return java.util.List<com.woniu.car.marketing.model.dtoVo.GetCouponInfoByUserIdDtoVo>
     **/
-    @Select("SELECT c.coupon_name,c.coupon_info,c.coupon_money,coupon_condition\n" +
-            "FROM t_coupon c\n" +
-            "JOIN t_coupon_info ci\n" +
-            "ON c.coupon_id = ci.coupon_id\n" +
-            "WHERE ci.coupon_info_user_id = #{now}\n" +
-            "AND c.coupon_end_time > #{couponInfoUserId}\n" +
+    @Select("SELECT c.coupon_name,c.coupon_info,c.coupon_money,coupon_condition " +
+            "FROM t_coupon c " +
+            "JOIN t_coupon_info ci " +
+            "ON c.coupon_id = ci.coupon_id " +
+            "WHERE ci.coupon_info_user_id = #{couponInfoUserId} " +
+            "AND c.coupon_end_time > #{now} " +
             "AND ci.coupon_info_state = 0")
     List<GetCouponInfoByUserIdDtoVo> listCouponInfoByUserId(Integer couponInfoUserId, Long now);
 }

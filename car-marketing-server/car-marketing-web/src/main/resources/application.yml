@@ -27,6 +27,12 @@ spring:
     multipart:
       max-file-size: 10MB #指定上载文件允许的最大大小。 默认值为1MB
       max-request-size: 10MB  #指定multipart/form-data请求允许的最大大小。 默认值为10MB。
+#配置redis
+  redis:
+    host: 47.108.133.10 # Redis服务器地址
+    port: 6399 # Redis服务器连接端口
+
+
 
 # seat 配置
 seata:
@@ -42,6 +48,7 @@ minio:
 mybatis-plus:
   configuration:
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl #sql打印日志
+
 swagger:
   base-package: com.woniu.car.marketing.web.controller
   contact:
@@ -51,3 +58,5 @@ swagger:
   description: "促销服务接口"
   title: "促销服务"
   version: 1.0
+
+

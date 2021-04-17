@@ -15,11 +15,11 @@ import javax.validation.constraints.NotNull;
  */
 @Data
 public class AddTwoClassifyParam {
-    @NotNull
+    @NotNull(message = "oneClassifyId不能为空")
     @ApiModelProperty(value = "关联一级分类id",example = "1")
     private Integer oneClassifyId;
 
-    @NotNull
+    @NotNull(message = "twoClassifyName不能为空")
     @ApiModelProperty(value = "二级分类名称",example = "打蜡")
     private String twoClassifyName;
 }

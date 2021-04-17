@@ -4,6 +4,8 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.validation.constraints.NotNull;
+
 /**
  * @ClassName UploadCarServiceInfoImagesParam
  * @Desc TODO
@@ -14,6 +16,7 @@ import org.springframework.web.multipart.MultipartFile;
 @Data
 public class UploadCarServiceInfoImagesParam {
 
+    @NotNull(message = "carServiceInfo不能为空")
     @ApiModelProperty(value = "服务详情")
     private MultipartFile[] carServiceInfo;
 }

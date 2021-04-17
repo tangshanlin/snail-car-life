@@ -18,10 +18,12 @@ import com.woniu.car.shop.web.domain.Shop;
 import com.woniu.car.shop.web.mapper.ShopMapper;
 import com.woniu.car.shop.web.service.ShopService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.woniu.car.shop.web.utils.Change;
 import com.woniu.car.shop.web.utils.ShopFileUpload;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.util.ObjectUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
@@ -81,27 +83,31 @@ public class ShopServiceImpl extends ServiceImpl<ShopMapper, Shop> implements Sh
                 insertCode = ConstCode.ADD_SHOP_TEL_FAIL;
             }
         }
-        if(insertCode!=ConstCode.ADD_SHOP_NAME_FAIL&&insertCode!=ConstCode.ADD_SHOP_ADDRESS_FAIL&&insertCode!=ConstCode.ADD_SHOP_TEL_FAIL){
+        if(insertCode!=ConstCode.ADD_SHOP_NAME_FAIL && insertCode!=ConstCode.ADD_SHOP_ADDRESS_FAIL && insertCode!=ConstCode.ADD_SHOP_TEL_FAIL){
             System.out.println(insertCode!=ConstCode.ADD_SHOP_NAME_FAIL&&insertCode!=ConstCode.ADD_SHOP_ADDRESS_FAIL&&insertCode!=ConstCode.ADD_SHOP_TEL_FAIL);
             MultipartFile[] file = addShopParamVo.getFile();
-            ArrayList<String> shopImage = shopFileUpload.upload(file);//将文件上传到minlo服务器上面
-            String shopImages = shopImage.get(0);//获取上传的链接地址
+            //ArrayList<String> shopImage = shopFileUpload.upload(file);//将文件上传到minlo服务器上面
+            //String shopImages = shopImage.get(0);//获取上传的链接地址
             Shop shop = BeanCopyUtil.copyOne(addShopParamVo, Shop::new);
-            shop.setShopImage(shopImages);
+            //shop.setShopImage(shopImages);
+
+            String shopTag = Change.arrayChangeString(addShopParamVo.getShopTag(), ",");
+
+            shop.setShopTag(shopTag);
             shop.setShopProportion(0.8);//设置默认的门店收益比例
             insertCode = shopMapper.insert(shop);
         }
 
-        MultipartFile[] file = addShopParamVo.getFile();
-        /**
-         * 将文件上传到minlo服务器上面
-         */
-        ArrayList<String> shopImage = shopFileUpload.upload(file);
-        String shopImages = shopImage.get(0);
-        Shop shop = BeanCopyUtil.copyOne(addShopParamVo, Shop::new);
-        shop.setShopImage(shopImages);
-        int insert = shopMapper.insert(shop);
-        return insert;
+//        MultipartFile[] file = addShopParamVo.getFile();
+//        /**
+//         * 将文件上传到minlo服务器上面
+//         */
+//        ArrayList<String> shopImage = shopFileUpload.upload(file);
+//        String shopImages = shopImage.get(0);
+//        Shop shop = BeanCopyUtil.copyOne(addShopParamVo, Shop::new);
+//        shop.setShopImage(shopImages);
+//        int insert = shopMapper.insert(shop);
+        return insertCode;
 
     }
 
@@ -114,7 +120,14 @@ public class ShopServiceImpl extends ServiceImpl<ShopMapper, Shop> implements Sh
     **/
     @Override
     public FindShopInfoVo findShopInfo(ShopIdParamVo shopId) {
-        Shop shop = shopMapper.selectById(shopId.getShopId());
+        QueryWrapper<Shop> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("shop_id",shopId.getShopId());
+        queryWrapper.eq("shop_account_start",1);
+
+        Shop shop = shopMapper.selectOne(queryWrapper);
+        if (ObjectUtils.isEmpty(shop)) {
+            return null;
+        }
         FindShopInfoVo findShopInfoVo = BeanCopyUtil.copyOne(shop, FindShopInfoVo::new);
         return findShopInfoVo;
     }
@@ -130,6 +143,7 @@ public class ShopServiceImpl extends ServiceImpl<ShopMapper, Shop> implements Sh
     public List<FindShopByClassDtoVo> findShopByClass(FindShopByClassParamVo findShopByClass) {
         QueryWrapper queryWrapper = new QueryWrapper();
         queryWrapper.eq("shop_class",1);//查询条件必须是4s门店
+        queryWrapper.eq("shop_account_start",1);
         if(findShopByClass.getShopBrand()==null){ //没传品牌查所有4s门店信息
             List<Shop> listShop = shopMapper.selectList(queryWrapper);
             List<FindShopByClassDtoVo> listFindShopByClassDtoVo = BeanCopyUtil.copyList(listShop, FindShopByClassDtoVo::new);
@@ -154,7 +168,11 @@ public class ShopServiceImpl extends ServiceImpl<ShopMapper, Shop> implements Sh
     public List<FindShopByIntegralDtoVo> findShopByIntegral() {
         QueryWrapper queryWrapper = new QueryWrapper();
         queryWrapper.ge("shop_integral",90);
+        queryWrapper.eq("shop_account_start",1);
         List listShop = shopMapper.selectList(queryWrapper);
+        if (ObjectUtils.isEmpty(listShop)) {
+            return null;
+        }
         List list = BeanCopyUtil.copyList(listShop, FindShopByIntegralDtoVo::new);
         return list;
     }
@@ -179,7 +197,11 @@ public class ShopServiceImpl extends ServiceImpl<ShopMapper, Shop> implements Sh
     **/
     @Override
     public ShopNameDtoVo getShopNameByShopId(ShopIdParamVo shopIdParamVo) {
-        Shop shop = shopMapper.selectById(shopIdParamVo.getShopId());
+        QueryWrapper<Shop> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("shop_id",shopIdParamVo.getShopId());
+        queryWrapper.eq("shop_account_start",1);
+
+        Shop shop = shopMapper.selectOne(queryWrapper);
         ShopNameDtoVo shopNameDtoVo = BeanCopyUtil.copyOne(shop, ShopNameDtoVo::new);
         return shopNameDtoVo;
     }
@@ -193,7 +215,11 @@ public class ShopServiceImpl extends ServiceImpl<ShopMapper, Shop> implements Sh
     **/
     @Override
     public ShopIntegralDtoVo getShopIntegralByShopId(ShopIdParamVo shopIdParamVo) {
-        Shop shop = shopMapper.selectById(shopIdParamVo.getShopId());
+        QueryWrapper<Shop> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("shop_id",shopIdParamVo.getShopId());
+        queryWrapper.eq("shop_account_start",1);
+
+        Shop shop = shopMapper.selectOne(queryWrapper);
         ShopIntegralDtoVo shopIntegralDtoVo = BeanCopyUtil.copyOne(shop, ShopIntegralDtoVo::new);
         return shopIntegralDtoVo;
     }
@@ -207,8 +233,11 @@ public class ShopServiceImpl extends ServiceImpl<ShopMapper, Shop> implements Sh
     **/
     @Override
     public Boolean updateShopIntegralByShopId(ShopIdParamVo shopIdParamVo) {
-        System.out.println(shopIdParamVo.getShopId()+"aaaaaaaaaaaaaaaaaa");
-        Shop shop = shopMapper.selectById(shopIdParamVo.getShopId());
+        QueryWrapper<Shop> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("shop_id",shopIdParamVo.getShopId());
+        queryWrapper.eq("shop_account_start",1);
+
+        Shop shop = shopMapper.selectOne(queryWrapper);
         shop.setShopIntegral(shop.getShopIntegral()-1);
         int i = shopMapper.updateById(shop);
         if(i!=0) return true;
@@ -240,25 +269,29 @@ public class ShopServiceImpl extends ServiceImpl<ShopMapper, Shop> implements Sh
     **/
     @Override
     public Integer updateShopAccountStart(ShopIdParamVo shopId) {
-        InsertAccountByTypeParams insertAccountByTypeParams = new InsertAccountByTypeParams();
-        insertAccountByTypeParams.setType(2);
-        ResultEntity<String> stringResultEntity = feignAuthClient.insertAccountByType(insertAccountByTypeParams);
-        Integer code = stringResultEntity.getCode();
-        System.out.println(code==ConstCode.ACCESS_SUCCESS);
-        if(code.equals(ConstCode.ACCESS_SUCCESS)){
-            String account = stringResultEntity.getData();//拿到账号
-            System.out.println("拿到账号"+account);
-            Shop shop = new Shop();
-            shop.setShopId(shopId.getShopId());
-            shop.setShopAccount(account);
-            shop.setShopAccountStart(1);
-            shopMapper.updateById(shop);
-            return ConstCode.ACCESS_SUCCESS;
-        }else if (code.equals(ConstCode.GET_ACCOUNT_ROLE_FAIL)){
-            return ConstCode.GET_ACCOUNT_ROLE_FAIL;
+        Shop shop1 = shopMapper.selectById(shopId.getShopId());
+        if(!ObjectUtils.isEmpty(shop1)){
+            InsertAccountByTypeParams insertAccountByTypeParams = new InsertAccountByTypeParams();
+            insertAccountByTypeParams.setType(2);
+            ResultEntity<String> stringResultEntity = feignAuthClient.insertAccountByType(insertAccountByTypeParams);
+            Integer code = stringResultEntity.getCode();
+            if(code.equals(ConstCode.ACCESS_SUCCESS)){
+                String account = stringResultEntity.getData();//拿到账号
+                Shop shop = new Shop();
+                shop.setShopId(shopId.getShopId());
+                shop.setShopAccount(account);
+                shop.setShopAccountStart(1);
+                shopMapper.updateById(shop);
+                return ConstCode.ACCESS_SUCCESS;
+            }else if (code.equals(ConstCode.GET_ACCOUNT_ROLE_FAIL)){
+                return ConstCode.GET_ACCOUNT_ROLE_FAIL;
+            }else {
+                return ConstCode.ADD_END_ACCOUNT_FAIL;
+            }
         }else {
-            return ConstCode.ADD_END_ACCOUNT_FAIL;
+            return ConstCode.The_Store_Already_Exists;
         }
+
 
 
     }

@@ -3,6 +3,7 @@ package com.woniu.car.station.web.controller;
 
 import com.woniu.car.commons.core.code.ConstCode;
 import com.woniu.car.commons.core.dto.ResultEntity;
+import com.woniu.car.commons.core.exception.CarException;
 import com.woniu.car.station.model.dto.PowerplantApplyforDto;
 import com.woniu.car.station.model.dto.PowerplantApplyforVoDto;
 import com.woniu.car.station.model.entity.PowerplantApplyfor;
@@ -62,7 +63,7 @@ public class PowerplantApplyforController {
         }else  if (result == -10){
             return ResultEntity.buildFailEntity().setMessage("电站名称已存在").setCode(ConstCode.NAME_ALREADY_EXISTS).setFlag(false);
         } else {
-            return ResultEntity.buildFailEntity().setMessage("新增电站申请表信息失败").setCode(ConstCode.LAST_STAGE).setFlag(false);
+            throw new CarException("新增电站信息失败",500);
         }
     }
     /*
@@ -129,7 +130,7 @@ public class PowerplantApplyforController {
         }else {
             powerplantApplyfor.setPowerplantApplyforStatus(PowerplantApplyforStatus.APPLYFORFAIL);
         }
-        return ResultEntity.buildSuccessEntity().setMessage("修改审核状态失败").setCode(ConstCode.LAST_STAGE).setFlag(false);
+        throw new CarException("修改电站审核失败",500);
     }
     /*
      * @Author WangPeng
@@ -148,7 +149,7 @@ public class PowerplantApplyforController {
         System.out.println(powerplantApplyfor);
         boolean b = powerplantApplyforService.deletePowerplantApplyforById(powerplantApplyfor);
         if (b) return ResultEntity.buildSuccessEntity().setMessage("删除成功").setCode(ConstCode.ACCESS_SUCCESS);
-        return ResultEntity.buildFailEntity().setMessage("删除失败").setCode(ConstCode.LAST_STAGE).setFlag(false);
+        throw new CarException("删除电站申请表失败",500);
     }
 
     /**
@@ -170,7 +171,7 @@ public class PowerplantApplyforController {
             System.out.println(stationimg);
             return ResultEntity.buildSuccessEntity(String.class).setCode(ConstCode.ACCESS_SUCCESS).setData(stationimg).setMessage("图片上传成功");
         }else {
-            return ResultEntity.buildFailEntity().setMessage("图片为空").setCode(ConstCode.LAST_STAGE).setFlag(false);
+            throw new CarException("图片为空",500);
         }
     }
 }

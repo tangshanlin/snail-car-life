@@ -19,29 +19,31 @@ import java.math.BigDecimal;
  */
 @Data
 public class UpdateCarServiceInfoParam {
-    @NotNull
+    @NotNull(message = "carServiceId不能为空")
     @ApiModelProperty(value = "要修改的具体服务id",example = "1")
     private Integer carServiceId;
 
-    @NotNull
+
     @ApiModelProperty(value = "服务名称",example = "全车清洗")
     private String carServiceName;
 
-    @NotNull
+
     @ApiModelProperty(value = "服务价格",example = "120")
     private BigDecimal carServicePrice;
 
-    @ApiModelProperty(value = "服务图片")
+
+    @ApiModelProperty(value = "服务图片,可以为空")
     private MultipartFile[] carServiceImage;
 
-    @NotNull
+
     @ApiModelProperty(value = "服务介绍",example = "对汽车车身内饰完全清洗")
     private String carServiceIntroduce;
+
 
     @ApiModelProperty(value = "服务详情")
     private MultipartFile[] carServiceInfo;
 
-    @NotNull
+
     @ApiModelProperty(value = "适用车型",example = "四座")
     private String carServiceType;
 }

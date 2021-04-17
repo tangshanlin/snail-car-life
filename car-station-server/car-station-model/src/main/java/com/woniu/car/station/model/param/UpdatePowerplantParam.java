@@ -4,8 +4,10 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 /**
  * @ClassName UpdatePowerplantParam
@@ -23,8 +25,8 @@ public class UpdatePowerplantParam {
     @ApiModelProperty(value = "电站名称",example = "湖南山川充电站")
     private String powerplanName;
 
-    @ApiModelProperty(value = "电站图片")
-    private String powerplantImage;
+    @ApiModelProperty(value = "电站图片,可以为空")
+    private MultipartFile[] powerplantImage;
 
     @ApiModelProperty(value = "电站介绍",example = "随时可充")
     private String powerplantIntroduce;
@@ -32,6 +34,7 @@ public class UpdatePowerplantParam {
     @ApiModelProperty(value = "电站地址",example = "重庆市南岸区")
     private String powerplantAddress;
 
+    @Size(max = 11,min = 8)
     @ApiModelProperty(value = "电站热线电话",example = "15654865355")
     private String powerplantPhone;
 

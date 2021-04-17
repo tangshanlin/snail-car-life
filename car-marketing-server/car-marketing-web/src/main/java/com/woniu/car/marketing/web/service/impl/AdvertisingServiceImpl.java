@@ -20,11 +20,14 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.woniu.car.marketing.web.util.MarketingFileUpload;
 import com.woniu.car.shop.model.dtoVo.ShopNameDtoVo;
 import com.woniu.car.shop.model.paramVo.ShopIdParamVo;
+import org.springframework.data.redis.core.*;
 import org.springframework.stereotype.Service;
+import org.springframework.util.ObjectUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 /**
@@ -42,13 +45,18 @@ public class AdvertisingServiceImpl extends ServiceImpl<AdvertisingMapper, Adver
     private AdvertisingMapper advertisingMapper;
 
     @Resource
-    private MarketingFileUpload myFileUpload;//minio文件上传
+    private MarketingFileUpload marketingFileUpload;//minio文件上传
 
     //feign相关
     @Resource
     private FeignShopClient feignShopClient;
     @Resource
     private FeignMarketingClient feignMarketingClient;
+
+    @Resource
+    private RedisTemplate redisTemplate;
+
+
 
 
     /*
@@ -64,16 +72,21 @@ public class AdvertisingServiceImpl extends ServiceImpl<AdvertisingMapper, Adver
         /**
          * 将文件上传到minlo服务器上面
          */
-        ArrayList<String> shopImage = myFileUpload.upload(file);
+        ArrayList<String> shopImage = marketingFileUpload.upload(file);
         String shopImages = shopImage.get(0);
         Advertising advertising = BeanCopyUtil.copyOne(addAdvertising, Advertising::new);
 
         advertising.setAdvertisingImage(shopImages);
-        addAdvertising.setAdvertisingBeginTime(addAdvertising.getAdvertisingEndTime());
-        addAdvertising.setAdvertisingEndTime(addAdvertising.getAdvertisingEndTime());
+        System.out.println(addAdvertising.getAdvertisingEndTime());
+        advertising.setAdvertisingBeginTime(addAdvertising.getAdvertisingEndTime().getTime());
+        advertising.setAdvertisingEndTime(addAdvertising.getAdvertisingEndTime().getTime());
+        System.out.println(addAdvertising);
         int insert = advertisingMapper.insert(advertising);
-        if(insert!=0) return true;
-        return false;
+        if(insert!=0){
+            return true;
+        }else {
+            return false;
+        }
     }
 
     /*
@@ -119,39 +132,54 @@ public class AdvertisingServiceImpl extends ServiceImpl<AdvertisingMapper, Adver
     **/
     @Override
     public List<GetAdvertisingByAuditAllDtoVo> listAdvertisingByAuditAll(AdvertisingByAuditParamVo getListAdvertisingByAuditAll) {
-        QueryWrapper<Advertising> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("advertising_audit",getListAdvertisingByAuditAll.getAdvertisingAudit());
-        List<Advertising> advertisings = advertisingMapper.selectList(queryWrapper);
-        List<GetAdvertisingByAuditAllDtoVo> getAdvertisingByAuditAllDtoVos = new ArrayList<>();
+        System.out.println("进来了");
+        ListOperations listOperations = redisTemplate.opsForList();
+        String key = "car:marketing:advertising:byAudit"+getListAdvertisingByAuditAll.getAdvertisingAudit();
+        System.out.println("aaa");
+        List<GetAdvertisingByAuditAllDtoVo> range = listOperations.range(key, 0, -1);
+        System.out.println(range);
+        //如果redis有数据从redis拿
+        if(!ObjectUtils.isEmpty(range)){
+            return range;
+        }else{
+            QueryWrapper<Advertising> queryWrapper = new QueryWrapper<>();
+            queryWrapper.eq("advertising_audit",getListAdvertisingByAuditAll.getAdvertisingAudit());
+            List<Advertising> advertisings = advertisingMapper.selectList(queryWrapper);
+            List<GetAdvertisingByAuditAllDtoVo> getAdvertisingByAuditAllDtoVos = new ArrayList<>();
 
-        //将数据库查询的数据进行遍历
-        advertisings.forEach(advertising -> {
-            //feign通过门店id拿门店名称
-            ShopIdParamVo shopIdParamVo = new ShopIdParamVo();
-            shopIdParamVo.setShopId(advertising.getAdvertisingSourceId());
-            ResultEntity<ShopNameDtoVo> shopNameByShopId = feignShopClient.getShopNameByShopId(shopIdParamVo);
-            ShopNameDtoVo shopNameDtoVo = shopNameByShopId.getData();
+            //将数据库查询的数据进行遍历
+            advertisings.forEach(advertising -> {
+                //feign通过门店id拿门店名称
+                ShopIdParamVo shopIdParamVo = new ShopIdParamVo();
+                shopIdParamVo.setShopId(advertising.getAdvertisingSourceId());
+                ResultEntity<ShopNameDtoVo> shopNameByShopId = feignShopClient.getShopNameByShopId(shopIdParamVo);
+                ShopNameDtoVo shopNameDtoVo = shopNameByShopId.getData();
 
-            //feign通过优惠卷类别id拿优惠券名称
-            GetCouponIdParamVo couponIdParamVo = new GetCouponIdParamVo();
-            couponIdParamVo.setCouponId(advertising.getAdvertisingSourceId());
-            ResultEntity<GetCouponNameDtoVo> couponNameByCouponId = feignMarketingClient.getCouponNameByCouponId(couponIdParamVo);
-            GetCouponNameDtoVo couponNameDtoVo = couponNameByCouponId.getData();
+                //feign通过优惠卷类别id拿优惠券名称
+                GetCouponIdParamVo couponIdParamVo = new GetCouponIdParamVo();
+                couponIdParamVo.setCouponId(advertising.getAdvertisingSourceId());
+                ResultEntity<GetCouponNameDtoVo> couponNameByCouponId = feignMarketingClient.getCouponNameByCouponId(couponIdParamVo);
+                GetCouponNameDtoVo couponNameDtoVo = couponNameByCouponId.getData();
 
-            //将数据存到Dto类里面
-            GetAdvertisingByAuditAllDtoVo advertisingByAuditDtoVo = new GetAdvertisingByAuditAllDtoVo();
-            advertisingByAuditDtoVo.setShopName(shopNameDtoVo.getShopName());
-            advertisingByAuditDtoVo.setAdvertisingBeginTime(advertising.getAdvertisingBeginTime());
-            advertisingByAuditDtoVo.setAdvertisingExplain(advertising.getAdvertisingExplain());
-            advertisingByAuditDtoVo.setAdvertisingEndTime(advertising.getAdvertisingEndTime());
-            advertisingByAuditDtoVo.setAdvertisingId(advertising.getAdvertisingId());
-            advertisingByAuditDtoVo.setAdvertisingImage(advertising.getAdvertisingImage());
-            advertisingByAuditDtoVo.setCouponName(couponNameDtoVo.getCouponName());
+                //将数据存到Dto类里面
+                GetAdvertisingByAuditAllDtoVo advertisingByAuditDtoVo = new GetAdvertisingByAuditAllDtoVo();
+                advertisingByAuditDtoVo.setShopName(shopNameDtoVo.getShopName());
+                advertisingByAuditDtoVo.setAdvertisingBeginTime(advertising.getAdvertisingBeginTime());
+                advertisingByAuditDtoVo.setAdvertisingExplain(advertising.getAdvertisingExplain());
+                advertisingByAuditDtoVo.setAdvertisingEndTime(advertising.getAdvertisingEndTime());
+                advertisingByAuditDtoVo.setAdvertisingId(advertising.getAdvertisingId());
+                advertisingByAuditDtoVo.setAdvertisingImage(advertising.getAdvertisingImage());
+                advertisingByAuditDtoVo.setCouponName(couponNameDtoVo.getCouponName());
 
-            getAdvertisingByAuditAllDtoVos.add(advertisingByAuditDtoVo);
-        });
+                getAdvertisingByAuditAllDtoVos.add(advertisingByAuditDtoVo);
+            });
+            //存入redis中
+            listOperations.leftPush(key,getAdvertisingByAuditAllDtoVos);
 
-        return getAdvertisingByAuditAllDtoVos;
+            return getAdvertisingByAuditAllDtoVos;
+
+        }
+
     }
 
     /*
@@ -163,33 +191,44 @@ public class AdvertisingServiceImpl extends ServiceImpl<AdvertisingMapper, Adver
     **/
     @Override
     public List<AdvertisingInfoBySourceAllDtoVo> listAdvertisingBySource(AdvertisingBySourceParamVo advertisingBySourceParamVo) {
-        QueryWrapper<Advertising> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("advertising_source_id",advertisingBySourceParamVo.getAdvertisingSourceId());
-        queryWrapper.eq("advertising_audit",1);
-        List<Advertising> advertisings = advertisingMapper.selectList(queryWrapper);
+        ListOperations listOperations = redisTemplate.opsForList();
+        String key = "car:marketing:advertising:bySource"+advertisingBySourceParamVo.getAdvertisingSourceId();
+        List<AdvertisingInfoBySourceAllDtoVo> range = listOperations.range(key, 0, -1);
+        //如果redis有数据从redis拿
+        if(!ObjectUtils.isEmpty(range)){
+            return range;
+        }else{
+            QueryWrapper<Advertising> queryWrapper = new QueryWrapper<>();
+            queryWrapper.eq("advertising_source_id",advertisingBySourceParamVo.getAdvertisingSourceId());
+            queryWrapper.eq("advertising_audit",1);
+            List<Advertising> advertisings = advertisingMapper.selectList(queryWrapper);
 
-        List<AdvertisingInfoBySourceAllDtoVo> advertisingInfoBySourceAllDtoVoList = new ArrayList<>();
+            List<AdvertisingInfoBySourceAllDtoVo> advertisingInfoBySourceAllDtoVoList = new ArrayList<>();
 
-        advertisings.forEach(advertising -> {
-            GetCouponIdParamVo couponIdParamVo = new GetCouponIdParamVo();
-            couponIdParamVo.setCouponId(advertising.getCouponId());
-            ResultEntity<GetCouponBySourceDtoVo> couponById = feignMarketingClient.getCouponById(couponIdParamVo);
-            GetCouponBySourceDtoVo couponByIdData = couponById.getData();
+            advertisings.forEach(advertising -> {
+                GetCouponIdParamVo couponIdParamVo = new GetCouponIdParamVo();
+                couponIdParamVo.setCouponId(advertising.getCouponId());
+                ResultEntity<GetCouponBySourceDtoVo> couponById = feignMarketingClient.getCouponById(couponIdParamVo);
+                GetCouponBySourceDtoVo couponByIdData = couponById.getData();
 
-            AdvertisingInfoBySourceAllDtoVo advertisingInfoBySourceAllDtoVo = new AdvertisingInfoBySourceAllDtoVo();
-            advertisingInfoBySourceAllDtoVo.setAdvertisingBeginTime(advertising.getAdvertisingBeginTime());
-            advertisingInfoBySourceAllDtoVo.setAdvertisingEndTime(advertising.getAdvertisingEndTime());
-            advertisingInfoBySourceAllDtoVo.setAdvertisingExplain(advertising.getAdvertisingExplain());
-            advertisingInfoBySourceAllDtoVo.setAdvertisingImage(advertising.getAdvertisingImage());
-            advertisingInfoBySourceAllDtoVo.setCouponId(couponByIdData.getCouponId());
-            advertisingInfoBySourceAllDtoVo.setCouponInfo(couponByIdData.getCouponInfo());
-            advertisingInfoBySourceAllDtoVo.setCouponMoney(couponByIdData.getCouponMoney());
-            advertisingInfoBySourceAllDtoVo.setCouponName(couponByIdData.getCouponName());
-            advertisingInfoBySourceAllDtoVoList.add(advertisingInfoBySourceAllDtoVo);
+                AdvertisingInfoBySourceAllDtoVo advertisingInfoBySourceAllDtoVo = new AdvertisingInfoBySourceAllDtoVo();
+                advertisingInfoBySourceAllDtoVo.setAdvertisingBeginTime(advertising.getAdvertisingBeginTime());
+                advertisingInfoBySourceAllDtoVo.setAdvertisingEndTime(advertising.getAdvertisingEndTime());
+                advertisingInfoBySourceAllDtoVo.setAdvertisingExplain(advertising.getAdvertisingExplain());
+                advertisingInfoBySourceAllDtoVo.setAdvertisingImage(advertising.getAdvertisingImage());
+                advertisingInfoBySourceAllDtoVo.setCouponId(couponByIdData.getCouponId());
+                advertisingInfoBySourceAllDtoVo.setCouponInfo(couponByIdData.getCouponInfo());
+                advertisingInfoBySourceAllDtoVo.setCouponMoney(couponByIdData.getCouponMoney());
+                advertisingInfoBySourceAllDtoVo.setCouponName(couponByIdData.getCouponName());
+                advertisingInfoBySourceAllDtoVoList.add(advertisingInfoBySourceAllDtoVo);
 
-        });
+            });
 
-        return advertisingInfoBySourceAllDtoVoList;
+            //存入redis中
+            listOperations.leftPush(key,advertisingInfoBySourceAllDtoVoList);
+            return advertisingInfoBySourceAllDtoVoList;
+        }
+
     }
 
 

@@ -16,7 +16,7 @@ import javax.validation.constraints.NotNull;
  */
 @Data
 public class DeleteStationParam {
-    @NotNull
+    @NotNull(message = "stationId不能为空")
     @ApiModelProperty(value = "充电桩id",example = "1")
     private Integer stationId;
 }

@@ -3,6 +3,7 @@ package com.woniu.car.station.web.controller;
 
 import com.woniu.car.commons.core.code.ConstCode;
 import com.woniu.car.commons.core.dto.ResultEntity;
+import com.woniu.car.commons.core.exception.CarException;
 import com.woniu.car.station.model.dto.PowerplantDto;
 import com.woniu.car.station.model.entity.Powerplant;
 import com.woniu.car.station.model.param.DeletePowerplantParam;
@@ -56,7 +57,7 @@ public class PowerplantController {
         System.out.println(powerplant);
         PowerplantDto onePowerplant = powerplantService.getOnePowerplant(powerplant);
         if (ObjectUtils.isEmpty(onePowerplant)){
-            return ResultEntity.buildSuccessEntity(PowerplantDto.class).setMessage("查询电站信息成功,结果为空或者电站不存在").setCode(ConstCode.ACCESS_SUCCESS).setData(onePowerplant);
+            throw new CarException("查询电站信息成功,结果为空或者电站不存在",500);
         }
         return ResultEntity.buildSuccessEntity(PowerplantDto.class).setMessage("查询电站信息成功").setCode(ConstCode.ACCESS_SUCCESS).setData(onePowerplant);
     }
@@ -72,7 +73,7 @@ public class PowerplantController {
     public ResultEntity<List<PowerplantDto>> listPowerplant(){
         //调用查询所有电站信息的方法
         List<PowerplantDto> powerplantList = powerplantService.listPowerplantAll();
-        if (ObjectUtils.isEmpty(powerplantList))return ResultEntity.buildListSuccessEntity(PowerplantDto.class).setMessage("查询所有电站信息成功,结果为空").setCode(ConstCode.ACCESS_SUCCESS).setData(powerplantList);
+        if (ObjectUtils.isEmpty(powerplantList))throw new CarException("查询所有电站信息成功,结果为空",500);
         return ResultEntity.buildListSuccessEntity(PowerplantDto.class).setMessage("查询所有电站信息成功").setCode(ConstCode.ACCESS_SUCCESS).setData(powerplantList);
     }
     /**
@@ -92,7 +93,7 @@ public class PowerplantController {
         System.out.println(powerplant);
         boolean b = powerplantService.updatePowerplantById(powerplant);
         if (b) return ResultEntity.buildSuccessEntity().setMessage("电站信息修改成功").setCode(ConstCode.ACCESS_SUCCESS);
-        return ResultEntity.buildFailEntity().setMessage("电站信息修改失败").setCode(ConstCode.LAST_STAGE);
+        throw new CarException("修改电站信息失败",500);
     }
     /**
      * @Author HuangZhengXing
@@ -111,7 +112,7 @@ public class PowerplantController {
         System.out.println("复制之后的实体类"+":"+powerplant);
         boolean b = powerplantService.deletePowerplantById(powerplant);
         if (b) return ResultEntity.buildSuccessEntity().setMessage("删除电站成功").setCode(ConstCode.ACCESS_SUCCESS);
-        return ResultEntity.buildFailEntity().setMessage("删除电站失败").setCode(ConstCode.LAST_STAGE);
+        throw new CarException("删除电站失败",500);
     }
 
 }

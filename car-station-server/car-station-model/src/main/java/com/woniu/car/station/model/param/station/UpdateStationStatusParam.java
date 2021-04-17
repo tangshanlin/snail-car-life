@@ -16,11 +16,11 @@ import javax.validation.constraints.NotNull;
  */
 @Data
 public class UpdateStationStatusParam {
-    @NotNull
+    @NotNull(message = "stationId不能为空")
     @ApiModelProperty(value = "充电桩id",example = "1")
     private Integer stationId;
 
-    @NotNull
+    @NotNull(message = "stationStatus不能为空")
     @ApiModelProperty(value = "电桩状态0空闲 1充电中",example = "1")
     private Integer stationStatus;
 }

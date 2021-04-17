@@ -222,6 +222,9 @@ public class ConstCode {
     /*积分不足兑换该优惠券*/
     public static final Integer NOT_ENOUGH_POINTS_FAIL= 1505;
 
+    /*门店已存在*/
+    public static final Integer The_Store_Already_Exists= 1506;
+
 
     /*后台相关状态码wty*/
     /*账号授予角色失败*/

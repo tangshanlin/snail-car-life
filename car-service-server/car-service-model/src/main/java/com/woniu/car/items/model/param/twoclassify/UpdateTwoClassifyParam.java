@@ -16,11 +16,11 @@ import javax.validation.constraints.NotNull;
  */
 @Data
 public class UpdateTwoClassifyParam {
-    @NotNull
+    @NotNull(message = "twoClassifyId不能为空")
     @ApiModelProperty(value = "要修改的二级分类id",example = "1")
     private Integer twoClassifyId;
 
-    @NotNull
+    @NotNull(message = "twoClassifyName不能为空")
     @ApiModelProperty(value = "二级分类名称",example = "洗车")
     private String twoClassifyName;
 }

@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.multipart.MaxUploadSizeExceededException;
 
 import javax.validation.UnexpectedTypeException;
+import javax.validation.constraints.Min;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;

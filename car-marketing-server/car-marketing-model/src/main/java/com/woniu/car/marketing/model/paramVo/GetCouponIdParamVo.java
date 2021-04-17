@@ -17,7 +17,7 @@ import javax.validation.constraints.NotNull;
 @Data
 @ApiModel(value = "传入优惠券主键id")
 public class GetCouponIdParamVo {
-    @ApiModelProperty(value = "优惠券类别id")
+    @ApiModelProperty(value = "优惠券类别id",example = "1")
     @Min(value = 1,message = "优惠券类别id必须大于等于0")
     @NotNull(message = "优惠券类别id不能为空")
     private Integer couponId;//优惠券类别id

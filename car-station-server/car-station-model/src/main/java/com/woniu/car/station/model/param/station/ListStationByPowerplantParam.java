@@ -16,7 +16,7 @@ import javax.validation.constraints.NotNull;
  */
 @Data
 public class ListStationByPowerplantParam {
-    @NotNull
+    @NotNull(message = "powerplantId不能为空")
     @ApiModelProperty(value = "关联电站id",example = "1")
     private Integer powerplantId;
 }

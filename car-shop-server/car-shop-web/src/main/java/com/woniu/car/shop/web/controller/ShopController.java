@@ -74,9 +74,7 @@ public class ShopController {
     @ApiOperation(value = "门店通过审核接口")
     @PutMapping("update_shop_account_start")
     public ResultEntity updateShopAccountStart(@RequestBody @Valid ShopIdParamVo shopId){
-        System.out.println(shopId);
         Integer state = shopService.updateShopAccountStart(shopId);
-        System.out.println(state+"------------");
         if(state == ConstCode.ACCESS_SUCCESS){
             return ResultEntity.buildSuccessEntity()
                     .setMessage("审核通过");
@@ -84,10 +82,14 @@ public class ShopController {
             return ResultEntity.buildFailEntity()
                     .setCode(ConstCode.GET_ACCOUNT_ROLE_FAIL)
                     .setMessage("账号授予角色失败");
-        }else {
+        }else if(state == ConstCode.ADD_END_ACCOUNT_FAIL){
             return ResultEntity.buildFailEntity()
                     .setCode(ConstCode.ADD_END_ACCOUNT_FAIL)
                     .setMessage("新增后台账户失败");
+        }else {
+            return ResultEntity.buildFailEntity()
+                    .setCode(ConstCode.The_Store_Already_Exists)
+                    .setMessage("门店不存在");
         }
     }
 
@@ -101,6 +103,10 @@ public class ShopController {
     @GetMapping("get_shop_info")
     public ResultEntity<FindShopInfoVo> findShopInfo(@Validated ShopIdParamVo shopId){
         FindShopInfoVo findShopInfoVo = shopService.findShopInfo(shopId);
+        if (ObjectUtils.isEmpty(findShopInfoVo)) {
+            return ResultEntity.buildFailEntity(FindShopInfoVo.class)
+                    .setMessage("未查询到门店信息");
+        }
         return ResultEntity.buildSuccessEntity(FindShopInfoVo.class)
                 .setData(findShopInfoVo)
                 .setMessage("根据门店id查询详细信息成功");
@@ -116,7 +122,8 @@ public class ShopController {
     public ResultEntity<List<FindShopByClassDtoVo>> findShopByClass(@Valid FindShopByClassParamVo findShopByClass){
         List<FindShopByClassDtoVo> findShopByClassDtoVoList = shopService.findShopByClass(findShopByClass);
         if(ObjectUtils.isEmpty(findShopByClassDtoVoList)){
-            return ResultEntity.buildListFailEntity(FindShopByClassDtoVo.class).setMessage("未查询到该品牌下的4s门店");
+            return ResultEntity.buildListFailEntity(FindShopByClassDtoVo.class)
+                    .setMessage("未查询到该品牌下的4s门店");
         }
         return ResultEntity.buildListSuccessEntity(FindShopByClassDtoVo.class)
                 .setData(findShopByClassDtoVoList)
@@ -134,6 +141,10 @@ public class ShopController {
     @GetMapping("list_shop_by_integral")
     public ResultEntity<List<FindShopByIntegralDtoVo>> findShopByIntegral(){
         List<FindShopByIntegralDtoVo> findShopByIntegralDtoVoList = shopService.findShopByIntegral();
+        if (ObjectUtils.isEmpty(findShopByIntegralDtoVoList)) {
+            return ResultEntity.buildListFailEntity(FindShopByIntegralDtoVo.class)
+                    .setMessage("暂无优选好店");
+        }
         return ResultEntity.buildListSuccessEntity(FindShopByIntegralDtoVo.class)
                 .setData(findShopByIntegralDtoVoList)
                 .setMessage("查询优选好店成功");

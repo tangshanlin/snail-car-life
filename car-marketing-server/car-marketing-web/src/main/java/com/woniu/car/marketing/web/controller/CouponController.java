@@ -5,6 +5,7 @@ import com.woniu.car.commons.core.dto.ResultEntity;
 import com.woniu.car.marketing.model.dtoVo.GetCouponAllDtoVo;
 import com.woniu.car.marketing.model.dtoVo.GetCouponBySourceDtoVo;
 import com.woniu.car.marketing.model.dtoVo.GetCouponNameDtoVo;
+import com.woniu.car.marketing.model.dtoVo.GetCouponSourceAndMoneyByIdDtoVo;
 import com.woniu.car.marketing.model.paramVo.AddCouponParamVo;
 import com.woniu.car.marketing.model.paramVo.GetCouponBySourceParamVo;
 import com.woniu.car.marketing.model.paramVo.GetCouponIdParamVo;
@@ -13,6 +14,7 @@ import com.woniu.car.marketing.web.service.CouponService;
 import io.swagger.annotations.*;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.PostConstruct;
@@ -66,6 +68,10 @@ public class CouponController {
     @GetMapping("/api/list_coupon_all")
     public ResultEntity<List<GetCouponAllDtoVo>> listCouponAll(){
         List<GetCouponAllDtoVo> getCouponInfoAllDtoVoList = couponService.listCouponInfoAll();
+        if(ObjectUtils.isEmpty(getCouponInfoAllDtoVoList)){
+            return ResultEntity.buildListFailEntity(GetCouponAllDtoVo.class)
+                    .setMessage("没有可用的优惠券");
+        }
         return ResultEntity.buildListSuccessEntity(GetCouponAllDtoVo.class)
                 .setMessage("查询所有优惠券类成功")
                 .setData(getCouponInfoAllDtoVoList);
@@ -125,7 +131,7 @@ public class CouponController {
         GetCouponNameDtoVo couponNameDtoVo = couponService.getCouponNameByCouponId(getCouponIdParamVo);
         if (ObjectUtils.isEmpty(couponNameDtoVo)) {
             return ResultEntity.buildFailEntity(GetCouponNameDtoVo.class)
-                    .setMessage("没有门店名称");
+                    .setMessage("没有查询到门店名称");
         }else{
             return ResultEntity.buildSuccessEntity(GetCouponNameDtoVo.class)
                     .setData(couponNameDtoVo)
@@ -154,6 +160,26 @@ public class CouponController {
         }
     }
 
+    /*
+    * @Author TangShanLin
+    * @Description TODO 内部调用，完成服务生成服务收益表时需要
+    * @Date  1:18
+    * @Param [getCouponIdParamVo]
+    * @return com.woniu.car.commons.core.dto.ResultEntity<com.woniu.car.marketing.model.dtoVo.GetCouponSourceAndMoneyByIdDtoVo>
+    **/
+    @GetMapping("get_coupon_source_and_goods_by_id")
+    @ApiOperation(value = "内部调用，完成服务生成服务收益表时需要")
+    private ResultEntity<GetCouponSourceAndMoneyByIdDtoVo> getCouponSourceAndMoneyByIdDtoVoResultEntity(@Valid GetCouponIdParamVo getCouponIdParamVo){
+        GetCouponSourceAndMoneyByIdDtoVo getCouponSourceAndMoneyByIdDtoVo = couponService.getCouponSourceAndMoneyByIdDtoVoResultEntity(getCouponIdParamVo);
+        if (ObjectUtils.isEmpty(getCouponSourceAndMoneyByIdDtoVo)) {
+            return ResultEntity.buildFailEntity(GetCouponSourceAndMoneyByIdDtoVo.class)
+                    .setMessage("没查询到该门店信息");
+        }else {
+            return ResultEntity.buildSuccessEntity(GetCouponSourceAndMoneyByIdDtoVo.class)
+                    .setMessage("查询门店信息成功")
+                    .setData(getCouponSourceAndMoneyByIdDtoVo);
+        }
+    }
 
 
 

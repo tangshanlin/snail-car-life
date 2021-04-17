@@ -91,6 +91,7 @@ public class AdvertisingController {
     @ApiOperation(value = "查看活动信息接口",notes = "后端：根据审核状态查看活动信息接口")
     @GetMapping("api/list_advertising_by_audit_all")
     public ResultEntity<List<GetAdvertisingByAuditAllDtoVo>> listAdvertisingByAuditAll(@Valid AdvertisingByAuditParamVo getListAdvertisingByAuditAll){
+        System.out.println("进lll");
         List<GetAdvertisingByAuditAllDtoVo> listGetAdvertisingByAuditAll =advertisingService.listAdvertisingByAuditAll(getListAdvertisingByAuditAll);
         if (ObjectUtils.isEmpty(listGetAdvertisingByAuditAll)) {
             return ResultEntity.buildListFailEntity(GetAdvertisingByAuditAllDtoVo.class)

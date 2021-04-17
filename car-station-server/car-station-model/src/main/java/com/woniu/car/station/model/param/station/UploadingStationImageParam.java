@@ -15,7 +15,7 @@ import javax.validation.constraints.NotNull;
  */
 @Data
 public class UploadingStationImageParam {
-    @NotNull
+    @NotNull(message = "stationImage不能为空")
     @ApiModelProperty(value = "接收图片")
     private MultipartFile[] stationImage;
 }
