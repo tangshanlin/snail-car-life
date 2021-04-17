@@ -23,13 +23,13 @@ import java.io.Serializable;
  */
 @Data
 
-@Document(indexName = "carbandDto")
+@ApiModel(value="CarBrandDto对象", description="车品牌表")
 public class CarBrandDto implements Serializable {
 
 
 
     @ApiModelProperty(value = "id")
-    @Id
+
     private Integer carbrandId;
 
     @ApiModelProperty(value = "品牌名字")

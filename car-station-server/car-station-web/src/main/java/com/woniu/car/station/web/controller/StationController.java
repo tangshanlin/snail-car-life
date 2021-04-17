@@ -4,6 +4,7 @@ package com.woniu.car.station.web.controller;
 import com.baomidou.mybatisplus.extension.api.R;
 import com.woniu.car.commons.core.code.ConstCode;
 import com.woniu.car.commons.core.dto.ResultEntity;
+import com.woniu.car.commons.core.exception.CarException;
 import com.woniu.car.station.model.dto.StationDto;
 import com.woniu.car.station.model.dto.UpdateStationDto;
 import com.woniu.car.station.model.entity.Station;
@@ -59,7 +60,7 @@ public class StationController {
         System.out.println("StationDto"+":"+stationDto);
         boolean b = stationService.addStation(stationDto);
         if (b) return ResultEntity.buildSuccessEntity().setMessage("新增电桩信息成功").setCode(ConstCode.ACCESS_SUCCESS);
-        return ResultEntity.buildFailEntity().setMessage("新增电桩信息失败").setCode(ConstCode.LAST_STAGE).setFlag(false);
+        throw new CarException("新增电站信息失败",500);
     }
 
     /**
@@ -78,7 +79,7 @@ public class StationController {
         BeanUtils.copyProperties(getOneStationParam,station);
         System.out.println("Station"+":"+station);
         Station oneStation = stationService.getOneStation(station);
-        if (ObjectUtils.isEmpty(oneStation))return ResultEntity.buildSuccessEntity(Station.class).setMessage("查询成功,结果为空").setCode(ConstCode.ACCESS_SUCCESS).setData(oneStation);
+        if (ObjectUtils.isEmpty(oneStation))throw new CarException("结果为空",500);
         return ResultEntity.buildSuccessEntity(Station.class).setMessage("查询成功").setCode(ConstCode.ACCESS_SUCCESS).setData(oneStation);
     }
 
@@ -96,7 +97,7 @@ public class StationController {
         BeanUtils.copyProperties(listStationByPowerplantParam,station);
         System.out.println("Station"+":"+station);
         List<Station> stations = stationService.listStationAll(station);
-        if (ObjectUtils.isEmpty(stations)) return ResultEntity.buildListSuccessEntity(Station.class).setMessage("查询成功,结果为空").setCode(ConstCode.ACCESS_SUCCESS).setData(stations);
+        if (ObjectUtils.isEmpty(stations)) throw new CarException("结果为空",500);
         return ResultEntity.buildListSuccessEntity(Station.class).setMessage("查询成功").setCode(ConstCode.ACCESS_SUCCESS).setData(stations);
     }
     /**
@@ -115,7 +116,7 @@ public class StationController {
         BeanUtils.copyProperties(updateStationInfoParam,updateStationDto);
         boolean b = stationService.updateBasicStationInfo(updateStationDto);
         if (b) return ResultEntity.buildSuccessEntity().setMessage("修改充电桩基本信息成功").setCode(ConstCode.ACCESS_SUCCESS);
-        return ResultEntity.buildFailEntity().setMessage("修改充电桩基本信息失败").setCode(ConstCode.LAST_STAGE).setFlag(false);
+        throw new CarException("修改电桩信息失败",500);
     }
     /**
      * @Author HuangZhengXing
@@ -138,7 +139,7 @@ public class StationController {
         System.out.println("Station"+":"+station);
         boolean b = stationService.updataStationStatus(station);
         if (b) return ResultEntity.buildSuccessEntity().setMessage("充电状态修改成功").setCode(ConstCode.ACCESS_SUCCESS);
-        return ResultEntity.buildFailEntity().setMessage("充电状态修改失败").setCode(ConstCode.LAST_STAGE).setFlag(false);
+        throw new CarException("修改充电桩状态失败",500);
     }
     /**
      * @Author HuangZhengXing
@@ -161,7 +162,7 @@ public class StationController {
         System.out.println("Station"+":"+station);
         boolean b = stationService.updataStationType(station);
         if (b) return ResultEntity.buildSuccessEntity().setMessage("修改充电类型成功").setCode(ConstCode.ACCESS_SUCCESS);
-        return ResultEntity.buildFailEntity().setMessage("修改充电类型失败").setCode(ConstCode.LAST_STAGE).setFlag(false);
+        throw new CarException("修改充电桩类型失败",500);
     }
     
     /**
@@ -180,7 +181,7 @@ public class StationController {
         System.out.println("Station"+":"+station);
         boolean b = stationService.deleteStation(station);
         if (b) return ResultEntity.buildSuccessEntity().setMessage("删除成功").setCode(ConstCode.ACCESS_SUCCESS);
-        return ResultEntity.buildFailEntity().setMessage("删除失败").setCode(ConstCode.LAST_STAGE).setFlag(false);
+        throw new CarException("修改充电桩类型失败",500);
     }
 
     /**
@@ -202,7 +203,7 @@ public class StationController {
             System.out.println(stationimg);
             return ResultEntity.buildSuccessEntity(String.class).setCode(ConstCode.ACCESS_SUCCESS).setData(stationimg).setMessage("图片上传成功");
         }else {
-            return ResultEntity.buildFailEntity().setMessage("图片为空").setCode(ConstCode.LAST_STAGE).setFlag(false);
+            throw new CarException("图片为空",500);
         }
     }
 

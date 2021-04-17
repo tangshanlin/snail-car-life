@@ -115,7 +115,7 @@ public class ScoreController {
         //从jwt获取userId
         Integer userId = GetTokenUtil.getUserId();
         //执行查询
-        List<Score> userId1 = scoreService.list(new QueryWrapper<Score>().eq("userId", userId));
+        List<Score> userId1 = scoreService.list(new QueryWrapper<Score>().eq("user_id", userId));
         return ResultEntity.buildListEntity(Score.class).setCode(ConstCode.SELECTSCORE_SUCESS).setFlag(true)
                 .setMessage("查询积分日志成功").setData(userId1);
 

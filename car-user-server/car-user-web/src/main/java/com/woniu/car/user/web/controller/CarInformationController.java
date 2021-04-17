@@ -10,6 +10,7 @@ import com.woniu.car.user.web.domain.Carseries;
 import com.woniu.car.user.web.service.CarInformationService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
 import org.springframework.data.elasticsearch.core.SearchHits;
@@ -36,9 +37,11 @@ import java.util.List;
 @RestController
 @RequestMapping("/car-information")
 @Api(tags = "车型号信息的接口")
+@Slf4j
 public class CarInformationController {
     @Resource
     private CarInformationService carInformationService;
+
     @Autowired
     private ElasticsearchOperations operations;
 
@@ -57,7 +60,9 @@ public class CarInformationController {
             final boolean carInfo = operations.indexExists("car_information");
             if(!carInfo){
                 //从数据库中存储所有车详情
+                log.info("从数据库查询");
                 final List<CarInformation> lists = carInformationService.list(null);
+                log.info("汽车详情条数：{}",lists.size());
                 if(!ObjectUtils.isEmpty(lists)){
                     lists.forEach(list->{
                         operations.save(list);
@@ -71,6 +76,7 @@ public class CarInformationController {
                 carInformations.add(student.getContent());
             });
             if(!ObjectUtils.isEmpty(carInformations)&&carInformations.size()>0){
+                log.info("从ES查询");
                 System.out.println("----------------------------------------ES查询");
                 return ResultEntity.buildListEntity(CarInformation.class).setCode(ConstCode.SELECTCARINFORMATION_SUCESS)
                         .setFlag(true).setMessage("查询车型成功").setData(carInformations);
@@ -83,6 +89,4 @@ public class CarInformationController {
 
 
 }
-
-
 

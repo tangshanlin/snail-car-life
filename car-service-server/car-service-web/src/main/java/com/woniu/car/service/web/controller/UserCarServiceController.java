@@ -3,6 +3,7 @@ package com.woniu.car.service.web.controller;
 
 import com.woniu.car.commons.core.code.ConstCode;
 import com.woniu.car.commons.core.dto.ResultEntity;
+import com.woniu.car.commons.core.exception.CarException;
 import com.woniu.car.items.model.entity.UserCarService;
 import com.woniu.car.items.model.param.carservice.DeleteCarServiceParam;
 import com.woniu.car.items.model.param.userservice.AddUserServiceParam;
@@ -53,7 +54,7 @@ public class UserCarServiceController {
         System.out.println("UserCarService"+":"+userCarService);
         boolean b = userCarServiceService.addUserCarService(userCarService);
         if (b) return ResultEntity.buildSuccessEntity().setMessage("新增成功").setCode(ConstCode.ACCESS_SUCCESS);
-        return ResultEntity.buildFailEntity().setMessage("新增失败").setCode(ConstCode.LAST_STAGE).setFlag(false);
+        throw new CarException("新增失败",500);
     }
     /**
      * @Author HuangZhengXing
@@ -71,7 +72,7 @@ public class UserCarServiceController {
         BeanUtils.copyProperties(listUserServiceByUserParam,userCarService);
         System.out.println("UserCarService"+":"+userCarService);
         List<UserCarService> userCarServices = userCarServiceService.listUserCarServiceByUser(userCarService);
-        if (ObjectUtils.isEmpty(userCarService)) return ResultEntity.buildListSuccessEntity(UserCarService.class).setMessage("查询成功,结果为空").setCode(ConstCode.ACCESS_SUCCESS).setData(userCarServices);
+        if (ObjectUtils.isEmpty(userCarService)) throw new CarException("结果为空",500);
         return ResultEntity.buildListSuccessEntity(UserCarService.class).setMessage("查询成功").setCode(ConstCode.ACCESS_SUCCESS).setData(userCarServices);
     }
     /**
@@ -110,7 +111,7 @@ public class UserCarServiceController {
         System.out.println("UserCarService"+":"+userCarService);
         boolean b = userCarServiceService.updateCarServiceStatus(userCarService);
         if (b) return ResultEntity.buildSuccessEntity().setMessage("修改成功").setCode(ConstCode.ACCESS_SUCCESS);
-        return ResultEntity.buildFailEntity().setMessage("修改失败").setCode(ConstCode.LAST_STAGE).setFlag(false);
+        throw new CarException("修改失败",500);
     }
 
     /**
@@ -130,7 +131,7 @@ public class UserCarServiceController {
         System.out.println("UserCarService"+":"+userCarService);
         boolean b = userCarServiceService.deleteCarService(userCarService);
         if (b) return ResultEntity.buildSuccessEntity().setMessage("删除成功").setCode(ConstCode.ACCESS_SUCCESS);
-        return ResultEntity.buildFailEntity().setMessage("删除失败").setCode(ConstCode.LAST_STAGE).setFlag(false);
+        throw new CarException("删除失败",500);
     }
 }
 

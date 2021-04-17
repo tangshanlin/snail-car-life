@@ -4,6 +4,7 @@ package com.woniu.car.service.web.controller;
 import cn.hutool.json.JSONUtil;
 import com.woniu.car.commons.core.code.ConstCode;
 import com.woniu.car.commons.core.dto.ResultEntity;
+import com.woniu.car.commons.core.exception.CarException;
 import com.woniu.car.items.model.entity.OneClassify;
 import com.woniu.car.items.model.entity.TwoClassify;
 import com.woniu.car.items.model.param.twoclassify.AddTwoClassifyParam;
@@ -58,7 +59,7 @@ public class TwoClassifyController {
             String twoClassifyList = JSONUtil.toJsonStr(twoClassifies);
             redisTemplate.opsForHash().put("com:woniu:car:service:twoclassify:t_two_classify","twoclassifyall",twoClassifyList);
             if (ObjectUtils.isEmpty(listTwoClassifyParam)){
-                return ResultEntity.buildListSuccessEntity(TwoClassify.class).setMessage("查询成功,结果为空").setCode(ConstCode.ACCESS_SUCCESS).setData(twoClassifies);
+                throw new CarException("查询结果为空",500);
             }
             return ResultEntity.buildListSuccessEntity(TwoClassify.class).setMessage("查询成功").setCode(ConstCode.ACCESS_SUCCESS).setData(twoClassifies);
     }
@@ -100,7 +101,7 @@ public class TwoClassifyController {
         System.out.println("twoClassify"+":"+twoClassify);
         boolean b = twoClassifyService.updateTwoClassifyServiceById(twoClassify);
         if (b) return ResultEntity.buildSuccessEntity().setMessage("修改成功").setCode(ConstCode.ACCESS_SUCCESS);
-        return ResultEntity.buildFailEntity().setMessage("修改失败").setCode(ConstCode.LAST_STAGE).setFlag(false);
+        throw new CarException("修改失败",500);
     }
     /**
      * @Author HuangZhengXing
@@ -121,7 +122,7 @@ public class TwoClassifyController {
         System.out.println("twoClassify"+":"+twoClassify);
         boolean b = twoClassifyService.deleteTwoClassifyServiceById(twoClassify);
         if (b) return ResultEntity.buildSuccessEntity().setMessage("删除成功").setCode(ConstCode.ACCESS_SUCCESS);
-        return ResultEntity.buildFailEntity().setMessage("删除失败").setCode(ConstCode.LAST_STAGE).setFlag(false);
+        throw new CarException("删除失败",500);
     }
 
 

@@ -7,11 +7,11 @@ import javax.validation.constraints.NotNull;
 
 @Data
 public class UpdatePowerplantApplyforStatusParam {
-    @NotNull
+    @NotNull(message = "powerplantApplyforId不能为空")
     @ApiModelProperty(value = "要修改审核状态的电站申请表id",example = "1")
     private Integer powerplantApplyforId;
 
-    @NotNull
+    @NotNull(message = "powerplantApplyforStatus不能为空")
     @ApiModelProperty(value = "要修改的审核状态",example = "2")
     private Integer powerplantApplyforStatus;
 }

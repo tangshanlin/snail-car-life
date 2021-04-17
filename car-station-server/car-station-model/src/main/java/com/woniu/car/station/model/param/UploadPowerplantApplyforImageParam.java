@@ -4,6 +4,8 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.validation.constraints.NotNull;
+
 /**
  * @ClassName UploadPowerplantApplyforImageParam
  * @Desc TODO
@@ -13,6 +15,7 @@ import org.springframework.web.multipart.MultipartFile;
  */
 @Data
 public class UploadPowerplantApplyforImageParam {
+    @NotNull(message = "不能为空")
     @ApiModelProperty(value = "电站图片")
     private MultipartFile[] powerplantApplyforImage;
 

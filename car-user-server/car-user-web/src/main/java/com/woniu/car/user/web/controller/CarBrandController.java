@@ -12,6 +12,7 @@ import com.woniu.car.user.web.service.CarBrandService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.elasticsearch.annotations.Document;
 import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
@@ -23,6 +24,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import org.springframework.web.bind.annotation.RestController;
+import sun.rmi.runtime.Log;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
@@ -39,6 +41,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/car-brand")
 @Api(tags = "车品牌查询")
+@Slf4j
 public class CarBrandController {
     @Resource
     private CarBrandService carBrandService;
@@ -65,6 +68,7 @@ public class CarBrandController {
                 operations.save(ListCarBrandlist);
             }if(!ObjectUtils.isEmpty(ListCarBrandlist)&&ListCarBrandlist.size()>0){
                 System.out.println("数据库查出");
+                log.info("车品牌条数：{}",ListCarBrandlist.size());
                 return ResultEntity.buildListEntity(CarBrandListDto.class).setCode(ConstCode.SELECTCARBRAND_SUCESS).setFlag(true)
                         .setMessage("查询所有车品牌成功").setData(ListCarBrandlist);
             }
