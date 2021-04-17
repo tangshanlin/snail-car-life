@@ -3,6 +3,8 @@ package com.woniu.car.items.model.param.userservice;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import javax.validation.constraints.NotNull;
+
 /**
  * @ClassName ListUserServiceByUserParam
  * @Desc TODO
@@ -12,6 +14,7 @@ import lombok.Data;
  */
 @Data
 public class ListUserServiceByUserParam {
+    @NotNull(message = "userId不能为空")
     @ApiModelProperty(value = "关联用户id")
     private Integer userId;
 }

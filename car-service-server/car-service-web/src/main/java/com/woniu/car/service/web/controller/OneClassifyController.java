@@ -4,6 +4,7 @@ package com.woniu.car.service.web.controller;
 import com.woniu.car.commons.core.code.ConstCode;
 import com.woniu.car.commons.core.code.ResultEnum;
 import com.woniu.car.commons.core.dto.ResultEntity;
+import com.woniu.car.commons.core.exception.CarException;
 import com.woniu.car.items.model.entity.OneClassify;
 import com.woniu.car.items.model.param.AddOneClassifyImageParam;
 import com.woniu.car.items.model.param.DeleteOneClassifyByIdParam;
@@ -103,7 +104,7 @@ public class OneClassifyController {
        if (b){
            return ResultEntity.buildSuccessEntity().setMessage("修改成功");
        }else{
-           return ResultEntity.buildFailEntity().setMessage("修改失败").setCode(ResultEnum.RES_FAIL.getCode()).setFlag(false);
+           throw new CarException("修改失败",500);
        }
    }
    
@@ -126,7 +127,7 @@ public class OneClassifyController {
        if (b){
            return ResultEntity.buildSuccessEntity().setMessage("删除成功");
        }else {
-           return ResultEntity.buildFailEntity().setMessage("删除失败").setCode(ResultEnum.RES_FAIL.getCode()).setFlag(false);
+           throw new CarException("删除失败",500);
        }
    }
 
@@ -141,7 +142,7 @@ public class OneClassifyController {
     @ApiOperation(value = "一级分类单张图片上传")
     public ResultEntity uploadingStationImage(AddOneClassifyImageParam addOneClassifyImageParam){
         if (ObjectUtils.isEmpty(addOneClassifyImageParam.getOneClassifyImage())){
-            return ResultEntity.buildFailEntity().setMessage("图片为空").setCode(ConstCode.LAST_STAGE).setFlag(false);
+            throw new CarException("图片为空",500);
         }else {
             if (addOneClassifyImageParam.getOneClassifyImage().length>0){
                 MultipartFile[] files = addOneClassifyImageParam.getOneClassifyImage();
@@ -152,7 +153,7 @@ public class OneClassifyController {
                 System.out.println(oneClassifyImg);
                 return ResultEntity.buildSuccessEntity(String.class).setCode(ConstCode.ACCESS_SUCCESS).setData(oneClassifyImg).setMessage("图片上传成功");
             }else {
-                return ResultEntity.buildFailEntity().setMessage("图片为空").setCode(ConstCode.LAST_STAGE).setFlag(false);
+                throw new CarException("图片为空",500);
             }
         }
 

@@ -15,7 +15,7 @@ import javax.validation.constraints.NotNull;
  */
 @Data
 public class AddOneClassifyImageParam {
-    @NotNull
+    @NotNull(message = "oneClassifyImage不能为空")
     @ApiModelProperty(value = "一级分类图片")
     private MultipartFile[] oneClassifyImage;
 }

@@ -15,7 +15,7 @@ import javax.validation.constraints.NotNull;
  */
 @Data
 public class ListCarServiceByTwoClassifyParam {
-    @NotNull
+    @NotNull(message = "twoClassifyId不能为空")
     @ApiModelProperty(value = "二级分类id",example = "1")
     private Integer twoClassifyId;
 }

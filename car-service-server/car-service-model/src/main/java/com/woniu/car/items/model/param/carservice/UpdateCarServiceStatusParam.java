@@ -16,11 +16,11 @@ import javax.validation.constraints.NotNull;
  */
 @Data
 public class UpdateCarServiceStatusParam {
-    @NotNull
+    @NotNull(message = "carServiceId不能为空")
     @ApiModelProperty(value = "要修改服务状态的服务id",example = "1")
     private Integer carServiceId;
 
-    @NotNull
+    @NotNull(message = "carServiceStatus不能为空")
     @ApiModelProperty(value = "服务状态 0待上架 1已上架 2已下架",example = "2")
     private Integer carServiceStatus;
 }

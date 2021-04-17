@@ -17,7 +17,7 @@ import javax.validation.constraints.NotNull;
 @Data
 public class ListTwoClassifyParam {
 
-    @NotNull
+    @NotNull(message = "oneClassifyId不能为空")
     @ApiModelProperty(value = "关联一级分类id",example = "1")
     private Integer oneClassifyId;
 }

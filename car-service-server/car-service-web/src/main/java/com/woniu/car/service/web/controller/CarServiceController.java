@@ -6,6 +6,7 @@ import cn.hutool.json.JSONUtil;
 import com.alibaba.fastjson.JSONObject;
 import com.woniu.car.commons.core.code.ConstCode;
 import com.woniu.car.commons.core.dto.ResultEntity;
+import com.woniu.car.commons.core.exception.CarException;
 import com.woniu.car.items.model.dto.CarServiceDto;
 import com.woniu.car.items.model.dto.CarServiceImagsDto;
 import com.woniu.car.items.model.entity.CarService;
@@ -68,7 +69,7 @@ public class CarServiceController {
         }else if (i == -10){
             return ResultEntity.buildFailEntity().setMessage("服务名称已存在").setCode(ConstCode.LAST_STAGE).setFlag(false);
         }else {
-            return ResultEntity.buildFailEntity().setMessage("新增具体服务失败").setCode(ConstCode.LAST_STAGE).setFlag(false);
+            throw new CarException("新增具体服务信息失败",500);
         }
     }
     /**
@@ -89,6 +90,7 @@ public class CarServiceController {
             BeanUtils.copyProperties(getOneCarServiceParam,carService);
             System.out.println("CarService"+":"+carService);
             CarService carServiceById = carServiceImpl.getCarServiceById(carService);
+            if (ObjectUtils.isEmpty(carServiceById))throw new CarException("结果为空",500);
             return ResultEntity.buildSuccessEntity(CarService.class).setMessage("查询成功").setCode(ConstCode.ACCESS_SUCCESS).setData(carServiceById);
         }
 
@@ -110,6 +112,7 @@ public class CarServiceController {
                 BeanUtils.copyProperties(listCarServiceByShopPararm,carService);
                 System.out.println("CarServiceSelect"+":"+carService);
             List<CarService> carServiceImagsDtoList = carServiceImpl.listCarServiceByShopId(carService);
+            if (ObjectUtils.isEmpty(carServiceImagsDtoList)) throw new CarException("结果为空",500);
             return ResultEntity.buildListSuccessEntity(CarService.class).setMessage("根据门店查询门店下的服务成功").setCode(ConstCode.ACCESS_SUCCESS).setData(carServiceImagsDtoList);
 
         }else {
@@ -137,6 +140,7 @@ public class CarServiceController {
         BeanUtils.copyProperties(listCarServiceByTwoClassifyParam,carService);
         System.out.println("CarService"+":"+carService);
         List<CarService> listCarServiceByTwoClassify = carServiceImpl.listCarServiceByTwoClassify(carService);
+        if (ObjectUtils.isEmpty(listCarServiceByTwoClassify))throw new CarException("结果为空",500);
         return ResultEntity.buildListSuccessEntity(CarService.class).setMessage("查询成功").setCode(ConstCode.ACCESS_SUCCESS).setData(listCarServiceByTwoClassify);
     }
 
@@ -151,7 +155,7 @@ public class CarServiceController {
     @ApiOperation(value = "查询所有服务信息",notes = "不需要携带参数")
     public ResultEntity<List<CarService>> listCarServiceAll(){
         List<CarService> listCarServiceAll = carServiceImpl.listCarServiceAll();
-        if (ObjectUtils.isEmpty(listCarServiceAll)) return ResultEntity.buildListEntity(CarService.class).setMessage("查询成功，结果为空").setCode(ConstCode.ACCESS_SUCCESS).setData(listCarServiceAll);
+        if (ObjectUtils.isEmpty(listCarServiceAll)) throw new CarException("结果为空",500);
         return ResultEntity.buildListSuccessEntity(CarService.class).setMessage("查询成功").setCode(ConstCode.ACCESS_SUCCESS).setData(listCarServiceAll);
     }
 
@@ -172,7 +176,7 @@ public class CarServiceController {
         System.out.println("CarServiceDto"+":"+carServiceDto);
         boolean b = carServiceImpl.updateCarService(carServiceDto);
         if (b) return ResultEntity.buildSuccessEntity().setMessage("修改成功").setCode(ConstCode.ACCESS_SUCCESS);
-        return ResultEntity.buildFailEntity().setMessage("修改失败").setCode(ConstCode.LAST_STAGE).setFlag(false);
+        throw new CarException("修改失败",500);
     }
 
     /*
@@ -191,7 +195,7 @@ public class CarServiceController {
         System.out.println("CarService"+":"+carService);
         boolean b = carServiceImpl.updateCarServiceStatus(carService);
         if (b) return ResultEntity.buildSuccessEntity().setMessage("修改成功").setCode(ConstCode.ACCESS_SUCCESS);
-        return ResultEntity.buildFailEntity().setMessage("修改失败").setCode(ConstCode.LAST_STAGE).setFlag(false);
+        throw new CarException("修改失败",500);
     }
 
     /**
@@ -210,7 +214,7 @@ public class CarServiceController {
         System.out.println("CarService"+":"+carService);
         boolean b = carServiceImpl.updateCarServiceSold(carService);
         if (b) return ResultEntity.buildSuccessEntity().setMessage("修改已售数量成功").setCode(ConstCode.ACCESS_SUCCESS);
-        return ResultEntity.buildFailEntity().setMessage("修改已售数量失败").setCode(ConstCode.LAST_STAGE).setFlag(false);
+        throw new CarException("修改已售数量失败",500);
     }
     /**
      * @Author HuangZhengXing
@@ -228,7 +232,7 @@ public class CarServiceController {
         System.out.println("CarService"+":"+carService);
         boolean b = carServiceImpl.deleteCarServiceById(carService);
         if (b) return ResultEntity.buildSuccessEntity().setMessage("删除成功").setCode(ConstCode.ACCESS_SUCCESS);
-        return ResultEntity.buildFailEntity().setMessage("删除失败").setCode(ConstCode.LAST_STAGE).setFlag(false);
+        throw new CarException("删除失败",500);
     }
 
     /**
@@ -253,7 +257,7 @@ public class CarServiceController {
                 System.out.println(stationimg);
                 return ResultEntity.buildSuccessEntity(String.class).setCode(ConstCode.ACCESS_SUCCESS).setData(stationimg).setMessage("图片上传成功");
             }else {
-                return ResultEntity.buildFailEntity().setMessage("图片为空").setCode(ConstCode.LAST_STAGE).setFlag(false);
+                throw new CarException("图片为空",500);
             }
         }
 
@@ -287,7 +291,7 @@ public class CarServiceController {
                 System.out.println(stationimgs);
                 return ResultEntity.buildSuccessEntity(String.class).setCode(ConstCode.ACCESS_SUCCESS).setData(stationimgs).setMessage("图片上传成功");
             }else {
-                return ResultEntity.buildFailEntity().setMessage("图片为空").setCode(ConstCode.LAST_STAGE).setFlag(false);
+                throw new CarException("图片为空",500);
             }
         }
 
