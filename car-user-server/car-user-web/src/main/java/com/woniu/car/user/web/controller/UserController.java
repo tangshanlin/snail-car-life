@@ -196,23 +196,25 @@ public class UserController {
            redisTemplate.opsForValue().set("com:woniu:car:user-server:car-user-web:sendcode:" + userTel+":number",l,24,TimeUnit.HOURS);
            redisTemplate.opsForValue().set("com:woniu:car:user-server:car-user-web:sendcode:" + userTel+":time",l,60,TimeUnit.SECONDS);
 
-       }
+       }else {
 
-        Integer number = Integer.valueOf(o1.toString());
-       if (number<11){
-           Object o = redisTemplate.opsForValue().get("com:woniu:car:user-server:car-user-web:sendcode:" + userTel + ":time");
-           if (ObjectUtils.isEmpty(o)){
-               l++;
-               redisTemplate.opsForValue().set("com:woniu:car:user-server:car-user-web:sendcode:" + userTel+":time",l,60,TimeUnit.SECONDS);
-               redisTemplate.opsForValue().set("com:woniu:car:user-server:car-user-web:sendcode:" + userTel+":number",l,24,TimeUnit.HOURS);
-           }else {
-               throw new CarException("你请求验证码太过频繁，请稍后再试",500);
+           Integer number = Integer.valueOf(o1.toString());
+           System.out.println(number);
+           if (number < 8) {
+               Object o = redisTemplate.opsForValue().get("com:woniu:car:user-server:car-user-web:sendcode:" + userTel + ":time");
+               if (ObjectUtils.isEmpty(o)) {
+                   number++;
+                   redisTemplate.opsForValue().set("com:woniu:car:user-server:car-user-web:sendcode:" + userTel + ":time",number, 60, TimeUnit.SECONDS);
+                   redisTemplate.opsForValue().set("com:woniu:car:user-server:car-user-web:sendcode:" + userTel + ":number", number, 24, TimeUnit.HOURS);
+               } else {
+                   throw new CarException("你请求验证码太过频繁，请稍后再试", 500);
+               }
+
            }
-
-       }if(number>11) {
-            throw new CarException("你当日请求验证码的次数超过10次,请隔日再试",500);
-        }
-
+           if (number >8) {
+               throw new CarException("你当日请求验证码的次数超过10次,请隔日再试", 500);
+           }
+       }
         param.setCode(Integer.toString(i));
         param.setPhoneNum(userTel);
         //post请求
@@ -328,7 +330,6 @@ public class UserController {
 //    })
     public ResultEntity checkTel(TelParam telParam) {
         if (!ObjectUtils.isEmpty(telParam)) {
-
 
             User user = userService.selectByTel(telParam);
             if (user != null)

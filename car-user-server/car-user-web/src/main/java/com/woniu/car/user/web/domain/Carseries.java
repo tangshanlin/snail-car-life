@@ -12,6 +12,10 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.elasticsearch.annotations.Document;
+import org.springframework.data.elasticsearch.annotations.Field;
+import org.springframework.data.elasticsearch.annotations.FieldType;
 
 /**
  * <p>
@@ -25,18 +29,22 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode(callSuper = false)
 @TableName("t_carseries")
 @ApiModel(value="Carseries对象", description="车系表")
+@Document(indexName = "carseries")
 public class Carseries implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
     @ApiModelProperty(value = "车系id")
     @TableId(value = "carseries_id", type = IdType.AUTO)
+    @Id
+    @Field(type = FieldType.Integer,name = "carseriesId")
     private Integer carseriesId;
 
     @ApiModelProperty(value = "车群id")
     private Integer cargroupId;
 
     @ApiModelProperty(value = "品牌id")
+    @Field(type = FieldType.Integer,name = "carbrand_id")
     private Integer carbrandId;
 
     @ApiModelProperty(value = "车系全名")

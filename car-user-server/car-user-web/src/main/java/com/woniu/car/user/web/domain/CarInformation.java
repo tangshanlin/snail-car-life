@@ -15,6 +15,8 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.elasticsearch.annotations.Document;
+import org.springframework.data.elasticsearch.annotations.Field;
+import org.springframework.data.elasticsearch.annotations.FieldType;
 
 /**
  * <p>
@@ -28,13 +30,14 @@ import org.springframework.data.elasticsearch.annotations.Document;
 @EqualsAndHashCode(callSuper = false)
 @TableName("t_car_information")
 @ApiModel(value="CarInformation对象", description="车型信息表")
-@Document(indexName = "")
+@Document(indexName = "car_information")
 public class CarInformation implements Serializable {
 
     private static final long serialVersionUID = 1L;
-    @Id
+
     @ApiModelProperty(value = "id")
-      @TableId(value = "carinformation_id", type = IdType.AUTO)
+    @TableId(value = "carinformation_id", type = IdType.AUTO)
+    @Id
     private Integer carinformationId;
 
     @ApiModelProperty(value = "品牌id")
@@ -44,6 +47,8 @@ public class CarInformation implements Serializable {
     private Integer cargroupId;
 
     @ApiModelProperty(value = "系列id")
+
+    @Field(type = FieldType.Integer,name="carseriesId" )
     private Integer carseriesId;
 
     @ApiModelProperty(value = "全名")
