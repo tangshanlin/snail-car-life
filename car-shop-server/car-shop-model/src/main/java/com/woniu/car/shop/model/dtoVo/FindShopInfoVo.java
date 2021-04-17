@@ -13,5 +13,5 @@ public class FindShopInfoVo {
     private String shopAddress;//门店地址
     private Integer shopOrderNumber;//总订单数（根据总成交单数计算）
     private Integer shopGrade;//总评分（从成交总评分/总成交数）
-    private Long shopTel;//门店电话
+    private String shopTel;//门店电话
 }

@@ -225,6 +225,9 @@ public class ConstCode {
     /*门店已存在*/
     public static final Integer The_Store_Already_Exists= 1506;
 
+    /*服务不存在，添加服务具体收益失败*/
+    public static final Integer Service_Revenue_Is_Empty= 1507;
+
 
     /*后台相关状态码wty*/
     /*账号授予角色失败*/

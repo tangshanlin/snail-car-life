@@ -17,10 +17,10 @@ import javax.validation.constraints.NotNull;
 @ApiModel(value = "传经纬度")
 public class FindShopInfoByMeLngLat {
     @ApiModelProperty(value = "经度")
-    @NotNull(message = "经度不能为空")
-    private String lng;//经度
+    private Double lng;//经度
 
     @ApiModelProperty(value = "纬度")
-    @NotNull(message = "纬度不能为空")
-    private String Lat;//纬度
+    private Double Lat;//纬度
+
+    private Double distance;
 }

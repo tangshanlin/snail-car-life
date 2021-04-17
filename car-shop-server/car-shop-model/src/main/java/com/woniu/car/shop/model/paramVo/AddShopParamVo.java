@@ -49,8 +49,8 @@ public class AddShopParamVo {
     private String shopBrand;//所属品牌
 
     @ApiModelProperty(value = "联系电话",example = "18888888888")
-    @NotNull(message = "联系电话不能为空")
-    //@Pattern(regexp = "/^((0\\d{2,3}-\\d{7,8})|(1[3584]\\d{9}))$/",message = "不是正确的11位手机号")
-    private Long shopTel;//联系电话
+    @NotBlank(message = "联系电话不能为空")
+    @Pattern(regexp = "/^((0\\d{2,3}-\\d{7,8})|(1[3584]\\d{9}))$/",message = "不是正确的11位手机号")
+    private String shopTel;//联系电话
 
 }

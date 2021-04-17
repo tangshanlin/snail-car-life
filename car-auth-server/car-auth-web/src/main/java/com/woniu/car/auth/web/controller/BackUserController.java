@@ -110,7 +110,7 @@ public class BackUserController {
                 } else {
                     return ResultEntity.buildFailEntity(String.class)
                             .setCode(ConstCode.GET_ACCOUNT_ROLE_FAIL)
-                            .setMessage("账号授予角色失败失败");
+                            .setMessage("账号授予角色失败");
                 }
             }
         }
