@@ -35,15 +35,14 @@ public interface ServiceCommentService extends IService<ServiceComment> {
      */
     Boolean deleteServiceComment(String commentSeCode);
 
-
-
     List<ServiceCommentDto> lookUserServiceComments(Integer userId);
 
     List<ServiceCommentDto> lookSomeServiceCommentsByServiceName(SeviceNameCommentParam param);
 
     IPage<ServiceCommentDto> lookSomeServiceCommentsByShopId(CommentPageParam pageParam);
 
-
     List<ServiceCommentDto> lookAllServiceCommentsByTagName(ServiceTagNameLookCommentParam tagName);
+
+
 
 }

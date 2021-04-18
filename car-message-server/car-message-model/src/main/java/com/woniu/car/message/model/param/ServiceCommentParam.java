@@ -22,26 +22,26 @@ public class ServiceCommentParam implements Serializable {
     /**
      * 服务评论编号
      */
-
     private String commentSecode;
 
-    /**
-     * 服务评论用户id
-     */
-    private Integer commentUserId;
-    /**
-     * 服务评论用户名字
-     */
-    private String commentName;
-
-    /**
-     * 服务评论用户头像
-     */
-    private String commentUrl;
+//    /**
+//     * 服务评论用户id
+//     */
+//    private Integer commentUserId;
+//    /**
+//     * 服务评论用户名字
+//     */
+//    private String commentName;
+//
+//    /**
+//     * 服务评论用户头像
+//     */
+//    private String commentUrl;
 
     /**
      * 服务评分
      */
+
     private Integer commentScore;
 
     /**

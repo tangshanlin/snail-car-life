@@ -23,7 +23,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-//@RestControllerAdvice
+@RestControllerAdvice
 public class GlobalExceptionHandler {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(GlobalExceptionHandler.class);
@@ -43,6 +43,7 @@ public class GlobalExceptionHandler {
         System.out.println("自定义异常");
         return new ResultEntity<>(e.getMessage(),e.getCode());
     }
+
 
 
     /**
@@ -76,12 +77,12 @@ public class GlobalExceptionHandler {
         return new ResultEntity<>("请求参数格式不合法",ResultEnum.RES_FAIL.getCode());
     }
 
-    /*@ExceptionHandler(NullPointerException.class)
+    @ExceptionHandler(NullPointerException.class)
     @ResponseStatus(code = HttpStatus.INTERNAL_SERVER_ERROR )
     public ResultEntity<?> NullPointerExceptionHandler(NullPointerException e){
         System.out.println("空指针异常"+e.getMessage());
         return new ResultEntity<>("空指针异常",ResultEnum.RES_FAIL.getCode());
-    }*/
+    }
 
     @ExceptionHandler(RemotingConnectException.class)
     @ResponseStatus(code = HttpStatus.INTERNAL_SERVER_ERROR )

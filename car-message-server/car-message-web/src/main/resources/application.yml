@@ -3,6 +3,10 @@ server:
   servlet:
     context-path: /message
 spring:
+#  elasticsearch:
+#    rest:
+#      uris:
+#        - http://localhost:9200
   servlet:
     multipart:
       max-file-size: 10MB
@@ -21,15 +25,20 @@ spring:
     password: root
   main:
     allow-bean-definition-overriding: true
+#  redis:
+#    port: 6379
+#    host: 119.23.75.195
+#    database: 0
+
 
 # minio 参数配置
 
 minio:
-  endpoint: http://192.168.10.27:9000
+  endpoint: http://119.23.75.195:9000
   bucketName: message
 
 rocketmq:
-  name-server: 192.168.10.38:9876
+  name-server: 192.168.10.93:9876
   producer:
     group: orderComplains
 
@@ -61,8 +70,13 @@ swagger:
   title: "信息服务"
   version: 1.0
 
+
 seata:
   enabled: true
   tx-service-group: my_test_tx_group
   enable-auto-data-source-proxy: true
+  application-id: ${spring.application.name}
+  registry:
+    nacos:
+      application: seata-server
 

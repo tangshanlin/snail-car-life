@@ -30,7 +30,7 @@ public class StationTagNameLookCommentParam implements Serializable {
     /**
      * 电站编号
      */
-    @ApiModelProperty(value = "电站编号")
+    @ApiModelProperty(value = "电站编号",example = "1")
     @NotNull(message="电站编号不能为空")
     private Integer commentPowerCode;
 

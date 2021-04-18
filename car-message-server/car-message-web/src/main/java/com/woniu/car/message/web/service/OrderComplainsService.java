@@ -14,6 +14,11 @@ import com.woniu.car.message.web.domain.OrderComplains;
  */
 public interface OrderComplainsService extends IService<OrderComplains> {
 
-    Boolean addOrderComplains(OrderComplainsParam orderComplainsParam);
+    Integer addOrderComplains(OrderComplainsParam orderComplainsParam);
+
+
+
+
+
 
 }

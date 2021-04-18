@@ -19,9 +19,4 @@ public interface ShopClient {
     public ResultEntity updateShopIntegralByShopId(@RequestBody ShopIdParamVo shopIdParamVo);
 
 
-
-
-
-
-
 }

@@ -1,8 +1,24 @@
 package com.woniu.car.commons.web.filter;
 
-//@Component
-//public class TokenFilter implements RequestInterceptor {
-//
+import com.woniu.car.commons.core.code.ConstDate;
+import feign.RequestInterceptor;
+import feign.RequestTemplate;
+import org.springframework.stereotype.Component;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
+
+@Component
+public class TokenFilter implements RequestInterceptor {
+
+    @Override
+    public void apply(RequestTemplate requestTemplate) {
+        ServletRequestAttributes requestAttributes= (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+        String auth_token = requestAttributes.getRequest().getHeader(ConstDate.REQUEST_HEADER_TOKEN);
+        if (auth_token!=null) {
+            requestTemplate.header(ConstDate.REQUEST_HEADER_TOKEN,auth_token);
+        }
+    }
+
 //    /**
 //     * @Author Lints
 //     * @Date 2021/4/6/006 12:20
@@ -16,8 +32,6 @@ package com.woniu.car.commons.web.filter;
 //    public void apply(RequestTemplate requestTemplate) {
 //        ServletRequestAttributes requestAttributes= (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
 //        String auth_token = requestAttributes.getRequest().getHeader(ConstDate.REQUEST_HEADER_TOKEN);
-//        if (auth_token!=null) {
-//            requestTemplate.header(ConstDate.REQUEST_HEADER_TOKEN,auth_token);
-//        }
+//
 //    }
-//}
+}

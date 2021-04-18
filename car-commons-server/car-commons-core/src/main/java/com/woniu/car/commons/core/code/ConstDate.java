@@ -10,8 +10,9 @@ public class ConstDate {
      */
     public static final String CONTENT_TYPE = "application/json;charset=utf-8";
     /**
-     * 请求头 - token
+     * 前端用户请求头 - token
      */
     public static final String REQUEST_HEADER_TOKEN = "auth_token";
+
 
 }

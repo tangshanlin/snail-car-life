@@ -125,6 +125,18 @@ public class ConstCode {
     public static final Integer DELETEMYCAR_SUCCESS=1338;
     /*删除爱车失败*/
     public static final Integer DELETEMYCAR_FAIL=1339;
+    /*钱包余额不足*/
+    public static final Integer CKECKWALLETMONEY_FAIL=1341;
+    /*钱包密码不对*/
+    public static final Integer CKECKWALLETPASSWORD_FAIL=1343;
+    /*查询所有车品牌成功*/
+    public static final Integer SELECTCARBRAND_SUCESS=1344;
+    /*根据车品牌id查询所有车系成功*/
+    public static final Integer SELECTCARSERIES_SUCESS=1346;
+    /*根据车系id查询所有车型成功*/
+    public static final Integer SELECTCARINFORMATION_SUCESS=1348;
+
+
 
     /*添加地址成功*/
     public static final Integer ADDADDRESS_SUCCESS=1350;
@@ -175,10 +187,9 @@ public class ConstCode {
     /*查询积分日志成功*/
     public static final Integer SELECTSCORE_SUCESS=1382;
 
-   /*输入参数错误*/
+
+    /*输入参数错误*/
     public static final Integer PARAM_ERROR=1400;
-
-
 
     /*订单不存在*/
     public static final Integer ORDER_NOT_EXIST=1003;
@@ -194,12 +205,19 @@ public class ConstCode {
     /*门店名称重复*/
     public static final Integer ADD_SHOP_NAME_FAIL= 1501;
 
-
     /*门店地址重复*/
     public static final Integer ADD_SHOP_ADDRESS_FAIL= 1502;
 
     /*门店联系方式*/
     public static final Integer ADD_SHOP_TEL_FAIL= 1503;
+
+    /*后台相关状态码wty*/
+    /*账号授予角色失败*/
+    public static final Integer GET_ACCOUNT_ROLE_FAIL= 1101;
+    /*新增后台账户失败*/
+    public static final Integer ADD_END_ACCOUNT_FAIL= 1102;
+
+
 
 
 

@@ -58,3 +58,11 @@ spring:
           uri: lb://car-shop-server
           predicates:
               - Path=/shop/**
+
+
+config:
+  jwt:
+    secret: "snail-car-life-car-auth-server"
+    expire: 8640000000
+    subject: "snail-car-life-auth-subject"
+    tokenPrefix: "com.snail.car.life"

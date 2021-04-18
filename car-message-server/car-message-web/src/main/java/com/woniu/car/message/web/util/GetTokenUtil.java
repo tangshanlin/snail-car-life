@@ -27,7 +27,6 @@ public class GetTokenUtil {
         Claim userId = JwtUtils.getDecodeToken(token).getClaim("userId");
         Integer userId2 = Integer.valueOf(userId.asString());
         return userId2;
-
     }
     public  static String  getUserAccount(){
         ServletRequestAttributes requestAttributes= (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();

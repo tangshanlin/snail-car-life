@@ -48,7 +48,7 @@ public class OrderComplains implements Serializable {
 
     @ApiModelProperty(value = "送达编号")
     @TableField(exist = false)
-    private Integer ComplainId;
+    private Integer complainSendId;
 
     @TableField(fill = FieldFill.INSERT)
     private Long gmtCreate;

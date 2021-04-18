@@ -46,7 +46,7 @@
       "name": "alipay.notify-url",
       "type": "java.lang.String",
       "sourceType": "com.woniu.car.commons.web.config.AlipayTemplate",
-      "defaultValue": "http:\/\/localhost:80\/order\/alipayNotifyNotice"
+      "defaultValue": "http:\/\/localhost:80\/order\/alipay_notify_notice"
     },
     {
       "name": "alipay.return-url",
