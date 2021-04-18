@@ -16,7 +16,7 @@ import javax.validation.constraints.NotNull;
  */
 @Data
 public class GetOneCarServiceParam {
-    @NotNull
+    @NotNull(message = "carServiceId不能为空")
     @ApiModelProperty(value = "要查询的具体服务id",example = "1")
     private Integer carServiceId;
 }

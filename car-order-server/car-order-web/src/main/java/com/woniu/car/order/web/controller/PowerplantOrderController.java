@@ -5,6 +5,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.woniu.car.commons.core.code.ConstCode;
 import com.woniu.car.commons.core.dto.ResultEntity;
+import com.woniu.car.commons.core.exception.CarException;
 import com.woniu.car.marketing.model.dtoVo.GetCouponInfoByIdDtoVo;
 import com.woniu.car.marketing.model.paramVo.GetCouponInfoByIdParamVo;
 import com.woniu.car.marketing.model.paramVo.UpdatePaySuccessCouponParamVo;
@@ -19,6 +20,8 @@ import com.woniu.car.station.model.entity.Station;
 import com.woniu.car.station.model.param.GetPowerplantParam;
 import com.woniu.car.station.model.param.station.GetOneStationParam;
 import com.woniu.car.user.web.domain.Address;
+import com.woniu.car.user.web.util.GetTokenUtil;
+import io.seata.spring.annotation.GlobalTransactional;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.util.ObjectUtils;
@@ -64,11 +67,19 @@ public class PowerplantOrderController {
      **/
     @RequestMapping(value = "insert_powerplant_order",method= RequestMethod.POST)
     @ApiOperation("新增电站订单")
+    @GlobalTransactional(timeoutMills = 50000, name = "prex-create-order")
     public ResultEntity insertPowerplantOrder(@RequestBody @Valid AddPowerplantOrderVo addPowerplantOrderVo){
+        /*记录是否使能用优惠券*/
+        Boolean useCouponInfo = false;
+
+        addPowerplantOrderVo.setUserId(GetTokenUtil.getUserId());
         /*根据电桩id查询电站信息*/
         GetOneStationParam getOneStationParam = new GetOneStationParam();
         getOneStationParam.setStationId(addPowerplantOrderVo.getStationId());
         Object data = stationClient.getOneStation(getOneStationParam).getData();
+        if(ObjectUtils.isEmpty(data)){
+            throw new CarException("电桩信息错误",500);
+        }
         // 将数据转成json字符串
         String jsonObject= JSON.toJSONString(data);
         //将json转成需要的对象
@@ -78,6 +89,9 @@ public class PowerplantOrderController {
         GetPowerplantParam getPowerplantParam = new GetPowerplantParam();
         getPowerplantParam.setPowerplantId(addPowerplantOrderVo.getPowerplantId());
         Object data1 = stationClient.getOnePowerplant(getPowerplantParam).getData();
+        if(ObjectUtils.isEmpty(data1)){
+            throw new CarException("电站信息错误",500);
+        }
         // 将数据转成json字符串
         String jsonObject1= JSON.toJSONString(data1);
         //将json转成需要的对象
@@ -120,6 +134,8 @@ public class PowerplantOrderController {
         }else{
             /*优惠券id*/
             powerplantOrder.setCouponInfoId(0);
+            /*实付金额*/
+            powerplantOrder.setAmountPaid(totalPrice);
         }
         /*电桩id*/
         powerplantOrder.setStationId(addPowerplantOrderVo.getStationId());
@@ -161,10 +177,7 @@ public class PowerplantOrderController {
                     .setFlag(true)
                     .setMessage("新增订单成功");
         }
-        return ResultEntity.buildFailEntity()
-                .setCode(ConstCode.LAST_STAGE)
-                .setFlag(false)
-                .setMessage("新增订单失败");
+        throw new CarException("新增订单失败",500);
     }
 }
 

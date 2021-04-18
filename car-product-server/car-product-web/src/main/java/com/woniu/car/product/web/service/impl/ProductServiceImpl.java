@@ -40,25 +40,27 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
     private ProductMapper productMapper;
     @Resource
     private ProductMyFileUpload myFileUpload;
+
     @Override
     public boolean addProduct(ProductParame parame) {
-        if (!ObjectUtils.isEmpty(parame)){
+        if (!ObjectUtils.isEmpty(parame)) {
 
-            MultipartFile[] file = parame.getFile();
-            ArrayList<String> uploads = myFileUpload.upload(file);
-            JSONObject jsonObject = new JSONObject();
-            if (uploads.size()==0) {
-                System.out.println("没有上传商品图片");
-            }else{
-                uploads.forEach(upload->{
-                    jsonObject.put("P"+ UUID.randomUUID().toString(),upload);
-                });
-            }
-            String commentImages = JSONObject.toJSONString(jsonObject);
+//            MultipartFile[] file = parame.getFile();
+//            ArrayList<String> uploads = myFileUpload.upload(file);
+//            JSONObject jsonObject = new JSONObject();
+//            if (uploads.size() == 0) {
+//                System.out.println("没有上传商品图片");
+//            } else {
+//                uploads.forEach(upload -> {
+//                    jsonObject.put("P" + UUID.randomUUID().toString(), upload);
+//                });
+//            }
+//            String commentImages = JSONObject.toJSONString(jsonObject);
             Product product = BeanCopyUtil.copyOne(parame, Product::new);
-            product.setProductImage(commentImages);
+            System.out.println(product);
+//            product.setProductImage(commentImages);
             int insert = productMapper.insert(product);
-            if (insert>0){
+            if (insert > 0) {
                 return true;
             }
         }
@@ -70,26 +72,29 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
         Product product = productMapper.selectById(id);
         return product;
     }
+
     /**
      * 订单修改商品减库存
+     *
      * @param orderDto
      */
     @Override
     public void updeteProductStock(ProductOrderDto orderDto) {
         Product product = productMapper.selectById(orderDto.getProductId());
         Integer productStock = product.getProductStock();
-        if (productStock<orderDto.getBuyNumber()){
-            throw new CarException("商品库存不足",1500);
+        if (productStock < orderDto.getBuyNumber()) {
+            throw new CarException("商品库存不足", 1500);
         }
         Integer i = productStock - orderDto.getBuyNumber();
         product.setProductStock(i);
         productMapper.updateById(product);
 
 
-
     }
+
     /**
      * 订单修改商品加库存
+     *
      * @param orderDto
      */
     @Override
@@ -102,14 +107,15 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
     }
 
     /**
-     *查询精选商品
+     * 查询精选商品
+     *
      * @return
      */
 
     @Override
     public List<HotProductDto> getHotProduct() {
-        QueryWrapper<Product> queryWrapper=new QueryWrapper<>();
-        queryWrapper.eq("product_isHot",1);
+        QueryWrapper<Product> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("product_isHot", 1);
         List<Product> products = productMapper.selectList(queryWrapper);
         List<HotProductDto> hotProductDtos = BeanCopyUtil.copyList(products, HotProductDto::new);
 
@@ -118,21 +124,22 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
 
     /**
      * 根据二级分类id查询商品列表
+     *
      * @param parame
      * @return
      */
 
     @Override
     public List<ProductDtoTwo> getProductTwo(ProductTwoParame parame) {
-        QueryWrapper<Product> obj= new QueryWrapper<>();
-        obj.eq("cate_id",parame.getCateId());
+        QueryWrapper<Product> obj = new QueryWrapper<>();
+        obj.eq("cate_id", parame.getCateId());
         List<Product> products = productMapper.selectList(obj);
-        List<ProductDtoTwo> pro=BeanCopyUtil.copyList(products,ProductDtoTwo::new);
+        List<ProductDtoTwo> pro = BeanCopyUtil.copyList(products, ProductDtoTwo::new);
 
         /**
          * 将图片类型转换为JSONObject
          */
-        for (int i=0;i<products.size();i++){
+        for (int i = 0; i < products.size(); i++) {
             JSONObject jsonObject = JSONObject.parseObject(products.get(i).getProductImage());
 
             pro.get(i).setCateImages(jsonObject);
@@ -142,6 +149,7 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
 
     /**
      * 查询单个商品
+     *
      * @param parame
      * @return
      */
@@ -153,9 +161,9 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
          * 将图片类型转换为JSONObject
          */
 
-            JSONObject jsonObject = JSONObject.parseObject(product.getProductImage());
+        JSONObject jsonObject = JSONObject.parseObject(product.getProductImage());
 
-            one.setCateImages(jsonObject);
+        one.setCateImages(jsonObject);
 
 
         return one;

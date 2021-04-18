@@ -34,7 +34,7 @@ public class Shop implements Serializable {
       private String shopName;
 
       @ApiModelProperty(value = "关联门店账号")
-      private Integer shopAccount;
+      private String shopAccount;
 
       @ApiModelProperty(value = "账户状态(1已审核0未审核)")
       private Integer shopAccountStart;
@@ -48,8 +48,11 @@ public class Shop implements Serializable {
       @ApiModelProperty(value = "信誉积分")
       private Integer shopIntegral;
 
-      @ApiModelProperty(value = "经纬度(json)")
-      private String shopLngLat;
+      @ApiModelProperty(value = "经度")
+      private String shopLongitude;
+
+      @ApiModelProperty(value = "纬度")
+      private String shopLatitude;
 
       @ApiModelProperty(value = "门店地址")
       private String shopAddress;
@@ -67,13 +70,13 @@ public class Shop implements Serializable {
       private Integer shopOrderNumber;
 
       @ApiModelProperty(value = "总评分（从成交总评分/总成交数）")
-      private Integer shopGrade;
+      private Double shopGrade;
 
       @ApiModelProperty(value = "提成比例")
       private Double shopProportion;
 
       @ApiModelProperty(value = "联系电话")
-      private Long shopTel;
+      private String shopTel;
 
       @ApiModelProperty(value = "余额")
       private BigDecimal shopBalance;

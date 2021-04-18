@@ -2,6 +2,7 @@ package com.woniu.car.commons.core.dto;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.woniu.car.commons.core.code.ResultEnum;
+import org.springframework.data.elasticsearch.core.SearchHits;
 
 import java.util.List;
 
@@ -89,6 +90,21 @@ public class ResultEntity<T> {
                 .setFlag(ResultEnum.RES_FAIL.getFlag())
                 .setCode(ResultEnum.RES_FAIL.getCode());
     }
+
+    public static <S> ResultEntity<SearchHits<S>> buildSearchHitsFailEntity(Class<S> type){
+        return new ResultEntity<SearchHits<S>>()
+                .setFlag(ResultEnum.RES_FAIL.getFlag())
+                .setCode(ResultEnum.RES_FAIL.getCode());
+    }
+
+    public static <S> ResultEntity<SearchHits<S>> buildSearchHitsSuccessEntity(Class<S> type){
+        return new ResultEntity<SearchHits<S>>()
+                .setFlag(ResultEnum.RES_SUCCESS.getFlag())
+                .setCode(ResultEnum.RES_SUCCESS.getCode());
+    }
+
+
+
 
     /**
      * @Author Lints

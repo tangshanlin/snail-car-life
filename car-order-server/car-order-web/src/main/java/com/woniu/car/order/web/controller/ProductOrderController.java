@@ -3,16 +3,16 @@ package com.woniu.car.order.web.controller;
 
 import com.woniu.car.commons.core.code.ConstCode;
 import com.woniu.car.commons.core.dto.ResultEntity;
+import com.woniu.car.commons.core.exception.CarException;
 import com.woniu.car.order.model.param.ExpressNoParams;
 import com.woniu.car.order.model.param.OrderVo;
 import com.woniu.car.order.web.code.OrderCode;
-import com.woniu.car.order.web.entity.OrderLogistics;
-import com.woniu.car.order.web.entity.ProductOrder;
-import com.woniu.car.order.web.service.CarserviceOrderService;
-import com.woniu.car.order.web.service.OrderLogisticsService;
-import com.woniu.car.order.web.service.ProductOrderService;
+import com.woniu.car.order.web.entity.*;
+import com.woniu.car.order.web.service.*;
+import com.woniu.car.order.web.vo.AllOrderDto;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
 import javax.validation.Valid;
+import java.util.List;
 
 /**
  * <p>
@@ -34,6 +35,7 @@ import javax.validation.Valid;
 @RestController
 @RequestMapping("/product_order")
 @Api(tags = "商品订单")
+@Slf4j
 public class ProductOrderController {
 
     @Resource
@@ -44,6 +46,12 @@ public class ProductOrderController {
 
     @Resource
     private ProductOrderService productOrderService;
+
+    @Resource
+    private PowerplantOrderService powerplantOrderService;
+
+    @Resource
+    private ProductOrderDetailService productOrderDetailService;
 
     /**
      * @Author WangPeng
@@ -72,29 +80,45 @@ public class ProductOrderController {
                                 .setFlag(true)
                                 .setMessage("修改物流信息成功");
                     }else{
-                        return ResultEntity.buildFailEntity()
-                                .setCode(ConstCode.LAST_STAGE)
-                                .setFlag(false)
-                                .setMessage("修改物流信息失败");
+                        throw new CarException("修改物流信息失败",500);
                     }
                 }else{
-                    return ResultEntity.buildFailEntity()
-                            .setCode(ConstCode.LAST_STAGE)
-                            .setFlag(false)
-                            .setMessage("修改物流信息失败");
+                    throw new CarException("添加物流信息失败",500);
                 }
             }else{
-                return ResultEntity.buildFailEntity()
-                        .setCode(ConstCode.LAST_STAGE)
-                        .setFlag(false)
-                        .setMessage("订单当前状态无法修改");
+             throw new CarException("订单当前状态无法修改",500);
             }
         }else{
-            return ResultEntity.buildFailEntity()
-                    .setCode(ConstCode.LAST_STAGE)
-                    .setFlag(false)
-                    .setMessage("未知订单错误");
+            throw new CarException("未知订单错误",500);
         }
+    }
+
+    @RequestMapping(value = "find_all_order",method = RequestMethod.GET)
+    @ApiOperation("查询所有订单")
+    public ResultEntity findAllOrder(){
+        AllOrderDto allOrderDto = new AllOrderDto();
+        log.info("开始查询所有商品订单");
+        List<ProductOrder> allProductOrder = productOrderService.findAllProductOrder();
+        allOrderDto.setProductOrders(allProductOrder);
+        log.info("开始根据商品订单编号查询商品订单详细");
+        for (int i = 0; i < allProductOrder.size(); i++) {
+            List<ProductOrderDetail> productOrderDetails = productOrderDetailService.findProductOrderDerailByProductOrderNo(allProductOrder.get(i).getProductOrderNo());
+            allOrderDto.getProductOrders().get(i).setProductOrderDetails(productOrderDetails);
+        }
+
+        log.info("开始查询服务订单");
+        List<CarserviceOrder> carserviceOrders = carserviceOrderService.findAllCarserviceOrder();
+        allOrderDto.setCarserviceOrders(carserviceOrders);
+
+        log.info("开始查询电站订单");
+        List<PowerplantOrder> PowerplantOrders = powerplantOrderService.findAllPowerplantOrder();
+        allOrderDto.setPowerplantOrders(PowerplantOrders);
+
+        return ResultEntity.buildFailEntity(AllOrderDto.class)
+                .setCode(ConstCode.ACCESS_SUCCESS)
+                .setFlag(true)
+                .setMessage("查询所有订单成功")
+                .setData(allOrderDto);
     }
 }
 

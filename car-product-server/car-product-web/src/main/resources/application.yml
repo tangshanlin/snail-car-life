@@ -23,6 +23,10 @@ spring:
     username: root
     password: root
 
+  elasticsearch:
+    rest:
+      uris: http://localhost:9200
+
 swagger:
   base-package: com.woniu.car.product.web.controller
   contact:
@@ -35,7 +39,7 @@ swagger:
 
 # minio 参数配置
 minio:
-  endpoint: http://192.168.10.22:9000
+  endpoint: http://119.23.75.195:9000
   bucketName: product
 
 # seat 配置
@@ -44,3 +48,4 @@ seata:
   tx-service-group: my_test_tx_group
   enable-auto-data-source-proxy: true
   application-id: ${spring.application.name}
+

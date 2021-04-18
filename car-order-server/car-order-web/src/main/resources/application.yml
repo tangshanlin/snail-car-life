@@ -24,7 +24,7 @@ spring:
 
     # redis
     redis:
-      host: localhost
+      host: 47.108.133.10
       port: 6379
 #rocketmq:
 #  name-server: 192.168.148.128:9876
@@ -53,7 +53,11 @@ seata:
 
 # minio 参数配置
 minio:
-  endpoint: http://192.168.10.86:9000
-  accessKey: minioadmin
-  secretKey: minioadmin
-  bucketName: station
+  endpoint: http://119.23.75.195:9000
+  bucketName: order
+feign:
+  client:
+    config:
+      default:
+        connectTimeout: 10000
+        readTimeout: 600000

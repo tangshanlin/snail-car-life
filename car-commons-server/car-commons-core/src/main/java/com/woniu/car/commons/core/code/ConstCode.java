@@ -188,8 +188,10 @@ public class ConstCode {
     public static final Integer SELECTSCORE_SUCESS=1382;
 
 
-    /*输入参数错误*/
+   /*输入参数错误*/
     public static final Integer PARAM_ERROR=1400;
+
+
 
     /*订单不存在*/
     public static final Integer ORDER_NOT_EXIST=1003;
@@ -202,8 +204,12 @@ public class ConstCode {
     /*查询商品订单成功*/
     public static final Integer FIND_PRODUCT_ORDER_SUCCESS=1004;
 
+
+
+    /*促销和门店code 1500~1599*/
     /*门店名称重复*/
     public static final Integer ADD_SHOP_NAME_FAIL= 1501;
+
 
     /*门店地址重复*/
     public static final Integer ADD_SHOP_ADDRESS_FAIL= 1502;
@@ -211,12 +217,22 @@ public class ConstCode {
     /*门店联系方式*/
     public static final Integer ADD_SHOP_TEL_FAIL= 1503;
 
+    /*优惠券发放完毕，领取失败*/
+    public static final Integer ADD_COUPON_GET_FAIL= 1504;
+
+    /*积分不足兑换该优惠券*/
+    public static final Integer NOT_ENOUGH_POINTS_FAIL= 1505;
+
+    /*门店已存在*/
+    public static final Integer The_Store_Already_Exists= 1506;
+
+    /*服务不存在，添加服务具体收益失败*/
+    public static final Integer Service_Revenue_Is_Empty= 1507;
     /*后台相关状态码wty*/
     /*账号授予角色失败*/
     public static final Integer GET_ACCOUNT_ROLE_FAIL= 1101;
     /*新增后台账户失败*/
     public static final Integer ADD_END_ACCOUNT_FAIL= 1102;
-
 
 
 

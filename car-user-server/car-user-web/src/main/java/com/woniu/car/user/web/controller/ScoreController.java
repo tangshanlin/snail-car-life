@@ -48,7 +48,6 @@ public class ScoreController {
             @ApiResponse(code = 1400, message = "输入参数错误")
 
     })
-
 //    @ApiImplicitParams({
 //            //dataType:参数类型
 //            //paramType:参数由哪里获取     path->从路径中获取，query->?传参，body->ajax请求
@@ -116,7 +115,7 @@ public class ScoreController {
         //从jwt获取userId
         Integer userId = GetTokenUtil.getUserId();
         //执行查询
-        List<Score> userId1 = scoreService.list(new QueryWrapper<Score>().eq("userId", userId));
+        List<Score> userId1 = scoreService.list(new QueryWrapper<Score>().eq("user_id", userId));
         return ResultEntity.buildListEntity(Score.class).setCode(ConstCode.SELECTSCORE_SUCESS).setFlag(true)
                 .setMessage("查询积分日志成功").setData(userId1);
 

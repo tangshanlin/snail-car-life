@@ -4,6 +4,7 @@ package com.woniu.car.user.web.controller;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.woniu.car.commons.core.code.ConstCode;
 import com.woniu.car.commons.core.dto.ResultEntity;
+import com.woniu.car.commons.core.exception.CarException;
 import com.woniu.car.commons.web.util.BeanCopyUtil;
 import com.woniu.car.user.param.AddWalletLogParam;
 import com.woniu.car.user.web.domain.Wallet;
@@ -12,6 +13,7 @@ import com.woniu.car.user.web.service.WalletService;
 import com.woniu.car.user.web.service.WalletlogService;
 import com.woniu.car.user.web.util.GetTokenUtil;
 import io.swagger.annotations.*;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.*;
 
@@ -42,7 +44,9 @@ public class WalletlogController {
 @ApiResponses({
         @ApiResponse(code = 1370, message = "添加钱包日志成功"),
         @ApiResponse(code = 1371, message = "添加钱包日志失败"),
-        @ApiResponse(code = 1400, message = "输入参数错误")
+        @ApiResponse(code = 1400, message = "输入参数错误"),
+        @ApiResponse(code = 1341, message = "钱包余额不足"),
+        @ApiResponse(code = 1343, message = "钱包密码校验失败")
 
 })
 
@@ -56,7 +60,7 @@ public class WalletlogController {
 //        @ApiImplicitParam(name = "walletType", value = "日志的类型（1充值2消费3退款4提现）", dataType = "integer",  example = "1"),
 //
 //})
-
+@Transactional (rollbackFor = Exception.class)
     public ResultEntity addWalletLog(@RequestBody @Valid AddWalletLogParam addWalletLogParam){
     //校验
     //从jwt中获取userid
@@ -82,12 +86,39 @@ public class WalletlogController {
             walletDb.setWalletMoney(add);
 
         }if (walletlogType==2||walletlogType==4){
+            //判断密码
+            System.out.println(walletDb.getWalletPassword());
+            System.out.println(addWalletLogParam.getWalletPassword());
+            boolean equals = walletDb.getWalletPassword().equals(addWalletLogParam.getWalletPassword());
+            System.out.println(equals);
+            if (!equals){
+                throw new CarException("钱包密码校验失败",ConstCode.CKECKWALLETPASSWORD_FAIL);
+
+            }
+
+
+
             //如果walletlogtype是2消费3体现
-            BigDecimal subtract = walletDb.getWalletMoney().subtract(walletChange);
-            walletlog.setWalletMoney(subtract);
-            //修改钱包余额
-            walletDb.setWalletMoney(subtract);
+            //判断余额是否不足
+                System.out.println("密码匹配成功");
+            int i = walletChange.compareTo(walletDb.getWalletMoney());
+                System.out.println(i);
+            if (i==1){
+                System.out.println("钱包余额不足");
+                throw new CarException("钱包余额不足",ConstCode.CKECKWALLETMONEY_FAIL);
+
+            }else {
+                BigDecimal subtract = walletDb.getWalletMoney().subtract(walletChange);
+                walletlog.setWalletMoney(subtract);
+                //修改钱包余额
+                walletDb.setWalletMoney(subtract);
+                System.out.println("开始消费");
+            }
+
+
         }
+
+
         //执行钱包日志的添加和钱包余额的修改
         walletlog.setUserId(userId);
         walletlog.setWalletId(walletDb.getWalletId());
@@ -100,6 +131,7 @@ public class WalletlogController {
                     .setMessage("添加日志失败");
         }
     }
+
     return ResultEntity.buildEntity().setCode(ConstCode.PARAM_ERROR).setFlag(false).setMessage("输入参数错误");
     }
 

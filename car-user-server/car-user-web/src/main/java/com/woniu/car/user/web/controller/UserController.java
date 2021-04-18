@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.woniu.car.commons.core.code.ConstCode;
 import com.woniu.car.commons.core.code.ResultEnum;
 import com.woniu.car.commons.core.dto.ResultEntity;
+import com.woniu.car.commons.core.exception.CarException;
 import com.woniu.car.user.dto.MsgParam;
 import com.woniu.car.user.param.*;
 import com.woniu.car.user.web.domain.User;
@@ -54,7 +55,7 @@ import java.util.concurrent.TimeUnit;
  */
 @RestController
 
-@Api(tags="用户服务接口")
+@Api(tags = "用户服务接口")
 @RequestMapping("/user")
 
 public class UserController {
@@ -85,8 +86,11 @@ public class UserController {
         int register = userService.register(userParam);
         if (register > 0) {
             return ResultEntity.buildEntity().setCode(ConstCode.REGISTER_SUCCESS).setMessage("注册成功");
-        }if (register==-2) return ResultEntity.buildEntity().setCode(ConstCode.CHECKTEL_FAIL).setMessage("手机号已经存在，请重新输入");
-        if (register==-3) return ResultEntity.buildEntity().setCode(ConstCode.CHECKACCOUNT_FAIL).setMessage("账户已经存在，请重新输入");
+        }
+        if (register == -2)
+            return ResultEntity.buildEntity().setCode(ConstCode.CHECKTEL_FAIL).setMessage("手机号已经存在，请重新输入");
+        if (register == -3)
+            return ResultEntity.buildEntity().setCode(ConstCode.CHECKACCOUNT_FAIL).setMessage("账户已经存在，请重新输入");
         return ResultEntity.buildEntity().setCode(ConstCode.REGISTER_FAIL).setFlag(false).setMessage("注册失败");
     }
 
@@ -111,11 +115,11 @@ public class UserController {
         System.out.println(loginPasswordParam);
         if (loginPasswordParam != null & userAccount != null) {
             User userDb = userService.getOne(new QueryWrapper<User>().eq("user_account", userAccount));
-            System.out.println("数据库查询的userdb"+userDb);
+            System.out.println("数据库查询的userdb" + userDb);
             if (!ObjectUtils.isEmpty(userDb)) {
                 //直接校验
                 Md5Hash md5Hash = new Md5Hash(loginPasswordParam.getUserPassword(), userDb.getUserSalt(), 2048);
-                System.out.println("加密后的MD5" +md5Hash);//
+                System.out.println("加密后的MD5" + md5Hash);//
                 if (md5Hash.toHex().equals(userDb.getUserPassword())) {
                     System.out.println("密码校验成功");
                     //与数据库校验成功，创建jwttoken
@@ -125,20 +129,18 @@ public class UserController {
 
 
                     String s = JwtUtils.careatToken(tokenmap);
-                    System.out.println("加密后的token"+s);
+                    System.out.println("加密后的token" + s);
 
-                        //记录本次的登陆时间
-                        long l = System.currentTimeMillis();
+                    //记录本次的登陆时间
+                    long l = System.currentTimeMillis();
 
-                        userDb.setUserLastLoginTime(l);
+                    userDb.setUserLastLoginTime(l);
                     System.out.println(userDb);
-                        boolean b = userService.updateById(userDb);
+                    boolean b = userService.updateById(userDb);
 
-                        //登陆成功返回jwttoken
-                        if (b) return ResultEntity.buildEntity(String.class).setCode(ConstCode.LOGIN_SUCCESS).setFlag(true)
-                                .setMessage("登陆成功").setData(s);
-
-
+                    //登陆成功返回jwttoken
+                    if (b) return ResultEntity.buildEntity(String.class).setCode(ConstCode.LOGIN_SUCCESS).setFlag(true)
+                            .setMessage("登陆成功").setData(s);
 
 
                 }
@@ -165,7 +167,7 @@ public class UserController {
 //
 //
 //    })
-    public ResultEntity<CloseableHttpResponse> sendcode( @RequestBody @Valid TelParam telParam) {
+    public ResultEntity<CloseableHttpResponse> sendcode(@RequestBody @Valid TelParam telParam) {
         //取出电话号码
         String userTel = telParam.getUserTel();
         System.out.println(userTel);
@@ -181,10 +183,38 @@ public class UserController {
         }
         MsgParam param = new MsgParam();
 
-        int i = RandomUtil.randomInt(1000,9999);
+        int i = RandomUtil.randomInt(1000, 9999);
         System.out.println(i);
+        int l =0;
         //存到redis
-        redisTemplate.opsForValue().set("com:woniu:car:user-server:car-user-web:sendcode:" + userTel, i,15, TimeUnit.MINUTES);
+        //存在redis 再存一个校验code时长的值 限制发送次数的值
+        Object o1 = redisTemplate.opsForValue().get("com:woniu:car:user-server:car-user-web:sendcode:"
+                + userTel + ":number");
+       if (ObjectUtils.isEmpty(o1)){
+           //次数为空 验证码失效一定为空
+           l++;
+           redisTemplate.opsForValue().set("com:woniu:car:user-server:car-user-web:sendcode:" + userTel+":number",l,24,TimeUnit.HOURS);
+           redisTemplate.opsForValue().set("com:woniu:car:user-server:car-user-web:sendcode:" + userTel+":time",l,60,TimeUnit.SECONDS);
+
+       }else {
+
+           Integer number = Integer.valueOf(o1.toString());
+           System.out.println(number);
+           if (number < 8) {
+               Object o = redisTemplate.opsForValue().get("com:woniu:car:user-server:car-user-web:sendcode:" + userTel + ":time");
+               if (ObjectUtils.isEmpty(o)) {
+                   number++;
+                   redisTemplate.opsForValue().set("com:woniu:car:user-server:car-user-web:sendcode:" + userTel + ":time",number, 60, TimeUnit.SECONDS);
+                   redisTemplate.opsForValue().set("com:woniu:car:user-server:car-user-web:sendcode:" + userTel + ":number", number, 24, TimeUnit.HOURS);
+               } else {
+                   throw new CarException("你请求验证码太过频繁，请稍后再试", 500);
+               }
+
+           }
+           if (number >8) {
+               throw new CarException("你当日请求验证码的次数超过10次,请隔日再试", 500);
+           }
+       }
         param.setCode(Integer.toString(i));
         param.setPhoneNum(userTel);
         //post请求
@@ -208,7 +238,7 @@ public class UserController {
                         responseEntity.getContentLength());
                 System.out.println("响应内容为:" +
                         EntityUtils.toString(responseEntity));
-
+                redisTemplate.opsForValue().set("com:woniu:car:user-server:car-user-web:sendcode:" + userTel+":code", i, 15, TimeUnit.MINUTES);
             }
         } catch (ClientProtocolException e) {
             e.printStackTrace();
@@ -233,6 +263,7 @@ public class UserController {
         return ResultEntity.buildEntity(CloseableHttpResponse.class).setCode(ConstCode.SENDCODE_SUCCESS).setFlag(true).setMessage("发送成功")
                 ;
     }
+
     @GetMapping("/checkByTel")
     @ApiOperation(value = "手机短信验证码校验接口", notes = "<span style='color:red;'>用来校验短信验证码的接口</span>")
     @ApiResponses({
@@ -247,19 +278,41 @@ public class UserController {
 //            @ApiImplicitParam(name = "code", value = "用户填入的4位纯数字验证码", dataType = "String", paramType = "path", example = "15578491030"),
 //
 //    })
-    public ResultEntity checkByTel( @Valid LoginTelParam loginTelParam){
+    public ResultEntity<String> checkByTel(@Valid LoginTelParam loginTelParam) {
+        //校验电话号码是否存在
+        User userDb = userService.getOne(new QueryWrapper<User>().eq("user_tel", loginTelParam.getUserTel()));
+        if (ObjectUtils.isEmpty(userDb)) {
+            return ResultEntity.buildEntity(String.class).setCode(ConstCode.CHECKTEL_SUCCESS).setFlag(false)
+                    .setMessage("用户电话号码不存在，请重新输入");
+        }
         //取出code 与redis的比较
         String userTel = loginTelParam.getUserTel();
         String code = loginTelParam.getCode();
-        String codeDb = (String)redisTemplate.opsForValue().get("com:woniu:car:user-server:car-user-web:sendcode:" + userTel);
+        String codeDb = (String) redisTemplate.opsForValue().get("car:user-server:car-user-web:sendcode:" + userTel);
         System.out.println(codeDb);
-        if (code.equals(codeDb))
-            //登陆成功存Jwttoken
+        if (code.equals(codeDb)) {
 
-            return ResultEntity.buildEntity().setCode(ConstCode.LOGIN_SUCCESS).setFlag(true).setMessage("登陆成功");
-        return ResultEntity.buildEntity().setCode(ConstCode.LOGIN_FAIL_CODEWRONG).setFlag(false).setMessage("验证码错误，请重新输入");
+            //校验成功
+            //登陆成功存Jwttoken
+            //与数据库校验成功，创建jwttoken
+            Map<String, String> tokenmap = new LinkedHashMap<>();
+            tokenmap.put("userAccount", userDb.getUserAccount());
+            tokenmap.put("userId", userDb.getUserId().toString());
+            String s = JwtUtils.careatToken(tokenmap);
+            System.out.println("加密后的token" + s);
+            //记录本次的登陆时间
+            long l = System.currentTimeMillis();
+            userDb.setUserLastLoginTime(l);
+            System.out.println(userDb);
+            boolean b = userService.updateById(userDb);
+            if (b)
+                return ResultEntity.buildEntity(String.class).setCode(ConstCode.LOGIN_SUCCESS).setFlag(true).setMessage("登陆成功").setData(s);
+        }
+
+        return ResultEntity.buildEntity(String.class).setCode(ConstCode.LOGIN_FAIL_CODEWRONG).setFlag(false).setMessage("验证码错误，请重新输入");
     }
-//手机号查重检验
+
+    //手机号查重检验
     @GetMapping("/checkTel")
     @ApiOperation(value = "手机号码查重校验接口", notes = "<span style='color:red;'>用来手机号码查重校验接口</span>")
     @ApiResponses({
@@ -275,17 +328,18 @@ public class UserController {
 //
 //
 //    })
-    public ResultEntity checkTel( TelParam telParam){
-        if (!ObjectUtils.isEmpty(telParam)){
+    public ResultEntity checkTel(TelParam telParam) {
+        if (!ObjectUtils.isEmpty(telParam)) {
 
+            User user = userService.selectByTel(telParam);
+            if (user != null)
+                return ResultEntity.buildEntity().setCode(ConstCode.CHECKTEL_FAIL).setFlag(false).setMessage("手机号已经存在，请更换手机号");
 
-        User user = userService.selectByTel(telParam);
-        if (user!=null) return ResultEntity.buildEntity().setCode(ConstCode.CHECKTEL_FAIL).setFlag(false).setMessage("手机号已经存在，请更换手机号");
-
-        return ResultEntity.buildEntity().setCode(ConstCode.CHECKTEL_SUCCESS).setFlag(true).setMessage("该手机号未注册，可以使用");
+            return ResultEntity.buildEntity().setCode(ConstCode.CHECKTEL_SUCCESS).setFlag(true).setMessage("该手机号未注册，可以使用");
         }
         return ResultEntity.buildEntity().setCode(ConstCode.PARAM_ERROR).setFlag(false).setMessage("输入参数错误");
-        }
+    }
+
     //账号查重校验
     @GetMapping("/checkAccount")
     @ApiOperation(value = "账号名查重校验接口", notes = "<span style='color:red;'>用来账号查重校验接口</span>")
@@ -303,17 +357,19 @@ public class UserController {
 //
 //    })
 
-    public ResultEntity checkAccount(@Valid AccountParam accountParam){
-        if (!ObjectUtils.isEmpty(accountParam)){
+    public ResultEntity checkAccount(@Valid AccountParam accountParam) {
+        if (!ObjectUtils.isEmpty(accountParam)) {
 
 
-        User user_account = userService.getOne(new QueryWrapper<User>().eq("user_account", accountParam.getUserAccount()));
-        if (user_account!=null) return ResultEntity.buildEntity().setCode(ConstCode.CHECKACCOUNT_FAIL).setFlag(false)
-        .setMessage("账户已经存在，请重新输入");
-        return ResultEntity.buildEntity().setCode(ConstCode.CHECKACCOUNT_SUCCESS).setFlag(true).setMessage("账户名可以使用");
+            User user_account = userService.getOne(new QueryWrapper<User>().eq("user_account", accountParam.getUserAccount()));
+            if (user_account != null)
+                return ResultEntity.buildEntity().setCode(ConstCode.CHECKACCOUNT_FAIL).setFlag(false)
+                        .setMessage("账户已经存在，请重新输入");
+            return ResultEntity.buildEntity().setCode(ConstCode.CHECKACCOUNT_SUCCESS).setFlag(true).setMessage("账户名可以使用");
         }
         return ResultEntity.buildEntity().setCode(ConstCode.PARAM_ERROR).setFlag(false).setMessage("输入参数错误");
-        }
+    }
+
     //修改密码
     @PutMapping("/update_user")
     @ApiOperation(value = "账户密码及电话号码修改接口", notes = "<span style='color:red;'>用来账户密码及电话号码修改接口,需要接受手机验证码</span>")
@@ -334,12 +390,12 @@ public class UserController {
 //
 //    })
     @Transactional(rollbackFor = Exception.class)
-    public ResultEntity updateUser(@RequestBody @Valid UserUpdateParam userUpdateParam){
+    public ResultEntity updateUser(@RequestBody @Valid UserUpdateParam userUpdateParam) {
         //校验传入参数的合法性
 
-        if (userUpdateParam!=null){
+        if (userUpdateParam != null) {
 
-           //从jwt中获取userid
+            //从jwt中获取userid
             Integer userId = GetTokenUtil.getUserId();
             System.out.println(userId);
 
@@ -348,32 +404,31 @@ public class UserController {
             String userAccount = GetTokenUtil.getUserAccount();
             System.out.println(userAccount);
 
-            if (!ObjectUtils.isEmpty(userDb)&userDb.getUserAccount().equals(userUpdateParam.getUserAccount())){
+            if (!ObjectUtils.isEmpty(userDb) & userDb.getUserAccount().equals(userUpdateParam.getUserAccount())) {
                 //从redis取出验证码
-                String codeDb = (String)redisTemplate.opsForValue().get("com:woniu:car:user-server:car-user-web:sendcode:" + userDb.getUserTel());
+                String codeDb = (String) redisTemplate.opsForValue().get("com:woniu:car:user-server:car-user-web:sendcode:" + userDb.getUserTel());
                 //校验验证码
-                if (userUpdateParam.getCode().equals(codeDb)){
+                if (userUpdateParam.getCode().equals(codeDb)) {
                     //校验成功执行修改
-                    if (userUpdateParam.getUserTel()!=null){
+                    if (userUpdateParam.getUserTel() != null) {
                         userDb.setUserTel(userUpdateParam.getUserTel());
                     }
                     String userPassword = userUpdateParam.getUserPassword();
-                    if (userPassword !=null){
+                    if (userPassword != null) {
                         Md5Hash md5Hash = new Md5Hash(userPassword, userDb.getUserSalt(), 2048);
-                        String newPassword=md5Hash.toHex();
+                        String newPassword = md5Hash.toHex();
                         userDb.setUserPassword(newPassword);
 
                     }
                     boolean b = userService.updateById(userDb);
-                    if (b)return ResultEntity.buildEntity().setCode(ConstCode.UPDATEUSER_SUCCESS).setFlag(true).setMessage("更新账户成功");
+                    if (b)
+                        return ResultEntity.buildEntity().setCode(ConstCode.UPDATEUSER_SUCCESS).setFlag(true).setMessage("更新账户成功");
                 }
             }
         }
-return ResultEntity.buildEntity().setCode(ConstCode.UPDATEUSER_FAIL).setFlag(false).setMessage("修改失败，请重试");
+        return ResultEntity.buildEntity().setCode(ConstCode.UPDATEUSER_FAIL).setFlag(false).setMessage("修改失败，请重试");
 
     }
-
-
 
 
 }

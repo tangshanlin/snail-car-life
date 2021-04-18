@@ -5,6 +5,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.woniu.car.commons.core.code.ConstCode;
 import com.woniu.car.commons.core.dto.ResultEntity;
+import com.woniu.car.commons.core.exception.CarException;
 import com.woniu.car.marketing.model.dtoVo.GetCouponInfoByIdDtoVo;
 import com.woniu.car.marketing.model.paramVo.GetCouponInfoByIdParamVo;
 import com.woniu.car.marketing.model.paramVo.UpdatePaySuccessCouponParamVo;
@@ -25,6 +26,7 @@ import com.woniu.car.product.web.domain.Product;
 import com.woniu.car.product.model.dto.ProductOrderDto;
 import com.woniu.car.user.param.SlectAddressByAdressIdParam;
 import com.woniu.car.user.web.domain.Address;
+import com.woniu.car.user.web.util.GetTokenUtil;
 import io.seata.spring.annotation.GlobalTransactional;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -85,7 +87,10 @@ public class ProductOrderDetailController {
 //    @GlobalTransactional(timeoutMills = 200000, name = "prex-create-order")
     @ApiOperation("新增商品订单")
     @RequestMapping(value = "insert_product_order",method = RequestMethod.POST)
+    @GlobalTransactional(timeoutMills = 50000, name = "prex-create-order")
     public ResultEntity insertProductOrder(@RequestBody @Valid AddProductOrderVo addProductOrderVo){
+       addProductOrderVo.setUserId(GetTokenUtil.getUserId());
+
         /*生成商品订单编号*/
         String productOrderNo = InsertOrderNoUtil.InsertProductOrderNo();
         /*商品总数量*/
@@ -97,7 +102,9 @@ public class ProductOrderDetailController {
         List<AddProductDetailOrderVo> productsInfo = addProductOrderVo.getProductDetailOrders();
         ArrayList<ProductOrderDetail> productOrderDetails = new ArrayList<>();
         ArrayList<Product> products = new ArrayList<>();
-
+        if(productsInfo.size()==0){
+            throw new CarException("此商品不存在",500);
+        }
         for (int i = 0; i < productsInfo.size(); i++){
             /*根据商品id获取商品信息*/
             Product product = productClient.getProductById(productsInfo.get(i).getProductId()).getData();
@@ -106,7 +113,7 @@ public class ProductOrderDetailController {
             /*计算总数量*/
             productSum = productSum+productsInfo.get(i).getProductCount();
             /*计算总价*/
-            productAmountTotal = productAmountTotal.add(product.getProductPrice());
+            productAmountTotal = productAmountTotal.add(product.getProductPrice().multiply(new BigDecimal(productsInfo.get(i).getProductCount())));
 
             /*生成商品订单详情表*/
             ProductOrderDetail productOrderDetail = new ProductOrderDetail();
@@ -133,34 +140,36 @@ public class ProductOrderDetailController {
         GetCouponInfoByIdParamVo getCouponInfoByIdParamVo = new GetCouponInfoByIdParamVo();
         getCouponInfoByIdParamVo.setCouponInfoId(addProductOrderVo.getCouponInfoId());
         GetCouponInfoByIdDtoVo couponInfo = marketingClient.getCouponInfoById(getCouponInfoByIdParamVo).getData();
-        System.err.println(couponInfo+"优惠券详情");
+
         /*判断优惠券是否存在*/
         log.info("查询id为"+addProductOrderVo.getCouponInfoId()+"的优惠券查询成功，并做出判断是否为空");
-        if(!ObjectUtils.isEmpty(couponInfo)){
+
             log.info("id为"+addProductOrderVo.getCouponInfoId()+"的优惠券存在,开始生成订单");
 
             ProductOrder productOrder = new ProductOrder();
             productOrder.setUserId(addProductOrderVo.getUserId());
             /*订单编号*/
             productOrder.setProductOrderNo(productOrderNo);
-            /*优惠券面额*/
-            productOrder.setCouponMoney(couponInfo.getCouponMoney());
             /*订单状态*/
             productOrder.setProductOrderStatus(OrderCode.ORDER_NON_PAYMENT);
             /*订单数量*/
             productOrder.setProductSum(productSum);
             /*订单总价*/
             productOrder.setProductAmountTotal(productAmountTotal);
-            /*判断优惠券的使用范围*/
-            if(couponInfo.getCouponId()== 0) {
-                if(couponInfo.getCouponCondition().compareTo(productAmountTotal) == -1) {
-                    productOrder.setCouponMoney(couponInfo.getCouponMoney());
+
+            if(!ObjectUtils.isEmpty(couponInfo)) {
+                /*判断优惠券的使用范围*/
+                if(couponInfo.getCouponId()== 0) {
+                    if(couponInfo.getCouponCondition().compareTo(productAmountTotal) == -1) {
+                        productOrder.setCouponMoney(couponInfo.getCouponMoney());
+                    }
+                }else {
+                    productOrder.setCouponMoney(new BigDecimal(0));
                 }
-            }else {
-                productOrder.setCouponMoney(new BigDecimal(0));
             }
+
             /*应付金额*/
-            productOrder.setAmountPayable(productAmountTotal.subtract(couponInfo.getCouponMoney()));
+            productOrder.setAmountPayable(productAmountTotal.subtract(productOrder.getCouponMoney()));
             /*生成订单*/
             Boolean aBoolean = productOrderService.insertProductOrder(productOrder);
             log.info("生成订单成功");
@@ -184,28 +193,31 @@ public class ProductOrderDetailController {
             /*1.根据地址id查询用户收获地址*/
             SlectAddressByAdressIdParam slectAddressByAdressIdParam = new SlectAddressByAdressIdParam();
             slectAddressByAdressIdParam.setAddressId(addProductOrderVo.getAddressId());
-            userClient.selectByAddressId(slectAddressByAdressIdParam);
             log.info("开始根据address_id:"+addProductOrderVo.getAddressId()+"查询信息");
             Object data = userClient.selectByAddressId(slectAddressByAdressIdParam).getData();
+            if(ObjectUtils.isEmpty(data)){
+                throw new CarException("地址信息错误",500);
+            }
             // 将数据转成json字符串
             String jsonObject=JSON.toJSONString(data);
             //将json转成需要的对象
             Address address= JSONObject.parseObject(jsonObject,Address.class);
 
             log.info("查询到信息"+address);
-            orderLogisticsService.insertOrderLogistics(
-                    new OrderLogistics()
-                            /*商品订单表id*/
-                            .setProductOrderId(productOrder.getProductOrderId())
-                            /*收件人名字*/
-                            .setConsigneeRealname(address.getAddressContactName())
-                            /*联系电话*/
-                            .setConsigneeTelphone(address.getAddressContactTel())
-                            /*收货地址*/
-                            .setConsigneeAddress(address.getAddressProvince()+address.getAddressCity()+address.getAddressDistrict()+address.getAddressStreet()+address.getAddressDetail())
-            );
-        }else{
-            log.info("id为"+addProductOrderVo.getCouponInfoId()+"已经使用");
+        Boolean aBoolean1 = orderLogisticsService.insertOrderLogistics(
+                new OrderLogistics()
+                        /*商品订单表id*/
+                        .setProductOrderId(productOrder.getProductOrderId())
+                        /*收件人名字*/
+                        .setConsigneeRealname(address.getAddressContactName())
+                        /*联系电话*/
+                        .setConsigneeTelphone(address.getAddressContactTel())
+                        /*收货地址*/
+                        .setConsigneeAddress(address.getAddressProvince() + address.getAddressCity() + address.getAddressDistrict() + address.getAddressStreet() + address.getAddressDetail())
+        );
+
+        if(!aBoolean1){
+            throw new CarException("新增订单失败",500);
         }
         return ResultEntity.buildFailEntity()
                 .setCode(ConstCode.ACCESS_SUCCESS)

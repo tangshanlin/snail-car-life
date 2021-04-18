@@ -1,16 +1,21 @@
 package com.woniu.car.shop.web.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.woniu.car.commons.web.util.BeanCopyUtil;
+import com.woniu.car.shop.model.dtoVo.FindShopServiceEarningAllByShopIdDtoVo;
 import com.woniu.car.shop.model.paramVo.AddShopServiceEarningsParamVo;
+import com.woniu.car.shop.model.paramVo.ShopIdParamVo;
 import com.woniu.car.shop.web.domain.ShopServiceEarnings;
 import com.woniu.car.shop.web.mapper.ShopServiceEarningsMapper;
 import com.woniu.car.shop.web.service.ShopServiceEarningsService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.apache.ibatis.annotations.Result;
 import org.springframework.stereotype.Service;
+import org.springframework.util.ObjectUtils;
 
 import javax.annotation.Resource;
 import java.math.BigDecimal;
+import java.util.List;
 
 /**
  * <p>
@@ -43,5 +48,25 @@ public class ShopServiceEarningsServiceImpl extends ServiceImpl<ShopServiceEarni
         int insert = shopServiceEarningsMapper.insert(shopServiceEarnings);
         if (insert==1) return true;
         return false;
+    }
+
+    /*
+    * @Author TangShanLin
+    * @Description TODO 查看某个门店下各个服务总收益
+    * @Date  10:24
+    * @Param [shopIdParamVo]
+    * @return java.util.List<com.woniu.car.shop.model.dtoVo.FindShopServiceEarningAllByShopIdDtoVo>
+    **/
+    @Override
+    public List<FindShopServiceEarningAllByShopIdDtoVo> getShopServiceEarnings(ShopIdParamVo shopIdParamVo) {
+        QueryWrapper<ShopServiceEarnings> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("shop_id",shopIdParamVo.getShopId());
+        List<ShopServiceEarnings> shopServiceEarnings = shopServiceEarningsMapper.selectList(queryWrapper);
+        if (ObjectUtils.isEmpty(shopServiceEarnings)) {
+            return null;
+        }
+
+        List<FindShopServiceEarningAllByShopIdDtoVo> findShopServiceEarningAllByShopIdDtoVoList = BeanCopyUtil.copyList(shopServiceEarnings, FindShopServiceEarningAllByShopIdDtoVo::new);
+        return findShopServiceEarningAllByShopIdDtoVoList;
     }
 }

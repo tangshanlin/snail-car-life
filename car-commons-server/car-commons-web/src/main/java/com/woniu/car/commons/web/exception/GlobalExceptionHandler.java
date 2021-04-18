@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.multipart.MaxUploadSizeExceededException;
 
 import javax.validation.UnexpectedTypeException;
+import javax.validation.constraints.Min;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -55,13 +56,13 @@ public class GlobalExceptionHandler {
      * @Since version-1.0
      */
 
-    /*@ExceptionHandler(Exception.class)
-    @ResponseStatus(code = HttpStatus.INTERNAL_SERVER_ERROR )
-    public ResultEntity<?> MySystemException(Exception e){
-       // e.printStackTrace();
-        System.out.println("全局异常");
-        return new ResultEntity<>(ResultEnum.RES_FAIL.getMessage(),ResultEnum.RES_FAIL.getCode());
-    }*/
+//    @ExceptionHandler(Exception.class)
+//    @ResponseStatus(code = HttpStatus.INTERNAL_SERVER_ERROR )
+//    public ResultEntity<?> MySystemException(Exception e){
+//       // e.printStackTrace();
+//        System.out.println("全局异常");
+//        return new ResultEntity<>(ResultEnum.RES_FAIL.getMessage(),ResultEnum.RES_FAIL.getCode());
+//    }
 
     @ExceptionHandler(MaxUploadSizeExceededException.class)
     @ResponseStatus(code = HttpStatus.INTERNAL_SERVER_ERROR )
@@ -115,5 +116,7 @@ public class GlobalExceptionHandler {
         System.out.println(e.getMessage());
         return new ResultEntity<>("参数不能为空",ResultEnum.RES_FAIL.getCode());
     }
+
+
 
 }

@@ -20,7 +20,7 @@ public class GetCouponInfoByUserIdAndSourceParamVo {
 
     @NotNull(message = "发行来源不能为空")
     @Min(value = 0,message = "发行来源大于等于0")
-    @ApiModelProperty(value = "发行来源(0平台-其他对应门店id)")
+    @ApiModelProperty(value = "发行来源(0平台-其他对应门店id)",example = "1")
     private Integer couponGoods;
 
     /*@NotNull(message = "关联用户id不能为空")

@@ -18,7 +18,7 @@ import javax.validation.constraints.NotNull;
 @ApiModel(value = "根据活动来源id展示活动信息")
 public class AdvertisingBySourceParamVo {
 
-    @ApiModelProperty(value = "发行来源(0平台-其他对应门店id)")
+    @ApiModelProperty(value = "发行来源(0平台-其他对应门店id)",example = "1")
     @Min(value = 0,message = "发布活动的来源id必须大于等于0")
     @NotNull(message = "发行来源不能为空")
     private Integer advertisingSourceId;//发布来源(0平台其他对应门店对应id)

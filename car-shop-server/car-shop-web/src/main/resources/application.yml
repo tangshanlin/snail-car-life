@@ -3,7 +3,18 @@ server:
   servlet:
     context-path: /shop
 
+feign:
+  client:
+    config:
+      default:
+        connect-timeout: 10000
+        read-timeout: 10000
+
 spring:
+  elasticsearch:
+    rest:
+      uris:
+        - http://localhost:9200
   main:
     allow-bean-definition-overriding: true
   datasource:
@@ -24,10 +35,12 @@ spring:
     multipart:
       max-request-size: 10MB  #指定multipart/form-data请求允许的最大大小。 默认值为10MB。
       max-file-size: 10MB #指定上载文件允许的最大大小。 默认值为1MB
-
+  redis:
+    host: 47.108.133.10
+    port: 6399
 # minio 参数配置
 minio:
-  endpoint: http://192.168.10.22:9000
+  endpoint: http://119.23.75.195:9000
   bucketName: shop
 
 

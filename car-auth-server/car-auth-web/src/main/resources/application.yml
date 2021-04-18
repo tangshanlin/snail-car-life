@@ -24,6 +24,10 @@ spring:
     username: root
     password: root
 
+  redis:
+    host: 47.108.133.10
+    port: 6399
+
 
 
 
@@ -53,9 +57,7 @@ swagger:
 
 #minio配置
 minio:
-  endpoint: http://192.168.10.22:9000
-  accessKey: minioadmin
-  secretKey: minioadmin
+  endpoint: http://119.23.75.195:9000
   bucketName: auth
 
 #seata配置
@@ -64,4 +66,5 @@ seata:
   tx-service-group: my_test_tx_group
   enable-auto-data-source-proxy: true
   application-id: ${spring.application.name}
+
 

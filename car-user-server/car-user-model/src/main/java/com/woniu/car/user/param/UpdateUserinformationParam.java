@@ -27,7 +27,4 @@ public class UpdateUserinformationParam {
 
 
 
-    @ApiModelProperty(value = "用户头像")
-    @NotNull
-    private String userImage;
 }

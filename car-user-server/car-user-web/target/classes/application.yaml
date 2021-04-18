@@ -11,6 +11,23 @@ spring:
     driver-class-name: com.mysql.jdbc.Driver
     username: root
     password: root
+  #配置redis
+#  redis:
+#    # Redis数据库索引（默认为0）
+#    database: 0
+#    # Redis服务器地址
+#    host: 47.108.133.10
+#    # Redis服务器连接端口
+#    port: 6379
+#    # Redis服务器连接密码（默认为空）
+#    password:
+#    timeout: 20000
+#    #    集群环境打开下面注释，单机不需要打开
+#    cluster:
+#    #      集群信息
+#    nodes: 47.108.133.10:6379,47.108.133.10:6380,47.108.133.10:6381,47.108.133.10:6382,47.108.133.10:6383,47.108.133.10:6384
+#    #      #默认值是5 一般当此值设置过大时，容易报：Too many Cluster redirections
+#    maxRedirects: 3
 
 
   cloud:
@@ -18,6 +35,12 @@ spring:
       discovery:
         server-addr: localhost:8848
 
+## seat 配置
+#seata:
+#  enabled: true
+#  tx-service-group: my_test_tx_group
+#  enable-auto-data-source-proxy: true
+#  application-id: ${spring.application.name}
 
 
 swagger:
@@ -36,3 +59,19 @@ jackson:
   serialization:
     FAIL_ON_EMPTY_BEANS: false
 
+## seat 配置
+seata:
+  enabled: true
+  tx-service-group: my_test_tx_group
+  enable-auto-data-source-proxy: true
+
+  application-id: ${spring.application.name}
+ # 配置es
+  elasticsearch:
+    rest:
+      uris:
+        - http://192.168.10.71:5601/:9200
+# minio 参数配置
+minio:
+  endpoint: http://119.23.75.195:9000
+  bucketName: user

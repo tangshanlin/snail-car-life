@@ -6,6 +6,7 @@ import com.auth0.jwt.interfaces.DecodedJWT;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.woniu.car.commons.core.code.ConstCode;
 import com.woniu.car.commons.core.dto.ResultEntity;
+import com.woniu.car.commons.core.exception.CarException;
 import com.woniu.car.commons.web.util.BeanCopyUtil;
 import com.woniu.car.user.param.*;
 import com.woniu.car.user.web.domain.Address;
@@ -15,6 +16,7 @@ import com.woniu.car.user.web.service.UserService;
 import com.woniu.car.user.web.util.GetTokenUtil;
 import com.woniu.car.user.web.util.JwtUtils;
 import io.swagger.annotations.*;
+import io.swagger.models.auth.In;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.*;
 
@@ -112,23 +114,29 @@ public class AddressController {
     public ResultEntity deleteAddress(@RequestBody @Valid deleteAddress deleteAddress){
         //校验
       //获取UserId
-      String token = GetTokenUtil.getToken();
-      DecodedJWT decodeToken = JwtUtils.getDecodeToken(token);
-      Claim userId = decodeToken.getClaims().get("userId");
-      Integer userId2 = Integer.valueOf(userId.asString());
+      Integer userId = GetTokenUtil.getUserId();
+      if (ObjectUtils.isEmpty(userId)){
+          throw new CarException("未登陆，请重新登陆",500);
+      }
 
-        Address addressDb = addressService.getById(deleteAddress.getAddressId());
-        if (addressDb.getUserId()==userId2){
+
+      Address addressDb = addressService.getById(deleteAddress.getAddressId());
+        if (addressDb.getUserId()==userId){
 
             boolean b = addressService.removeById(deleteAddress.getAddressId());
-            if (b) return ResultEntity.buildEntity().setCode(ConstCode.DELETEADDRESS_SUCCESS).setFlag(true)
-                    .setMessage("删除地址成功");
-            return ResultEntity.buildEntity().setCode(ConstCode.DELETEADDRESS_FAIL).setFlag(false)
-                    .setMessage("删除地址失败");
+            if (b){
+                return ResultEntity.buildEntity().setCode(ConstCode.DELETEADDRESS_SUCCESS).setFlag(true)
+                        .setMessage("删除地址成功");
+            }else {
+
+                throw new CarException("删除地址失败",500);
+            }
+
+
 
         }
+      throw new CarException("输入参数错误",500);
 
-        return ResultEntity.buildEntity().setCode(ConstCode.PARAM_ERROR).setFlag(false).setMessage("输入参数错误");
     }
 
     @GetMapping("/selectByAddressId")
@@ -152,7 +160,8 @@ public class AddressController {
     public ResultEntity selectByAddressId( @Valid SlectAddressByAdressIdParam selectAddressParam){
       //校验输入参数
         //从jwt中获取userId；
-        Integer userId = GetTokenUtil.getUserId();
+//        Integer userId = GetTokenUtil.getUserId();
+        Integer userId =1;
         //校验
         Address addressDb = addressService.getById(selectAddressParam.getAddressId());
         if (!ObjectUtils.isEmpty(addressDb)&addressDb.getUserId()==userId){

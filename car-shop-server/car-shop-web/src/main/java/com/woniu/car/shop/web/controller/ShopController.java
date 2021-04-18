@@ -6,9 +6,12 @@ import com.woniu.car.commons.core.dto.ResultEntity;
 
 import com.woniu.car.shop.model.dtoVo.*;
 import com.woniu.car.shop.model.paramVo.*;
+import com.woniu.car.shop.web.domain.EsShopWoniuCar;
 import com.woniu.car.shop.web.service.ShopService;
 import io.swagger.annotations.*;
+import org.springframework.data.elasticsearch.core.SearchHits;
 import org.springframework.util.ObjectUtils;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -39,28 +42,38 @@ public class ShopController {
     @PostMapping("add_shop")
     @ApiOperation(value = "申请成为门店接口")
     public ResultEntity addShop(@Valid AddShopParamVo addShopParamVo){
-        int i = shopService.addShopParamVo(addShopParamVo);
-        //根据返回码判断是信息重复还是成功
-        if(i== ConstCode.ADD_SHOP_NAME_FAIL){
-            return ResultEntity.buildFailEntity()
-                    .setCode(ConstCode.ADD_SHOP_NAME_FAIL)
-                    .setMessage("门店名称已存在");
+        shopService.addShopParamVo(addShopParamVo);
+        return ResultEntity.buildSuccessEntity()
+                .setMessage("添加成功");
+    }
 
-        }else if(i== ConstCode.ADD_SHOP_ADDRESS_FAIL){
-            return ResultEntity.buildFailEntity()
-                    .setCode(ConstCode.ADD_SHOP_ADDRESS_FAIL)
-                    .setMessage("门店地址已存在");
-
-        }else if(i == ConstCode.ADD_SHOP_TEL_FAIL){
-            return ResultEntity.buildFailEntity()
-                    .setCode(ConstCode.ADD_SHOP_TEL_FAIL)
-                    .setMessage("门店电话已存在");
-
-        }else{
+    /*
+    * @Author TangShanLin
+    * @Description TODO 门店通过审核接口
+    * @Date  16:52
+    * @Param [shopId]
+    * @return com.woniu.car.commons.core.dto.ResultEntity
+    **/
+    @ApiOperation(value = "门店通过审核接口")
+    @PutMapping("update_shop_account_start")
+    public ResultEntity updateShopAccountStart(@RequestBody @Valid ShopIdParamVo shopId){
+        Integer state = shopService.updateShopAccountStart(shopId);
+        if(state == ConstCode.ACCESS_SUCCESS){
             return ResultEntity.buildSuccessEntity()
-                    .setMessage("申请门店信息已发送");
+                    .setMessage("审核通过");
+        } else if (state == ConstCode.GET_ACCOUNT_ROLE_FAIL){
+            return ResultEntity.buildFailEntity()
+                    .setCode(ConstCode.GET_ACCOUNT_ROLE_FAIL)
+                    .setMessage("账号授予角色失败");
+        }else if(state == ConstCode.ADD_END_ACCOUNT_FAIL){
+            return ResultEntity.buildFailEntity()
+                    .setCode(ConstCode.ADD_END_ACCOUNT_FAIL)
+                    .setMessage("新增后台账户失败");
+        }else {
+            return ResultEntity.buildFailEntity()
+                    .setCode(ConstCode.The_Store_Already_Exists)
+                    .setMessage("门店不存在");
         }
-
     }
 
 
@@ -71,8 +84,12 @@ public class ShopController {
      */
     @ApiOperation(value = "根据门店id查询详细信息接口")
     @GetMapping("get_shop_info")
-    public ResultEntity<FindShopInfoVo> findShopInfo(@Valid ShopIdParamVo shopId){
+    public ResultEntity<FindShopInfoVo> findShopInfo(@Validated ShopIdParamVo shopId){
         FindShopInfoVo findShopInfoVo = shopService.findShopInfo(shopId);
+        if (ObjectUtils.isEmpty(findShopInfoVo)) {
+            return ResultEntity.buildFailEntity(FindShopInfoVo.class)
+                    .setMessage("未查询到门店信息");
+        }
         return ResultEntity.buildSuccessEntity(FindShopInfoVo.class)
                 .setData(findShopInfoVo)
                 .setMessage("根据门店id查询详细信息成功");
@@ -88,7 +105,8 @@ public class ShopController {
     public ResultEntity<List<FindShopByClassDtoVo>> findShopByClass(@Valid FindShopByClassParamVo findShopByClass){
         List<FindShopByClassDtoVo> findShopByClassDtoVoList = shopService.findShopByClass(findShopByClass);
         if(ObjectUtils.isEmpty(findShopByClassDtoVoList)){
-            return ResultEntity.buildListFailEntity(FindShopByClassDtoVo.class).setMessage("未查询到该品牌下的4s门店");
+            return ResultEntity.buildListFailEntity(FindShopByClassDtoVo.class)
+                    .setMessage("未查询到该品牌下的4s门店");
         }
         return ResultEntity.buildListSuccessEntity(FindShopByClassDtoVo.class)
                 .setData(findShopByClassDtoVoList)
@@ -106,6 +124,10 @@ public class ShopController {
     @GetMapping("list_shop_by_integral")
     public ResultEntity<List<FindShopByIntegralDtoVo>> findShopByIntegral(){
         List<FindShopByIntegralDtoVo> findShopByIntegralDtoVoList = shopService.findShopByIntegral();
+        if (ObjectUtils.isEmpty(findShopByIntegralDtoVoList)) {
+            return ResultEntity.buildListFailEntity(FindShopByIntegralDtoVo.class)
+                    .setMessage("暂无优选好店");
+        }
         return ResultEntity.buildListSuccessEntity(FindShopByIntegralDtoVo.class)
                 .setData(findShopByIntegralDtoVoList)
                 .setMessage("查询优选好店成功");
@@ -120,9 +142,10 @@ public class ShopController {
     **/
     @ApiOperation(value = "查询所有附近门店接口",notes = "功能暂时未完成")
     @GetMapping("list_shop_info_all")
-    public ResultEntity<List<FindShopInfoAll>> findShopInfoAll(@Valid FindShopInfoByMeLngLat meLngLat){
-        List<FindShopInfoAll> findShopInfoAllList = shopService.findShopInfoAll(meLngLat);
-        return ResultEntity.buildListSuccessEntity(FindShopInfoAll.class)
+    public ResultEntity<SearchHits<EsShopWoniuCar>> findShopInfoAll(@Valid FindShopInfoByMeLngLat meLngLat){
+        System.out.println(meLngLat);
+        SearchHits<EsShopWoniuCar> findShopInfoAllList = shopService.findShopInfoAll(meLngLat);
+        return ResultEntity.buildSearchHitsSuccessEntity(EsShopWoniuCar.class)
                 .setData(findShopInfoAllList)
                 .setMessage("查询所有附近门店信息成功");
     }
@@ -224,7 +247,31 @@ public class ShopController {
         }
     }
 
+    @ApiOperation(value = "内部调用：修改门店总评分",notes = "feign：根据门店id和门店总评分修改评分")
+    @PutMapping("update_shop_grade")
+    public ResultEntity updateShopGrade(@RequestBody @Valid AmendShopGradeByShopIdParamVo amendShopGradeByShopIdParamVo){
+        Boolean boo = shopService.updateShopGrade(amendShopGradeByShopIdParamVo);
+        if (boo) {
+            return ResultEntity.buildSuccessEntity()
+                    .setMessage("修改总评分成功");
+        }else {
+            return ResultEntity.buildFailEntity()
+                    .setMessage("修改总评分失败");
+        }
+    }
 
+    @PutMapping("update_shop_order_number")
+    @ApiOperation(value = "内部调用：修改门店总成交数",notes = "feign：每次完成后修改门店总成交数")
+    public ResultEntity updateShopOrderNumber(@RequestBody @Valid ShopIdParamVo shopIdParamVo){
+        Boolean boo = shopService.updateShopOrderNumber(shopIdParamVo);
+        if (boo) {
+            return ResultEntity.buildSuccessEntity()
+                    .setMessage("修改门店总成交数成功");
+        }else {
+            return ResultEntity.buildFailEntity()
+                    .setMessage("修改门店总成交数失败");
+        }
+    }
 
 }
 

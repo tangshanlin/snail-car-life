@@ -16,7 +16,7 @@ import javax.validation.constraints.NotNull;
 @Data
 @ApiModel(value = "通过地址id查询地址的参数")
 public class SlectAddressByAdressIdParam {
-    @ApiModelProperty(value = "地址ID")
-    @NotNull
+    @ApiModelProperty(value = "地址ID",example = "1")
+    @NotNull(message = "地址id不能为空")
     private Integer addressId;
 }

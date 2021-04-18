@@ -7,6 +7,7 @@ import com.woniu.car.order.model.param.UseCodeVo;
 import com.woniu.car.order.model.param.UserVo;
 import com.woniu.car.order.web.entity.CarserviceOrder;
 import org.aspectj.weaver.ast.Or;
+import org.checkerframework.checker.units.qual.C;
 
 import java.io.InputStream;
 import java.util.List;
@@ -125,4 +126,13 @@ public interface CarserviceOrderService extends IService<CarserviceOrder> {
     
     public Boolean updateCarserviceOrderStatusByUseCode(UseCodeVo useCodeVo);
 
+
+    /**
+     * @Author WangPeng
+     * @Description TODO 查询所有服务订单
+     * @Date  10:32
+     * @Param []
+     * @return com.woniu.car.order.web.entity.CarserviceOrder
+     **/
+    public List<CarserviceOrder> findAllCarserviceOrder();
 }

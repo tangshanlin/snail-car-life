@@ -17,35 +17,35 @@ import java.math.BigDecimal;
  */
 @Data
 public class AddCarServiceParam {
-    @NotNull
+    @NotNull(message = "twoClassifyId不能为空")
     @ApiModelProperty(value = "关联二级分类id",example = "2")
     private Integer twoClassifyId;
 
-    @NotNull
+    @NotNull(message = "shopId不能为空")
     @ApiModelProperty(value = "关联门店id",example = "1")
     private Integer shopId;
 
-    @NotNull
+    @NotNull(message = "carServiceName不能为空")
     @ApiModelProperty(value = "服务名称",example = "标准洗车")
     private String carServiceName;
 
-    @NotNull
+    @NotNull(message = "carServicePrice不能为空")
     @ApiModelProperty(value = "服务价格",example = "54")
     private BigDecimal carServicePrice;
 
-    @NotNull
+    @NotNull(message = "carServiceImage不能为空")
     @ApiModelProperty(value = "服务图片")
-    private MultipartFile[] carServiceImage;
+    private String carServiceImage;
 
-    @NotNull
+    @NotNull(message = "carServiceIntroduce不能为空")
     @ApiModelProperty(value = "服务介绍",example = "标准清洗汽车")
     private String carServiceIntroduce;
 
-    @NotNull
+    @NotNull(message = "carServiceInfo不能为空")
     @ApiModelProperty(value = "服务详情")
-    private MultipartFile[] carServiceInfo;
+    private String carServiceInfo;
 
-    @NotNull
+    @NotNull(message = "carServiceType不能为空")
     @ApiModelProperty(value = "适用车型",example = "五座")
     private String carServiceType;
 }
