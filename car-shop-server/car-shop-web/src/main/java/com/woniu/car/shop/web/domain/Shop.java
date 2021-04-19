@@ -70,13 +70,13 @@ public class Shop implements Serializable {
       private Integer shopOrderNumber;
 
       @ApiModelProperty(value = "总评分（从成交总评分/总成交数）")
-      private Integer shopGrade;
+      private Double shopGrade;
 
       @ApiModelProperty(value = "提成比例")
       private Double shopProportion;
 
       @ApiModelProperty(value = "联系电话")
-      private Long shopTel;
+      private String shopTel;
 
       @ApiModelProperty(value = "余额")
       private BigDecimal shopBalance;

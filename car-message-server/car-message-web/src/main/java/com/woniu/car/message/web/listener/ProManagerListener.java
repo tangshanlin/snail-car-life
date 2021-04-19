@@ -17,7 +17,7 @@ import org.springframework.stereotype.Component;
 public class ProManagerListener implements RocketMQListener<ResultEntity> {
     @Override
     public void onMessage(ResultEntity message) {
-        System.out.println("用户投诉信息来了");
+        System.out.println("用户投诉信息来了消费者");
         System.out.println(message.getMessage());
         System.out.println(message.getData());
     }

@@ -1,12 +1,11 @@
 package com.woniu.car.shop.web.service;
 
 import com.woniu.car.shop.model.dtoVo.*;
-import com.woniu.car.shop.model.paramVo.AddShopParamVo;
-import com.woniu.car.shop.model.paramVo.FindShopByClassParamVo;
-import com.woniu.car.shop.model.paramVo.FindShopInfoByMeLngLat;
-import com.woniu.car.shop.model.paramVo.ShopIdParamVo;
+import com.woniu.car.shop.model.paramVo.*;
+import com.woniu.car.shop.web.domain.EsShopWoniuCar;
 import com.woniu.car.shop.web.domain.Shop;
 import com.baomidou.mybatisplus.extension.service.IService;
+import org.springframework.data.elasticsearch.core.SearchHits;
 
 import java.util.List;
 
@@ -21,7 +20,7 @@ import java.util.List;
  */
 public interface ShopService extends IService<Shop> {
 
-    int addShopParamVo(AddShopParamVo addShopParamVo);
+    void addShopParamVo(AddShopParamVo addShopParamVo);
 
     FindShopInfoVo findShopInfo(ShopIdParamVo shopId);
 
@@ -29,7 +28,7 @@ public interface ShopService extends IService<Shop> {
 
     List<FindShopByIntegralDtoVo> findShopByIntegral();
 
-    List<FindShopInfoAll> findShopInfoAll(FindShopInfoByMeLngLat meLngLat);
+    SearchHits<EsShopWoniuCar> findShopInfoAll(FindShopInfoByMeLngLat meLngLat);
 
     ShopNameDtoVo getShopNameByShopId(ShopIdParamVo shopIdParamVo);
 
@@ -40,4 +39,8 @@ public interface ShopService extends IService<Shop> {
     List<FindShopInfoByStateDtoVo> listShopInfoByState();
 
     Integer updateShopAccountStart(ShopIdParamVo shopId);
+
+    Boolean updateShopGrade(AmendShopGradeByShopIdParamVo amendShopGradeByShopIdParamVo);
+
+    Boolean updateShopOrderNumber(ShopIdParamVo shopIdParamVo);
 }

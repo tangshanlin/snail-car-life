@@ -46,6 +46,7 @@ public class GlobalExceptionHandler {
     }
 
 
+
     /**
      * @Author Lints
      * @Date 2021/4/6/006 12:18
@@ -55,13 +56,13 @@ public class GlobalExceptionHandler {
      * @Since version-1.0
      */
 
-    /*@ExceptionHandler(Exception.class)
-    @ResponseStatus(code = HttpStatus.INTERNAL_SERVER_ERROR )
-    public ResultEntity<?> MySystemException(Exception e){
-       // e.printStackTrace();
-        System.out.println("全局异常");
-        return new ResultEntity<>(ResultEnum.RES_FAIL.getMessage(),ResultEnum.RES_FAIL.getCode());
-    }*/
+//    @ExceptionHandler(Exception.class)
+//    @ResponseStatus(code = HttpStatus.INTERNAL_SERVER_ERROR )
+//    public ResultEntity<?> MySystemException(Exception e){
+//       // e.printStackTrace();
+//        System.out.println("全局异常");
+//        return new ResultEntity<>(ResultEnum.RES_FAIL.getMessage(),ResultEnum.RES_FAIL.getCode());
+//    }
 
     @ExceptionHandler(MaxUploadSizeExceededException.class)
     @ResponseStatus(code = HttpStatus.INTERNAL_SERVER_ERROR )
@@ -77,12 +78,12 @@ public class GlobalExceptionHandler {
         return new ResultEntity<>("请求参数格式不合法",ResultEnum.RES_FAIL.getCode());
     }
 
-    /*@ExceptionHandler(NullPointerException.class)
+    @ExceptionHandler(NullPointerException.class)
     @ResponseStatus(code = HttpStatus.INTERNAL_SERVER_ERROR )
     public ResultEntity<?> NullPointerExceptionHandler(NullPointerException e){
         System.out.println("空指针异常"+e.getMessage());
         return new ResultEntity<>("空指针异常",ResultEnum.RES_FAIL.getCode());
-    }*/
+    }
 
     @ExceptionHandler(RemotingConnectException.class)
     @ResponseStatus(code = HttpStatus.INTERNAL_SERVER_ERROR )
@@ -115,6 +116,7 @@ public class GlobalExceptionHandler {
         System.out.println(e.getMessage());
         return new ResultEntity<>("参数不能为空",ResultEnum.RES_FAIL.getCode());
     }
+
 
 
 }

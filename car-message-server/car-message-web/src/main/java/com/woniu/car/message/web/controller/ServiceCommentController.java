@@ -1,6 +1,7 @@
 package com.woniu.car.message.web.controller;
 
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.woniu.car.commons.core.code.ConstCode;
 import com.woniu.car.commons.core.dto.ResultEntity;
@@ -10,8 +11,10 @@ import com.woniu.car.message.model.dto.UserInformation;
 import com.woniu.car.message.model.feign.CommentPageParam;
 import com.woniu.car.message.model.feign.ServiceTagNameLookCommentParam;
 import com.woniu.car.message.model.param.*;
+import com.woniu.car.message.web.domain.ServiceComment;
 import com.woniu.car.message.web.service.ServiceCommentService;
 import io.swagger.annotations.*;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.*;
 
@@ -29,12 +32,16 @@ import java.util.List;
 @RestController
 @RequestMapping("/service-comment")
 @Api(tags = "服务评论服务接口信息")
+@Slf4j
 public class ServiceCommentController {
 
     @Resource
     private ServiceCommentService serviceCommentService;
     @Resource
     private UserClient userClient;
+
+
+
 
     /**
      * 添加服务评论
@@ -203,6 +210,46 @@ public class ServiceCommentController {
         }
         return ResultEntity.buildPageListFailEntity(ServiceCommentDto.class).setMessage("根据门店编号查询某门店下面的所有评论失败");
     }
+
+    /**
+     * 查询某门店下面所有服务评论的总平分
+     */
+
+    @GetMapping("get_score_by_shop_id")
+    public Double getScoreByShopId(Integer shopId){
+        final QueryWrapper<ServiceComment> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("comment_shop_code",shopId);
+        final List<ServiceComment> serviceComments = serviceCommentService.list(queryWrapper);
+        if(!ObjectUtils.isEmpty(serviceComments)){
+            Double allscores=0.0;
+            Integer total=0;
+            for(ServiceComment comment:serviceComments){
+                if(comment.getCommentScore()!=null){
+                    allscores=allscores+comment.getCommentScore();
+                    total++;
+                }
+
+            }
+            return allscores*1.0/total;
+        }
+        log.info("没有人评论改门店，默认五星好评");
+        return 5.0D;
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

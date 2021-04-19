@@ -37,7 +37,7 @@ public class ShopFileUpload {
                             .bucket(bucketName)
                             .contentType(file[i].getContentType())
                             .stream(file[i].getInputStream(),file[i].getSize(),-1).build();
-                    minioClient.putObject(objectArgs);
+                    minioClient.putObject(objectArgs);//会报索引越界
                     images.add(endpoint+"/"+bucketName+"/"+fileName);
 
                 } catch (Exception e) {

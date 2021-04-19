@@ -8,6 +8,7 @@ import javax.validation.constraints.Future;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
+import java.util.Date;
 
 /**
  * Created with IntelliJ IDEA.
@@ -36,7 +37,7 @@ public class AddShopEarningsInfoParamVo {
 
     @ApiModelProperty(value = "付款时间")
     @Future(message = "必须是一个将来的日期")
-    private Long payTime;//付款时间
+    private Date payTime;//付款时间
 
     @ApiModelProperty(value = "优惠券类别id")
     @Min(value = 1,message = "优惠券类别id必须大于等于1")

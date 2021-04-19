@@ -30,8 +30,9 @@ public class ProductTagNameLookCommentParam implements Serializable {
     /**
      * 商品编号
      */
-    @ApiModelProperty(value = "商品编号")
+    @ApiModelProperty(value = "商品编号",example = "1")
     @NotNull(message="商品编号不能为空")
     private Integer productCode;
+
 
 }

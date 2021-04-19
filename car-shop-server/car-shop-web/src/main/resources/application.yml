@@ -3,7 +3,18 @@ server:
   servlet:
     context-path: /shop
 
+feign:
+  client:
+    config:
+      default:
+        connect-timeout: 10000
+        read-timeout: 10000
+
 spring:
+  elasticsearch:
+    rest:
+      uris:
+        - http://localhost:9200
   main:
     allow-bean-definition-overriding: true
   datasource:

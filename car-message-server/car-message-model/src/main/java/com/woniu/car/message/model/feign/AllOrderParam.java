@@ -1,5 +1,6 @@
 package com.woniu.car.message.model.feign;
 
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
@@ -14,7 +15,13 @@ import lombok.experimental.Accessors;
 @Accessors(chain = true)
 public class AllOrderParam {
 
-    public com.woniu.car.message.model.feign.CarserviceOrder CarserviceOrder;
+    public CarserviceOrder CarserviceOrder;
 
     public PowerplantOrder powerplantOrder;
+
+    public ProductOrder productOrder;
+
+
+
+
 }

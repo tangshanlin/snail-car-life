@@ -12,7 +12,7 @@ import java.io.Serializable;
 @ApiModel(value = "电站标签名字参数信息")
 public class SeviceNameCommentParam implements Serializable {
 
-    @ApiModelProperty(value = "门店编号")
+    @ApiModelProperty(value = "门店编号",example = "1")
     @NotNull(message="门店编号名字不能为空")
     private Integer shopId;
 

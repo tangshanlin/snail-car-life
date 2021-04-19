@@ -21,22 +21,6 @@ import java.io.Serializable;
 @EqualsAndHashCode(callSuper = false)
 @ApiModel(value = "添加商品评论参数信息")
 public class ProductCommentParam implements Serializable {
-    /**
-     * 评论用户id
-     */
-    @ApiModelProperty(value = "用户编号,token中获取")
-    private Integer commentUserId;
-    /**
-     * 评论用户名字
-     */
-    @ApiModelProperty(value = "用户名字，其他地方中获取")
-    private String commentName;
-
-    /**
-     * 商品评论人头像
-     */
-    @ApiModelProperty(value = "用户名字，其他地方中获取")
-    private String commentUrl;
 
     /**
      * 商品评论评分
@@ -44,7 +28,7 @@ public class ProductCommentParam implements Serializable {
 
     @NotNull(message = "商品评论评分不能为空")
     @Range(min = 1, max = 5, message = "该值的取值范围为1-5之间")
-    @ApiModelProperty("商品评论评分")
+    @ApiModelProperty(value = "商品评论评分",example = "1")
     private Integer commentScore;
     /**
      * 商品评论内容
@@ -63,7 +47,7 @@ public class ProductCommentParam implements Serializable {
     /**
      * 商品评论商品编号
      */
-    @ApiModelProperty(value = "商品评论商品编号")
+    @ApiModelProperty(value = "商品评论商品编号",example = "1")
     @NotNull(message="商品评论商品编号不能为空")
     private Integer productCode;
 

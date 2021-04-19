@@ -5,15 +5,19 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.woniu.car.commons.core.code.ConstCode;
 import com.woniu.car.commons.core.dto.ResultEntity;
+import com.woniu.car.commons.web.util.BeanCopyUtil;
 import com.woniu.car.message.client.UserClient;
 import com.woniu.car.message.model.dto.ProductCommentDto;
 import com.woniu.car.message.model.dto.UserInformation;
+//import com.woniu.car.message.model.es.ProductCommentEs;
 import com.woniu.car.message.model.feign.CommentPageParam;
 import com.woniu.car.message.model.param.*;
 import com.woniu.car.message.web.domain.GoodProduct;
 import com.woniu.car.message.web.service.GoodProductService;
 import com.woniu.car.message.web.service.ProductCommentService;
 import io.swagger.annotations.*;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
 import org.springframework.util.ObjectUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -43,6 +47,9 @@ public class ProductCommentController {
     private GoodProductService goodProductService;
     @Resource
     private UserClient userClient;
+
+//    @Autowired
+//    private ElasticsearchOperations operations;
     /**
      * @Author Lints
      * @Date 2021/4/5/005 18:05
@@ -86,7 +93,6 @@ public class ProductCommentController {
             return new ResultEntity<>().buildSuccessEntity().setMessage("添加商品评价成功");
         }
         return new ResultEntity<>().buildFailEntity().setMessage("添加评价失败");
-
     }
 
    /**
@@ -134,22 +140,16 @@ public class ProductCommentController {
             @ApiResponse(code = 200,message = "查询自己的所有评论成功"),
             @ApiResponse(code=500,message = "查询自己的所有评论失败")
     })
-    @ApiImplicitParams({
-            //dataType:参数类型
-            //paramType:参数由哪里获取     path->从路径中获取，query->?传参，body->ajax请求
-            @ApiImplicitParam(name = "userId",value = "用户编号",dataType = "Integer",paramType = "path",example = "1"),
-    })
-    public ResultEntity<List<ProductCommentDto>> findMyselfProductComment(@Validated UserIdParam userId){
-//        UserInformation data = userClient.selectUerInformation().getData();
-//        if(!ObjectUtils.isEmpty(data)){
-//            Integer userId = data.getUserId();
-//
-//        }
-        if (!ObjectUtils.isEmpty(userId)){
-            List<ProductCommentDto> productComments=productCommentService.lookUserPComments(userId.getUserId());
-            if (!ObjectUtils.isEmpty(productComments)){
-                return ResultEntity.buildListSuccessEntity(ProductCommentDto.class).setMessage("查询自己的所有评论成功")
-                        .setData(productComments);
+    public ResultEntity<List<ProductCommentDto>> findMyselfProductComment(){
+        UserInformation data = userClient.selectUerInformation().getData();
+        if(!ObjectUtils.isEmpty(data)){
+            Integer userId = data.getUserId();
+            if (!ObjectUtils.isEmpty(userId)){
+                List<ProductCommentDto> productComments=productCommentService.lookUserPComments(userId);
+                if (!ObjectUtils.isEmpty(productComments)){
+                    return ResultEntity.buildListSuccessEntity(ProductCommentDto.class).setMessage("查询自己的所有评论成功")
+                            .setData(productComments);
+                }
             }
         }
         return ResultEntity.buildListFailEntity(ProductCommentDto.class).setMessage("查询自己的所有评论失败");
@@ -185,6 +185,26 @@ public class ProductCommentController {
         return ResultEntity.buildListFailEntity(ProductCommentDto.class).setMessage("查询某商品的所有评论失败");
     }
 
+    @GetMapping("/get_good_product_conception")
+    public ResultEntity<String> getgetGoodProduct(Integer productId){
+        QueryWrapper<GoodProduct> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("product_id",productId);
+        GoodProduct goodProduct = goodProductService.getOne(queryWrapper);
+        if(!ObjectUtils.isEmpty(goodProduct)){
+            Integer productNums = goodProduct.getProductNums();
+            Integer productGoodNum = goodProduct.getProductGoodNum();
+            double goodProbability=productGoodNum*1.0/productNums*100;
+            System.out.println("好评率=====>>>>>>>"+goodProbability+"%");
+            return ResultEntity.buildSuccessEntity(String.class).setMessage("查询商品好评率成功")
+                    .setData(goodProbability+"%");
+
+        }
+        return ResultEntity.buildFailEntity(String.class).setMessage("查询商品好评率失败");
+    }
+
+
+
+
     /* *
      * @Author Lints
      * @Date 2021/4/5/005 18:53
@@ -196,7 +216,7 @@ public class ProductCommentController {
     @GetMapping("/find_all_product_comment_by_tag_name")
     @ApiOperation(value = "查询某商品的所有评论",notes = "<span style='color:red;'>用来查询某商品的所有评论的接口</span>")
     @ApiResponses({
-            @ApiResponse(code = 200,message = "98.31%"),
+            @ApiResponse(code = 200,message = "根据标签查询该商品的评论成功"),
             @ApiResponse(code=1606,message = "没有该商品标签的评论"),
             @ApiResponse(code=500,message = "根据标签查询该商品的评论失败"),
     })
@@ -210,15 +230,7 @@ public class ProductCommentController {
         if (!ObjectUtils.isEmpty(tagName)){
             List<ProductCommentDto> productCommentDtos=productCommentService.lookAllProductCommentsByTagName(tagName);
             if (!ObjectUtils.isEmpty(productCommentDtos)){
-                //信息中直接展示好评率,展示给前端
-                QueryWrapper<GoodProduct> queryWrapper = new QueryWrapper<>();
-                queryWrapper.eq("product_id",tagName.getProductCode());
-                GoodProduct goodProduct = goodProductService.getOne(queryWrapper);
-                Integer productNums = goodProduct.getProductNums();
-                Integer productGoodNum = goodProduct.getProductGoodNum();
-                double goodProbability=productGoodNum*1.0/productNums*100;
-                System.out.println("好评率=====>>>>>>>"+goodProbability+"%");
-                return ResultEntity.buildListSuccessEntity(ProductCommentDto.class).setMessage(goodProbability+"%")
+                return ResultEntity.buildListSuccessEntity(ProductCommentDto.class).setMessage("根据标签查询该商品的评论成功")
                         .setData(productCommentDtos);
             }else{
                 return ResultEntity.buildListFailEntity(ProductCommentDto.class).setMessage("没有该商品标签的评论")
@@ -237,7 +249,6 @@ public class ProductCommentController {
      * @Since version-1.0
      */
     @GetMapping("/api/find_all_product_comment_by_product_id")
-
     @ApiOperation(value = "后台的",notes = "<span style='color:red;'>后台接口</span>")
     public ResultEntity<IPage<ProductCommentDto>> findSomeProductsProductComment(CommentPageParam pageParam){
         if (!ObjectUtils.isEmpty(pageParam)){

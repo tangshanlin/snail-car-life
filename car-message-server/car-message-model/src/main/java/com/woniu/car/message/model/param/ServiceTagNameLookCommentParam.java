@@ -28,7 +28,7 @@ public class ServiceTagNameLookCommentParam implements Serializable {
     /**
      * 服务编号
      */
-    @ApiModelProperty(value = "服务编号")
+    @ApiModelProperty(value = "服务编号",example = "1")
     @NotNull(message="服务编号不能为空")
     private Integer serviceCode;
 

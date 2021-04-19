@@ -19,5 +19,5 @@ public class FindShopInfoByStateDtoVo {
     private String shopAddress;//门店地址
     private Integer shopClass;//所属类型（0非4s 1是4s店）
     private String shopBrand;//所属品牌
-    private Long shopTel;//联系电话
+    private String shopTel;//联系电话
 }

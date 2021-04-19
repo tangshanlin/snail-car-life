@@ -12,7 +12,7 @@ import java.io.Serializable;
 public class PowerIdParam  implements Serializable {
 
     @NotNull(message = "电站id不能为空")
-    @ApiModelProperty(value = "电站id")
+    @ApiModelProperty(value = "电站id",example = "1")
     private Integer powerId;
 
 

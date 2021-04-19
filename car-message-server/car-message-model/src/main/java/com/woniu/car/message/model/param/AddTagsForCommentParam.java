@@ -22,7 +22,7 @@ public class AddTagsForCommentParam implements Serializable {
     /**
      * 一系列标签编号
      */
-    @ApiModelProperty(value = "遍历出来的标签编号")
+    @ApiModelProperty(value = "遍历出来的标签编号",example = "[2,3]")
     @NotNull(message = "标签选择不能为空")
     private Integer[] tagId;
 
