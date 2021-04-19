@@ -1,6 +1,7 @@
 package com.woniu.car.user.web.controller;
 
 
+import cn.hutool.Hutool;
 import cn.hutool.core.util.RandomUtil;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -11,7 +12,10 @@ import com.woniu.car.commons.core.exception.CarException;
 import com.woniu.car.user.dto.MsgParam;
 import com.woniu.car.user.param.*;
 import com.woniu.car.user.web.domain.User;
+import com.woniu.car.user.web.domain.UserInformation;
+import com.woniu.car.user.web.service.UserInformationService;
 import com.woniu.car.user.web.service.UserService;
+import com.woniu.car.user.web.service.WalletService;
 import com.woniu.car.user.web.token.JwtToken;
 import com.woniu.car.user.web.util.GetTokenUtil;
 import com.woniu.car.user.web.util.JwtUtils;
@@ -28,6 +32,7 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
 import org.apache.shiro.crypto.hash.Md5Hash;
+import org.aspectj.weaver.ast.Var;
 import org.redisson.api.RedissonClient;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -63,7 +68,10 @@ public class UserController {
     private UserService userService;
     @Resource
     private RedisTemplate<Object, Object> redisTemplate;
-    private JwtToken jwtToken;
+
+    @Resource
+    private  UserInformationService userInformationService;
+
 
     @PostMapping("/register")
 
@@ -278,13 +286,9 @@ public class UserController {
 //            @ApiImplicitParam(name = "code", value = "用户填入的4位纯数字验证码", dataType = "String", paramType = "path", example = "15578491030"),
 //
 //    })
+    @Transactional(rollbackFor = Exception.class)
     public ResultEntity<String> checkByTel(@Valid LoginTelParam loginTelParam) {
-        //校验电话号码是否存在
-        User userDb = userService.getOne(new QueryWrapper<User>().eq("user_tel", loginTelParam.getUserTel()));
-        if (ObjectUtils.isEmpty(userDb)) {
-            return ResultEntity.buildEntity(String.class).setCode(ConstCode.CHECKTEL_SUCCESS).setFlag(false)
-                    .setMessage("用户电话号码不存在，请重新输入");
-        }
+
         //取出code 与redis的比较
         String userTel = loginTelParam.getUserTel();
         String code = loginTelParam.getCode();
@@ -292,19 +296,49 @@ public class UserController {
         System.out.println(codeDb);
         if (code.equals(codeDb)) {
 
+
             //校验成功
+            //校验电话号码是否存在
+            User userDb = userService.getOne(new QueryWrapper<User>().eq("user_tel", loginTelParam.getUserTel()));
+
+            if (ObjectUtils.isEmpty(userDb)) {
+                //如果不存在，则直创建一个账户
+                String userAccountReg;
+                while (true){
+                userAccountReg = RandomUtil.randomString(6);
+                    User user_account = userService.getOne(new QueryWrapper<User>().eq("user_account",userAccountReg));
+                    if (ObjectUtils.isEmpty(user_account))
+                        break;
+                }
+
+                User userReg = new User();
+                userReg.setUserTel(userTel);
+                userReg.setUserAccount(userAccountReg);
+
+                userService.save(userReg);
+                UserInformation userInformation = new UserInformation();
+                userInformation.setUserTel(userTel);
+                userInformation.setUserName(userAccountReg);
+                //和前端沟通 头像写死
+                userInformation.setUserImage("https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fpic.soutu123.cn%2Felement_origin_min_pic%2F01%2F54%2F05%2F335746fd1e7f644.jpg%21%2Ffw%2F700%2Fquality%2F90%2Funsharp%2Ftrue%2Fcompress%2Ftrue&refer=http%3A%2F%2Fpic.soutu123.cn&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=jpeg?sec=1620364494&t=853cc8f45366a9ec51424cf84e72b5bd");
+                userInformationService.save(userInformation);
+
+                return ResultEntity.buildEntity(String.class).setCode(ConstCode.REGISTER_SUCCESS).setFlag(false)
+                        .setMessage("用户电话号码注册成功");
+            }
             //登陆成功存Jwttoken
             //与数据库校验成功，创建jwttoken
+            User userDb2 = userService.getOne(new QueryWrapper<User>().eq("user_tel", loginTelParam.getUserTel()));
             Map<String, String> tokenmap = new LinkedHashMap<>();
-            tokenmap.put("userAccount", userDb.getUserAccount());
-            tokenmap.put("userId", userDb.getUserId().toString());
+            tokenmap.put("userAccount", userDb2.getUserAccount());
+            tokenmap.put("userId", userDb2.getUserId().toString());
             String s = JwtUtils.careatToken(tokenmap);
             System.out.println("加密后的token" + s);
             //记录本次的登陆时间
             long l = System.currentTimeMillis();
             userDb.setUserLastLoginTime(l);
-            System.out.println(userDb);
-            boolean b = userService.updateById(userDb);
+            System.out.println(userDb2);
+            boolean b = userService.updateById(userDb2);
             if (b)
                 return ResultEntity.buildEntity(String.class).setCode(ConstCode.LOGIN_SUCCESS).setFlag(true).setMessage("登陆成功").setData(s);
         }
@@ -372,7 +406,7 @@ public class UserController {
 
     //修改密码
     @PutMapping("/update_user")
-    @ApiOperation(value = "账户密码及电话号码修改接口", notes = "<span style='color:red;'>用来账户密码及电话号码修改接口,需要接受手机验证码</span>")
+    @ApiOperation(value = "账户密码修改接口", notes = "<span style='color:red;'>用来账户密码修改接口,需要接受手机验证码</span>")
     @ApiResponses({
             @ApiResponse(code = 1314, message = "修改成功"),
             @ApiResponse(code = 1315, message = "修改失败，请重试")
@@ -429,7 +463,36 @@ public class UserController {
         return ResultEntity.buildEntity().setCode(ConstCode.UPDATEUSER_FAIL).setFlag(false).setMessage("修改失败，请重试");
 
     }
+    @DeleteMapping("/delete_user")
+    @ApiOperation(value = "用户注销接口", notes = "<span style='color:red;'>用来执行用户注销接口</span>")
+    @ApiResponses({
+            @ApiResponse(code = 1384,message = "注销用户成功"),
+            @ApiResponse(code = 1385,message = "注销用户失败")
+    })
+    public ResultEntity deleteUser(DeleteUserParam deleteUserParam){
+        //从token李获取userid
+        Integer userId = GetTokenUtil.getUserId();
+        User userDb = userService.getById(userId);
+        if (ObjectUtils.isEmpty(deleteUserParam)){
 
+
+        if (!ObjectUtils.isEmpty(userDb)){
+            if (userDb.getUserPassword().equals(deleteUserParam.getUserPassword())){
+                //校验成功开始删除
+                boolean b = userService.removeById(userId);
+                if (b){
+                    //删除关联的表
+                    boolean remove = userInformationService.remove(new QueryWrapper<UserInformation>().eq("user_id", userId));
+                    if (remove) return ResultEntity.buildSuccessEntity().setCode(ConstCode.DELETEUSER_SUCESS).setFlag(true)
+                            .setMessage("删除用户成功");
+                    throw new CarException("删除用户失败",500);
+                }
+            }
+        }
+        throw  new CarException("未登陆，请登陆后执行该操作",500);
+
+    } throw new CarException("输入参数错误",500);
+    }
 
 }
 
