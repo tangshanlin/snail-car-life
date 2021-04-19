@@ -70,8 +70,16 @@ seata:
   elasticsearch:
     rest:
       uris:
-        - http://192.168.10.71:5601/:9200
+        - http://47.108.133.10:9200
 # minio 参数配置
 minio:
   endpoint: http://119.23.75.195:9000
   bucketName: user
+# redis
+
+#    redis:
+#      host: 47.108.133.10
+#      port: 6379
+redis:
+  host: 47.108.133.10
+  port: 6379
