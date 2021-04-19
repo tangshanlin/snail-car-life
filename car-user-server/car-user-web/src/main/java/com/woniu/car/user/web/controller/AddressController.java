@@ -201,7 +201,7 @@ public class AddressController {
         //从jwt中获取userId；
         Integer userId = GetTokenUtil.getUserId();
 
-        if (ObjectUtils.isEmpty(userId)){
+        if (!ObjectUtils.isEmpty(userId)){
 
 
             //根据userid查询账户

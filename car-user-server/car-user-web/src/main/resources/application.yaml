@@ -34,6 +34,9 @@ spring:
     nacos:
       discovery:
         server-addr: localhost:8848
+  redis:
+    host: 47.108.133.10
+    port: 6399
 
 ## seat 配置
 #seata:
@@ -80,6 +83,3 @@ minio:
 #    redis:
 #      host: 47.108.133.10
 #      port: 6379
-redis:
-  host: 47.108.133.10
-  port: 6379

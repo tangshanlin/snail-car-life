@@ -21,6 +21,7 @@ import com.woniu.car.user.web.util.GetTokenUtil;
 import com.woniu.car.user.web.util.JwtUtils;
 import io.swagger.annotations.*;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.http.HttpEntity;
 import org.apache.http.ParseException;
 import org.apache.http.client.ClientProtocolException;
@@ -52,6 +53,7 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * <p>
+ *
  * 用户表 前端控制器
  * </p>
  *
@@ -62,12 +64,13 @@ import java.util.concurrent.TimeUnit;
 
 @Api(tags = "用户服务接口")
 @RequestMapping("/user")
+@Slf4j
 
 public class UserController {
     @Resource
     private UserService userService;
     @Resource
-    private RedisTemplate<Object, Object> redisTemplate;
+    private RedisTemplate redisTemplate;
 
     @Resource
     private  UserInformationService userInformationService;
@@ -203,7 +206,10 @@ public class UserController {
            l++;
            redisTemplate.opsForValue().set("com:woniu:car:user-server:car-user-web:sendcode:" + userTel+":number",l,24,TimeUnit.HOURS);
            redisTemplate.opsForValue().set("com:woniu:car:user-server:car-user-web:sendcode:" + userTel+":time",l,60,TimeUnit.SECONDS);
-
+//           redisTemplate.opsForHash().put("com:woniu:car:user-server:car-user-web:sendcode:" + userTel+":number",userTel,l);
+//           redisTemplate.expire("com:woniu:car:user-server:car-user-web:sendcode:" + userTel+":number", 24, TimeUnit.HOURS);
+//           redisTemplate.opsForHash().put("com:woniu:car:user-server:car-user-web:sendcode:" + userTel+":time",userTel,l);
+//           redisTemplate.expire("com:woniu:car:user-server:car-user-web:sendcode:" + userTel+":time", 60, TimeUnit.SECONDS);
        }else {
 
            Integer number = Integer.valueOf(o1.toString());
@@ -247,6 +253,7 @@ public class UserController {
                 System.out.println("响应内容为:" +
                         EntityUtils.toString(responseEntity));
                 redisTemplate.opsForValue().set("com:woniu:car:user-server:car-user-web:sendcode:" + userTel+":code", i, 15, TimeUnit.MINUTES);
+
             }
         } catch (ClientProtocolException e) {
             e.printStackTrace();
@@ -292,9 +299,11 @@ public class UserController {
         //取出code 与redis的比较
         String userTel = loginTelParam.getUserTel();
         String code = loginTelParam.getCode();
-        String codeDb = (String) redisTemplate.opsForValue().get("car:user-server:car-user-web:sendcode:" + userTel);
+        log.info("传入参数"+"userTel:"+userTel+"code:"+code);
+        String codeDb = (String) redisTemplate.opsForValue().get("com:woniu:car:user-server:car-user-web:sendcode:" + userTel+":code");
         System.out.println(codeDb);
         if (code.equals(codeDb)) {
+            log.info("code校验成功");
 
 
             //校验成功
@@ -303,11 +312,13 @@ public class UserController {
 
             if (ObjectUtils.isEmpty(userDb)) {
                 //如果不存在，则直创建一个账户
+                log.info("手机号不存在，根据手机号创建账号");
                 String userAccountReg;
                 while (true){
                 userAccountReg = RandomUtil.randomString(6);
                     User user_account = userService.getOne(new QueryWrapper<User>().eq("user_account",userAccountReg));
                     if (ObjectUtils.isEmpty(user_account))
+                        log.info(userAccountReg);
                         break;
                 }
 
@@ -321,10 +332,13 @@ public class UserController {
                 userInformation.setUserName(userAccountReg);
                 //和前端沟通 头像写死
                 userInformation.setUserImage("https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fpic.soutu123.cn%2Felement_origin_min_pic%2F01%2F54%2F05%2F335746fd1e7f644.jpg%21%2Ffw%2F700%2Fquality%2F90%2Funsharp%2Ftrue%2Fcompress%2Ftrue&refer=http%3A%2F%2Fpic.soutu123.cn&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=jpeg?sec=1620364494&t=853cc8f45366a9ec51424cf84e72b5bd");
-                userInformationService.save(userInformation);
+                boolean save = userInformationService.save(userInformation);
+                if (save){
+                    return ResultEntity.buildEntity(String.class).setCode(ConstCode.REGISTER_SUCCESS).setFlag(false)
+                            .setMessage("用户电话号码注册成功");
+                }
 
-                return ResultEntity.buildEntity(String.class).setCode(ConstCode.REGISTER_SUCCESS).setFlag(false)
-                        .setMessage("用户电话号码注册成功");
+
             }
             //登陆成功存Jwttoken
             //与数据库校验成功，创建jwttoken
