@@ -91,6 +91,10 @@ public class MycarController {
             //校验成功添加
             Mycar mycar = BeanCopyUtil.copyOne(addMycarParam, Mycar::new);
             mycar.setUserId(userIdToken);
+            if (addMycarParam.getMycarImage()==null){
+                mycar.setMycarImage("https://z3.ax1x.com/2021/04/14/c6gVrq.png");
+            }
+
             boolean save = mycarService.save(mycar);
             if(save) return ResultEntity.buildEntity().setCode(ConstCode.ADDMYCAR_SUCCESS).setFlag(true)
                     .setMessage("添加我的爱车信息成功");
@@ -151,12 +155,13 @@ public class MycarController {
 //    })
     public ResultEntity deleteMycar(@RequestBody @Valid DeleteMycarParam deleteMycarParam){
         Integer mycarId = deleteMycarParam.getMycarId();
-        Integer userId = deleteMycarParam.getUserId();
-        if (mycarId!=null&userId!=null){
+
+        if (mycarId!=null){
             //从jwt中获取userid
             Integer userIdToken = GetTokenUtil.getUserId();
             //校验
-            if (userId==userIdToken){
+            Mycar mycarDb = mycarService.getOne(new QueryWrapper<Mycar>().eq("mycar_id", mycarId));
+            if (mycarDb.getUserId().equals(userIdToken)){
                 //校验成功
                 //执行删除
                 boolean b = mycarService.removeById(mycarId);

@@ -186,6 +186,14 @@ public class ConstCode {
     public static final Integer SELECTSCORE_FAIL=1383;
     /*查询积分日志成功*/
     public static final Integer SELECTSCORE_SUCESS=1382;
+    /*删除用户成功*/
+    public static final Integer DELETEUSER_SUCESS=1384;
+    /*删除用户失败*/
+    public static final Integer DELETEUSER_FAIL=1385;
+    /*上传用户头像成功*/
+    public static final Integer UPLOADUSERIMAGE_SUCESS=1386;
+    /*上传用户头像失败*/
+    public static final Integer UPLOADUSERIMAGE_FAIL=1387;
 
 
    /*输入参数错误*/

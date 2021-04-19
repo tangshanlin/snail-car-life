@@ -75,6 +75,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
                 User userDb = userMapper.selectOne(new QueryWrapper<User>().eq("user_tel", user.getUserTel()));
                 userInformation.setUserId(userDb.getUserId());
                 userInformation.setUserTel(userDb.getUserTel());
+                //默认昵称为用户帐户
+                userInformation.setUserName(registerParam.getUserAccount());
                 int insert1 = userInformationMapper.insert(userInformation);
               return insert1;
             }

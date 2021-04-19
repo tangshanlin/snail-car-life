@@ -14,4 +14,6 @@ import org.springframework.web.multipart.MultipartFile;
 public class UpdateUserInformationImageParam {
     private MultipartFile file;
 
-}
+
+    }
+

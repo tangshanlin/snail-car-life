@@ -6,7 +6,9 @@ import com.baomidou.mybatisplus.annotation.TableLogic;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+import net.bytebuddy.implementation.bind.annotation.Empty;
 
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
 /**
@@ -23,16 +25,17 @@ public class AddMycarParam {
 //    @NotNull(message = "")
 //    private Integer userId;
 
-    @ApiModelProperty(value = "车型id")
+    @ApiModelProperty(value = "车型id",example = "7173")
     @NotNull(message = "车型id不能为空")
     private Integer cartypeId;
 
     @ApiModelProperty(value = "车品牌")
-    @NotNull
+    @NotEmpty(message = "车品牌不能为空")
     private String mycarBrand;
 
     @ApiModelProperty(value = "款型")
-    @NotNull
+    @NotEmpty(message = "款型不能为空")
+
     private String mycarType;
 
 
@@ -49,11 +52,11 @@ public class AddMycarParam {
     private String mycarCode;
 
     @ApiModelProperty(value = "生产年份")
-    @NotNull
+    @NotEmpty(message = "生产年份不能为空")
     private String mycarProductionDate;
 
     @ApiModelProperty(value = "发动机排量")
-    @NotNull
+    @NotEmpty(message = "发动机排量不能为空")
     private String mycarEngineCapacity;
 
     @ApiModelProperty(value = "上路时间")

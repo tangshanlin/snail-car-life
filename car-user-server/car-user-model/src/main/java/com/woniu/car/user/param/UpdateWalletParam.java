@@ -4,6 +4,7 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 
@@ -19,6 +20,10 @@ import java.math.BigDecimal;
 public class UpdateWalletParam {
 
 
-    @ApiModelProperty(value = "钱包密码")
-    private String walletPassword;
+    @ApiModelProperty(value = "钱包旧密码")
+    @NotEmpty(message = "钱包旧密码不能为空")
+    private String walletOldPassword;
+    @ApiModelProperty(value = "钱包新密码")
+    @NotEmpty(message = "钱包新密码不能为空")
+    private String walletNewPassword;
 }

@@ -5,6 +5,7 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.sql.Blob;
 
@@ -21,11 +22,11 @@ public class AddDriverLicenseParam {
 
 
     @ApiModelProperty(value = "证件真实名")
-    @NotNull
+    @NotEmpty(message = "用户的真实姓名")
     private String userRelalName;
 
-    @ApiModelProperty(value = "证件号码")
-    @NotNull
+    @ApiModelProperty(value = "证件号码",example = "2233132131")
+    @NotNull(message = "证件号码不能为空")
     private Integer driverlicensePassportNo;
 
     @ApiModelProperty(value = "性别")
@@ -33,27 +34,26 @@ public class AddDriverLicenseParam {
     private Integer driverlicenseUserGender;
 
     @ApiModelProperty(value = "国籍")
-    @NotNull
-    private Blob driverlicenseNation;
-
+    @NotEmpty(message = "住址不能为空")
+    private String driverlicenseNation;
     @ApiModelProperty(value = "住址")
-    @NotNull
+    @NotEmpty
     private String driverlicenseAddress;
 
     @ApiModelProperty(value = "初次领证日期")
-    @NotNull
+    @NotEmpty
     private Long driverlicenseCreate;
 
     @ApiModelProperty(value = "准驾车型")
-    @NotNull
-    private Blob driverlicenseCartype;
+    @NotEmpty
+    private String driverlicenseCartype;
 
     @ApiModelProperty(value = "有效期开始时间")
-    @NotNull
+    @NotEmpty
     private Long driverlicenseStarttime;
 
     @ApiModelProperty(value = "有效结束日期")
-    @NotNull
+    @NotEmpty
     private Long driverlicenseEndtime;
 
 

@@ -14,7 +14,7 @@ import javax.validation.constraints.NotNull;
  */
 @Data
 public class SelectCarseirsParam {
-    @ApiModelProperty(value = "品牌ID")
+    @ApiModelProperty(value = "品牌ID",example = "65")
     @NotNull(message = "参数不能为空")
     private Integer CarbrandId;
 }

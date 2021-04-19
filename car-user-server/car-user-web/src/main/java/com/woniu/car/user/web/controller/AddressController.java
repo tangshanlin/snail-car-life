@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 import java.util.List;
 
 /**
@@ -160,8 +161,8 @@ public class AddressController {
     public ResultEntity selectByAddressId( @Valid SlectAddressByAdressIdParam selectAddressParam){
       //校验输入参数
         //从jwt中获取userId；
-//        Integer userId = GetTokenUtil.getUserId();
-        Integer userId =1;
+        Integer userId = GetTokenUtil.getUserId();
+
         //校验
         Address addressDb = addressService.getById(selectAddressParam.getAddressId());
         if (!ObjectUtils.isEmpty(addressDb)&addressDb.getUserId()==userId){
@@ -195,21 +196,19 @@ public class AddressController {
 //
 //
 //    })
-    public ResultEntity<List<Address>>selectByUserId( @Valid SelectAddressParam selectAddressParam){
+    public ResultEntity<List<Address>>selectByUserId( ){
         //校验输入参数
         //从jwt中获取userId；
-        String token = GetTokenUtil.getToken();
-        DecodedJWT decodeToken = JwtUtils.getDecodeToken(token);
-        Claim userId = decodeToken.getClaims().get("userId");
-        Integer userId2 = Integer.valueOf(userId.asString());
-        if (selectAddressParam!=null){
-            String userAccount = selectAddressParam.getUserAccount();
+        Integer userId = GetTokenUtil.getUserId();
+
+        if (ObjectUtils.isEmpty(userId)){
+
 
             //根据userid查询账户
-            User userDb = userService.getOne(new QueryWrapper<User>().eq("user_id", userId2));
-            if (!ObjectUtils.isEmpty(userDb)&userDb.getUserAccount().equals(userAccount)) {
+            User userDb = userService.getOne(new QueryWrapper<User>().eq("user_id", userId));
+            if (!ObjectUtils.isEmpty(userDb)) {
                 //校验成功
-                List<Address> addressList = addressService.list(new QueryWrapper<Address>().eq("user_id", userId2));
+                List<Address> addressList = addressService.list(new QueryWrapper<Address>().eq("user_id", userId));
                 return ResultEntity.buildListEntity(Address.class).setCode(ConstCode.SELECTADDRESS_SUCCESS).setFlag(true).setMessage("查询用户所有地址成功")
                         .setData(addressList);
 
@@ -248,18 +247,14 @@ public class AddressController {
     public ResultEntity updateAddress(@RequestBody @Valid UpdateAddress updateAddress){
       //校验@RequestBody
         //从jwt中获取userId；
-        String token = GetTokenUtil.getToken();
-        DecodedJWT decodeToken = JwtUtils.getDecodeToken(token);
-        Claim userId = decodeToken.getClaims().get("userId");
-        Integer userId2 = Integer.valueOf(userId.asString());
-        ;
-        Integer addressId = updateAddress.getAddressId();
+        Integer userId = GetTokenUtil.getUserId();
+        @NotNull Integer addressId = updateAddress.getAddressId();
         Address addresdb = addressService.getById(addressId);
-        if (addresdb.getUserId()==userId2){
+        if (addresdb.getUserId()==userId){
             //校验成功开始修改
 
             Address address = BeanCopyUtil.copyOne(updateAddress, Address::new);
-            address.setUserId(userId2);
+            address.setUserId(userId);
             boolean b = addressService.updateById(address);
             if (b) return ResultEntity.buildEntity().setCode(ConstCode.UPDATEADDRESS_SUCCESS).setFlag(true).setMessage("修改地址成功");
             return ResultEntity.buildEntity().setCode(ConstCode.UPDATEADDRESS_FAIL).setFlag(true)

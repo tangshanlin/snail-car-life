@@ -129,10 +129,10 @@ public class WalletController {
         Integer userId = GetTokenUtil.getUserId();
 
         Wallet walletDb = walletService.getOne(new QueryWrapper<Wallet>().eq("user_id",userId));
-        if (!ObjectUtils.isEmpty(walletDb)){
+        if (!ObjectUtils.isEmpty(walletDb)&&walletDb.getWalletPassword().equals(updateWalletParam.getWalletOldPassword())){
             //校验成功 进行修改
 
-            String walletPassword = updateWalletParam.getWalletPassword();
+            String walletPassword = updateWalletParam.getWalletNewPassword();
 
             if (walletPassword!=null){
                 walletDb.setWalletPassword(walletPassword);

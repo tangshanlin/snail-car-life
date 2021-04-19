@@ -17,11 +17,9 @@ import javax.validation.constraints.NotNull;
 @Data
 @ApiModel(value = "删除爱车的参数")
 public class DeleteMycarParam {
-    @ApiModelProperty(value = "我的车id")
-    @NotNull
+    @ApiModelProperty(value = "我的车id",example = "1")
+    @NotNull(message = "我的爱车id不能为空")
     private Integer mycarId;
 
-    @ApiModelProperty(value = "用户id")
-    @NotNull
-    private Integer userId;
+
 }

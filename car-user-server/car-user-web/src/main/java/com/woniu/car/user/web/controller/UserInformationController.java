@@ -4,18 +4,23 @@ package com.woniu.car.user.web.controller;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.woniu.car.commons.core.code.ConstCode;
 import com.woniu.car.commons.core.dto.ResultEntity;
+import com.woniu.car.commons.core.exception.CarException;
 import com.woniu.car.commons.web.util.BeanCopyUtil;
 
+import com.woniu.car.user.param.UpdateUserInformationImageParam;
 import com.woniu.car.user.param.UpdateUserinformationParam;
 import com.woniu.car.user.web.domain.UserInformation;
 import com.woniu.car.user.web.service.UserInformationService;
 import com.woniu.car.user.web.util.GetTokenUtil;
+import com.woniu.car.user.web.util.UserFileUpload;
 import io.swagger.annotations.*;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 import javax.validation.Valid;
+import java.util.ArrayList;
 
 /**
  * <p>
@@ -31,6 +36,9 @@ import javax.validation.Valid;
 public class UserInformationController {
     @Resource
     private UserInformationService userInformationService;
+    @Resource
+    private UserFileUpload userFileUpload;
+
 
     /*
      * @Author SuShanHu
@@ -99,7 +107,33 @@ public class UserInformationController {
         }
         return  ResultEntity.buildEntity().setCode(ConstCode.PARAM_ERROR).setFlag(false).setMessage("输入参数错误");
     }
+  @PutMapping("/update-image")
+  @ApiOperation(value = "更改用户头像接口",notes ="<span style='color:red;'>更改用户头像的接口</span>" )
+  @ApiResponses({
+          @ApiResponse(code = 1386,message = "头像更新成功"),
+          @ApiResponse(code = 1387,message = "头像更新失败")
+  })
+    public ResultEntity updateImage(@RequestBody @Valid UpdateUserInformationImageParam updateUserInformationImageParam){
+        //获取token中的userid
+      Integer userId = GetTokenUtil.getUserId();
+      if (ObjectUtils.isEmpty(userId)){
+          throw new CarException("未登陆，请登录后再上传头像",500);
+      }
+      UserInformation userInforDb = userInformationService.getOne(new QueryWrapper<UserInformation>().eq("user_id", userId));
 
+      MultipartFile[] multipartFiles = new MultipartFile[1];
+      multipartFiles[0]=updateUserInformationImageParam.getFile();
+      ArrayList<String> upload = userFileUpload.upload(multipartFiles);
+      String s = upload.get(0);
+      userInforDb.setUserImage(s);
+      boolean b = userInformationService.updateById(userInforDb);
+      if (b)
+          return ResultEntity.buildEntity().setCode(ConstCode.UPLOADUSERIMAGE_SUCESS).setFlag(true)
+          .setMessage("更新头像成功");
+
+      return ResultEntity.buildEntity().setCode(ConstCode.UPLOADUSERIMAGE_FAIL).setFlag(false)
+              .setMessage("更新头像失败");
+  }
 
 }
 

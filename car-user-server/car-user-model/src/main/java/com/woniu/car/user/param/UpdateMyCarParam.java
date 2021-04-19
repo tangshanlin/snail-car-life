@@ -22,7 +22,7 @@ public class UpdateMyCarParam {
     private Integer mycarId;
 
     @ApiModelProperty(value = "里程")
-    @NotNull(message = "")
+    @NotNull(message = "我的车里程")
     private Integer mycarKm;
 
 

@@ -16,10 +16,10 @@ import javax.validation.constraints.NotNull;
 @Data
 @ApiModel(value = "删除钱包的参数")
 public class DeleteWalletParam {
-    @ApiModelProperty(value = "用户id")
-    @NotNull
+    @ApiModelProperty(value = "用户id",example = "1")
+    @NotNull(message = "用户id不能为空")
     private Integer userId;
-    @ApiModelProperty(value = "钱包id")
-    @NotNull
+    @ApiModelProperty(value = "钱包id",example = "1")
+    @NotNull(message = "钱包id不能为空")
     private Integer walletId;
 }
