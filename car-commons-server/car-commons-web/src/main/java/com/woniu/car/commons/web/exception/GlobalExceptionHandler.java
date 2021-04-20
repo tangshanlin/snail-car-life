@@ -1,5 +1,7 @@
 package com.woniu.car.commons.web.exception;
 
+import com.auth0.jwt.exceptions.JWTVerificationException;
+import com.auth0.jwt.exceptions.TokenExpiredException;
 import com.woniu.car.commons.core.code.ResultEnum;
 import com.woniu.car.commons.core.dto.ResultEntity;
 import com.woniu.car.commons.core.exception.CarException;
@@ -116,7 +118,13 @@ public class GlobalExceptionHandler {
         System.out.println(e.getMessage());
         return new ResultEntity<>("参数不能为空",ResultEnum.RES_FAIL.getCode());
     }
+    @ExceptionHandler(JWTVerificationException.class)
+    @ResponseStatus(code = HttpStatus.INTERNAL_SERVER_ERROR )
+    public ResultEntity<?> JWTVerificationException(TokenExpiredException e){
+        System.out.println(e.getMessage());
+        return new ResultEntity<>("token已经过期，请重新登陆",ResultEnum.RES_FAIL.getCode());
 
+    }
 
 
 }

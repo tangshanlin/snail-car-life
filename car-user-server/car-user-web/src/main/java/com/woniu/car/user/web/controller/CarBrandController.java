@@ -55,6 +55,7 @@ public class CarBrandController {
     public ResultEntity<List<CarBrandListDto>> selectAllBrand(){
         List<CarBrandListDto> ListCarBrandlist = new ArrayList<CarBrandListDto>();
         final boolean carbrand = operations.indexExists("carbrand");
+        log.info("es中不存在caband索引，从数据库查询");
         CriteriaQuery cq = new CriteriaQuery(new Criteria());
         if (!carbrand){
             for (int i=65;i<91;i++){
@@ -80,6 +81,7 @@ public class CarBrandController {
         });
             if (!ObjectUtils.isEmpty(ListCarBrandlist)&&ListCarBrandlist.size()>0){
                 //从es中查出
+                log.info("从es中查询车品牌");
                 return ResultEntity.buildListEntity(CarBrandListDto.class).setCode(ConstCode.SELECTCARBRAND_SUCESS).setFlag(true)
                         .setMessage("查询所有车品牌成功").setData(ListCarBrandlist);
             }

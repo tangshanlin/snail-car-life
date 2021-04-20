@@ -65,6 +65,7 @@ public class WalletController {
             Wallet walletDb = walletService.getOne(new QueryWrapper<Wallet>().eq("user_id", userId));
             if (!ObjectUtils.isEmpty(walletDb)){
                 Wallet wallet = BeanCopyUtil.copyOne(addwalletParam, Wallet::new);
+                wallet.setUserId(userId);
                 boolean save = walletService.save(wallet);
                 if (save) return ResultEntity.buildEntity().setCode(ConstCode.ADDWALLET_SUCCESS).setFlag(true).setMessage("创建钱包成功");
                 return ResultEntity.buildEntity().setCode(ConstCode.ADDWALLET_FAIL).setFlag(false).setMessage("创建钱包失败");

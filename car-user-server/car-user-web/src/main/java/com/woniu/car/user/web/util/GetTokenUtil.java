@@ -1,5 +1,6 @@
 package com.woniu.car.user.web.util;
 
+import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.interfaces.Claim;
 import com.woniu.car.commons.core.code.ConstDate;
 import com.woniu.car.commons.core.exception.CarException;
@@ -34,6 +35,7 @@ public class GetTokenUtil {
             throw new CarException("未登录，请先去登陆",500);
         }
         System.out.println(token);
+
         Claim userId = JwtUtils.getDecodeToken(token).getClaim("userId");
         Integer userId2 = Integer.valueOf(userId.asString());
         return userId2;

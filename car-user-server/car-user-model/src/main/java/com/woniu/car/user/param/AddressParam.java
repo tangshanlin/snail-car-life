@@ -32,6 +32,6 @@ public class AddressParam {
     private String addressStreet;
     @NotEmpty(message = "详细地址不能为空")
     private String addressDetail;
-    @NotEmpty(message = "默认地址不能为空")
+    @NotNull(message = "默认地址不能为空")
     private Integer isDefaultAddress;
 }

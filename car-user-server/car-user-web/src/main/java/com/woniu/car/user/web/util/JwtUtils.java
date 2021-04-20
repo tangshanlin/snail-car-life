@@ -3,6 +3,8 @@ package com.woniu.car.user.web.util;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTCreator;
 import com.auth0.jwt.algorithms.Algorithm;
+import com.auth0.jwt.exceptions.JWTVerificationException;
+import com.auth0.jwt.exceptions.TokenExpiredException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 
 import java.util.Date;
@@ -28,6 +30,16 @@ public class JwtUtils {
     //解析token
     public static DecodedJWT getDecodeToken(String token){
         System.out.println();
-        return JWT.require(Algorithm.HMAC256(SALT)).build().verify(token);
+        DecodedJWT verify=null;
+            try{
+                verify = JWT.require(Algorithm.HMAC256(SALT)).build().verify(token);
+            }catch (JWTVerificationException e){
+                throw e;
+            }
+
+
+
+
+        return verify;
     }
 }

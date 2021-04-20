@@ -17,6 +17,7 @@ import com.woniu.car.user.web.util.GetTokenUtil;
 import com.woniu.car.user.web.util.JwtUtils;
 import io.swagger.annotations.*;
 import io.swagger.models.auth.In;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.*;
 
@@ -36,6 +37,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/address")
 @Api(tags = "地址接口")
+@Slf4j
 
 public class AddressController {
     @Resource
@@ -75,15 +77,26 @@ public class AddressController {
             Address address = BeanCopyUtil.copyOne(addressParam, Address::new);
             //获取用户ID
             Integer userId = GetTokenUtil.getUserId();
+            log.info("从token中获取userid："+userId);
             address.setUserId(userId);
             //测试用
             System.out.println(userId);
             boolean save = addressService.save(address);
-            if (save) return ResultEntity.buildEntity().setCode(ConstCode.ADDADDRESS_SUCCESS).setFlag(true)
-                    .setMessage("新增地址成功");
-            return ResultEntity.buildEntity().setCode(ConstCode.ADDADDRESS_FAIL).setFlag(false).
-                    setMessage("新增地址失败");
+            if (save){
+                log.info("新增地址成功");
+                return
+                        ResultEntity.buildEntity().setCode(ConstCode.ADDADDRESS_SUCCESS).setFlag(true)
+                                .setMessage("新增地址成功");
+
+            }
+
+            log.info("新增地址失败");
+            throw new CarException("新增地址失败",500);
+//            return ResultEntity.buildEntity().setCode(ConstCode.ADDADDRESS_FAIL).setFlag(false).
+//                    setMessage("新增地址失败");
+
         }
+        log.info("传入参数有误");
         return  ResultEntity.buildEntity().setCode(ConstCode.PARAM_ERROR).setFlag(false).setMessage("输入参数错误");
     }
 
@@ -117,25 +130,28 @@ public class AddressController {
       //获取UserId
       Integer userId = GetTokenUtil.getUserId();
       if (ObjectUtils.isEmpty(userId)){
+          log.info("未登录，token校验失败");
           throw new CarException("未登陆，请重新登陆",500);
       }
 
 
       Address addressDb = addressService.getById(deleteAddress.getAddressId());
         if (addressDb.getUserId()==userId){
-
+            log.info("参数检验成功");
             boolean b = addressService.removeById(deleteAddress.getAddressId());
             if (b){
+                log.info("删除地址成功");
                 return ResultEntity.buildEntity().setCode(ConstCode.DELETEADDRESS_SUCCESS).setFlag(true)
                         .setMessage("删除地址成功");
             }else {
-
+                log.info("删除地址失败");
                 throw new CarException("删除地址失败",500);
             }
 
 
 
         }
+      log.info("输入参数错误");
       throw new CarException("输入参数错误",500);
 
     }
@@ -248,19 +264,25 @@ public class AddressController {
       //校验@RequestBody
         //从jwt中获取userId；
         Integer userId = GetTokenUtil.getUserId();
-        @NotNull Integer addressId = updateAddress.getAddressId();
+        @NotNull(message = "地址id不能为空") Integer addressId = updateAddress.getAddressId();
         Address addresdb = addressService.getById(addressId);
         if (addresdb.getUserId()==userId){
             //校验成功开始修改
-
+            log.info("传入参数校验成功，开始修改地址");
             Address address = BeanCopyUtil.copyOne(updateAddress, Address::new);
             address.setUserId(userId);
             boolean b = addressService.updateById(address);
-            if (b) return ResultEntity.buildEntity().setCode(ConstCode.UPDATEADDRESS_SUCCESS).setFlag(true).setMessage("修改地址成功");
-            return ResultEntity.buildEntity().setCode(ConstCode.UPDATEADDRESS_FAIL).setFlag(true)
-                    .setMessage("修改地址失败");
+            if (b) {
+                log.info("修改地址成功");
+                return ResultEntity.buildEntity().setCode(ConstCode.UPDATEADDRESS_SUCCESS).setFlag(true).setMessage("修改地址成功");
+            }
+                log.info("修改地址失败");
+            throw new CarException("修改地址失败",500);
+//            return ResultEntity.buildEntity().setCode(ConstCode.UPDATEADDRESS_FAIL).setFlag(true)
+//                    .setMessage("修改地址失败");
 
         }
+        log.info("传入参数校验失败");
         return ResultEntity.buildEntity().setCode(ConstCode.PARAM_ERROR).setFlag(false).setMessage("输入参数错误");
     }
 
