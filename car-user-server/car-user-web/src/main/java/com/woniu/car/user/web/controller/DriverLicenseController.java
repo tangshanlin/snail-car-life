@@ -1,6 +1,9 @@
 package com.woniu.car.user.web.controller;
 
 
+import cn.hutool.core.date.DateTime;
+import cn.hutool.core.date.DateUnit;
+import cn.hutool.core.date.DateUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.woniu.car.commons.core.code.ConstCode;
 import com.woniu.car.commons.core.dto.ResultEntity;
@@ -61,8 +64,17 @@ public class DriverLicenseController {
         //从jwt中获取userid
         Integer userId = GetTokenUtil.getUserId();
         //开始新增
-        DriverLicense driverLicense = BeanCopyUtil.copyOne(addDriverLicenseParam, DriverLicense::new);
+        DriverLicense driverLicense = new DriverLicense();
         driverLicense.setUserId(userId);
+        driverLicense.setDriverlicenseAddress(addDriverLicenseParam.getDriverlicenseAddress());
+        driverLicense.setDriverlicenseCartype(addDriverLicenseParam.getDriverlicenseCartype());
+        driverLicense.setDriverlicenseCreate(DateUtil.parse(addDriverLicenseParam.getDriverlicenseCreate()).getTime());
+        driverLicense.setDriverlicenseEndtime(DateUtil.parse(addDriverLicenseParam.getDriverlicenseEndtime()).getTime());
+        driverLicense.setDriverlicenseStarttime(DateUtil.parse(addDriverLicenseParam.getDriverlicenseStarttime()).getTime());
+        driverLicense.setDriverlicenseNation(addDriverLicenseParam.getDriverlicenseNation());
+        driverLicense.setDriverlicensePassportNo(addDriverLicenseParam.getDriverlicensePassportNo());
+        driverLicense.setDriverlicenseUserGender(addDriverLicenseParam.getDriverlicenseUserGender());
+        driverLicense.setUserRelalName(addDriverLicenseParam.getUserRelalName());
         boolean save = driverLicenseService.save(driverLicense);
         if (save) return ResultEntity.buildEntity().setCode(ConstCode.ADDDRIVERLICENSE_SUCCESS)
                 .setFlag(true).setMessage("新增驾驶证成功");

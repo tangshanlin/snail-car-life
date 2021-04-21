@@ -73,10 +73,14 @@ public class AddressController {
 //    })
     public ResultEntity addAddress(@RequestBody @Valid AddressParam addressParam){
         if (!ObjectUtils.isEmpty(addressParam)){
-            //复制到address对象
-            Address address = BeanCopyUtil.copyOne(addressParam, Address::new);
             //获取用户ID
             Integer userId = GetTokenUtil.getUserId();
+            if (ObjectUtils.isEmpty(userId)){
+                throw new CarException("请登陆后执行此操作",500);
+            }
+            //复制到address对象
+            Address address = BeanCopyUtil.copyOne(addressParam, Address::new);
+
             log.info("从token中获取userid："+userId);
             address.setUserId(userId);
             //测试用

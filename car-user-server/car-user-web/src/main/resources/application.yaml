@@ -33,7 +33,7 @@ spring:
   cloud:
     nacos:
       discovery:
-        server-addr: localhost:8848
+        server-addr: 192.168.10.113:8848
   redis:
     host: 47.108.133.10
     port: 6399

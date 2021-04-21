@@ -29,7 +29,7 @@ public class AddDrivingLicenseParam {
 
     @ApiModelProperty(value = "发证日期")
     @NotEmpty(message = "发证日期不能为空")
-    private Long drivinglicenseDate;
+    private String drivinglicenseDate;
 
     @ApiModelProperty(value = "品牌型号")
     @NotEmpty(message = "品牌型号不能为空")
@@ -57,7 +57,7 @@ public class AddDrivingLicenseParam {
 
     @ApiModelProperty(value = "注册日期")
     @NotEmpty(message = "注册日期不能为空")
-    private Long registerDate;
+    private String registerDate;
 
 
 

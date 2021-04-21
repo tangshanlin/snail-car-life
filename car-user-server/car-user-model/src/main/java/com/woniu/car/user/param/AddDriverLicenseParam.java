@@ -30,31 +30,31 @@ public class AddDriverLicenseParam {
     private Integer driverlicensePassportNo;
 
     @ApiModelProperty(value = "性别")
-    @NotNull
-    private Integer driverlicenseUserGender;
+    @NotEmpty(message = "性别不能为空")
+    private String driverlicenseUserGender;
 
     @ApiModelProperty(value = "国籍")
     @NotEmpty(message = "住址不能为空")
     private String driverlicenseNation;
     @ApiModelProperty(value = "住址")
-    @NotEmpty
+    @NotEmpty(message = "住址不能为空")
     private String driverlicenseAddress;
 
     @ApiModelProperty(value = "初次领证日期")
-    @NotEmpty
-    private Long driverlicenseCreate;
+    @NotEmpty(message = "初次领证日期不能为空")
+    private String driverlicenseCreate;
 
     @ApiModelProperty(value = "准驾车型")
-    @NotEmpty
+    @NotEmpty(message = "准驾车型不能为空")
     private String driverlicenseCartype;
 
     @ApiModelProperty(value = "有效期开始时间")
-    @NotEmpty
-    private Long driverlicenseStarttime;
+    @NotEmpty(message = "驾驶证开始时间不能为空")
+    private String driverlicenseStarttime;
 
     @ApiModelProperty(value = "有效结束日期")
-    @NotEmpty
-    private Long driverlicenseEndtime;
+    @NotEmpty(message = "有效结束日期不能为空")
+    private String driverlicenseEndtime;
 
 
 

@@ -327,8 +327,13 @@ public class UserController {
                 userReg.setUserAccount(userAccountReg);
 
                 userService.save(userReg);
+
                 UserInformation userInformation = new UserInformation();
                 userInformation.setUserTel(userTel);
+                //从数据库查询到userID
+                User user_telDb = userService.getOne(new QueryWrapper<User>().eq("user_tel", userTel));
+
+                userInformation.setUserId(user_telDb.getUserId());
                 userInformation.setUserName(userAccountReg);
                 //和前端沟通 头像写死
                 userInformation.setUserImage("https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fpic.soutu123.cn%2Felement_origin_min_pic%2F01%2F54%2F05%2F335746fd1e7f644.jpg%21%2Ffw%2F700%2Fquality%2F90%2Funsharp%2Ftrue%2Fcompress%2Ftrue&refer=http%3A%2F%2Fpic.soutu123.cn&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=jpeg?sec=1620364494&t=853cc8f45366a9ec51424cf84e72b5bd");

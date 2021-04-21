@@ -25,8 +25,8 @@ public class UpdateUserinformationParam {
     private String userName;
 
     @ApiModelProperty(value = "用户生日")
-    @NotNull(message = "用户生日")
-    private Long userBirthday;
+    @NotEmpty(message = "用户生日")
+    private String userBirthday;
 
 
 

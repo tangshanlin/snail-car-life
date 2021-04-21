@@ -1,6 +1,9 @@
 package com.woniu.car.user.web.controller;
 
 
+import cn.hutool.Hutool;
+import cn.hutool.core.date.DateTime;
+import cn.hutool.core.date.DateUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.woniu.car.commons.core.code.ConstCode;
 import com.woniu.car.commons.core.dto.ResultEntity;
@@ -14,6 +17,7 @@ import com.woniu.car.user.web.service.UserInformationService;
 import com.woniu.car.user.web.util.GetTokenUtil;
 import com.woniu.car.user.web.util.UserFileUpload;
 import io.swagger.annotations.*;
+import org.aspectj.weaver.ast.Var;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -89,16 +93,22 @@ public class UserInformationController {
         if (!ObjectUtils.isEmpty(updateUerinformationParam)){
             //从jwt中取出userid
             Integer userId = GetTokenUtil.getUserId();
+
             UserInformation userInformationDb = userInformationService.getOne(new QueryWrapper<UserInformation>().eq("user_id",userId));
-            UserInformation userInformationCopy
-                    = BeanCopyUtil.copyOne(updateUerinformationParam,UserInformation::new);
-            userInformationCopy.setUserId(userId);
-            userInformationCopy.setUserScore(userInformationDb.getUserScore());
-            userInformationCopy.setWalletMoney(userInformationDb.getWalletMoney());
-            userInformationCopy.setUserTel(userInformationDb.getUserTel());
+
+            //时间转换
+            DateTime parse = DateUtil.parse(updateUerinformationParam.getUserBirthday());
+            long time = parse.getTime();
+            System.out.println(time);
+          userInformationDb.setUserBirthday(time);
+
+
+            userInformationDb.setUserId(userId);
+
+            userInformationDb.setUserName(updateUerinformationParam.getUserName());
 
             //执行新增
-            boolean save = userInformationService.save(userInformationCopy);
+            boolean save = userInformationService.updateById(userInformationDb);
             if (save) return ResultEntity.buildEntity().setCode(ConstCode.ADDUSERINFORMATION_SUCCESS)
                     .setFlag(true).setMessage("新增用户详情信息成功");
             return ResultEntity.buildEntity().setCode(ConstCode.ADDUSERINFORMATION_FAIL).setFlag(false)
@@ -107,13 +117,13 @@ public class UserInformationController {
         }
         return  ResultEntity.buildEntity().setCode(ConstCode.PARAM_ERROR).setFlag(false).setMessage("输入参数错误");
     }
-  @PutMapping("/update-image")
+  @PostMapping  ("/update-image")
   @ApiOperation(value = "更改用户头像接口",notes ="<span style='color:red;'>更改用户头像的接口</span>" )
   @ApiResponses({
           @ApiResponse(code = 1386,message = "头像更新成功"),
           @ApiResponse(code = 1387,message = "头像更新失败")
   })
-    public ResultEntity updateImage(@RequestBody @Valid UpdateUserInformationImageParam updateUserInformationImageParam){
+    public ResultEntity updateImage(@Valid UpdateUserInformationImageParam updateUserInformationImageParam){
         //获取token中的userid
       Integer userId = GetTokenUtil.getUserId();
       if (ObjectUtils.isEmpty(userId)){
@@ -122,7 +132,8 @@ public class UserInformationController {
       UserInformation userInforDb = userInformationService.getOne(new QueryWrapper<UserInformation>().eq("user_id", userId));
 
       MultipartFile[] multipartFiles = new MultipartFile[1];
-      multipartFiles[0]=updateUserInformationImageParam.getFile();
+     multipartFiles[0]=updateUserInformationImageParam.getFile();
+//      multipartFiles[0]=updateUserInformationImageParam;
       ArrayList<String> upload = userFileUpload.upload(multipartFiles);
       String s = upload.get(0);
       userInforDb.setUserImage(s);
